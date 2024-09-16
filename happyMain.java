@@ -10,9 +10,9 @@ public class happyMain {
         while (true) {
             System.out.print("Happy > ");
             String input = reader.readLine();
-            ArrayList<happy.Token<?>> result = happy.run("happy.java", input); // No need to extend happy
+            //ArrayList<happy.Token<?>> result = happy.run("happy.java", input); // No need to extend happy
 
-            System.out.println(result);
+            //System.out.println(result);
         }
     }
 }
