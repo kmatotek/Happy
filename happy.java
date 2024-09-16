@@ -188,6 +188,86 @@ public class happy {
         }
     }
 
+    // --------------- NODES --------------------- //
+
+    public class NumberNode{
+        private Token<?> token;
+
+        public NumberNode(Token<?> token){
+            this.token = token;
+        }
+        
+        public String toString(){
+            return this.token.toString();
+        }
+    }
+
+    public class BinOpNode{
+        private NumberNode leftNode;
+        private NumberNode rightNode;
+        private Token<?> operatorToken;
+
+        public BinOpNode(NumberNode leftNode, NumberNode rightNode, Token<?> operatorToken){
+            this.leftNode = leftNode;
+            this.rightNode = rightNode;
+            this.operatorToken = operatorToken;
+        }
+
+        public String toString(){
+            return leftNode.toString() + " " +  operatorToken.toString() + " " + rightNode.toString();
+        }
+
+    }
+
+    // --------------- PARSER --------------------- //
+
+    public class Parser{
+        private ArrayList<Token<?>> tokens;
+        private int tokenIndex;
+        private Token currToken;
+
+        public Parser(ArrayList<Token<?>> tokens){
+            this.tokens = tokens;
+            this.tokenIndex = -1;
+            this.advance();
+        }
+
+        public Token<?> advance(){
+            this.tokenIndex += 1;
+            if(this.tokenIndex < this.tokens.size()){
+                this.currToken = tokens.get(tokenIndex);
+            }
+            return this.currToken;
+        }
+
+        public NumberNode factor(){
+            Token token = this.currToken;
+
+            if(token.type.equals("TT_INT") || token.type.equals("TT_FLOAT")){
+                this.advance();
+                return new NumberNode(token);
+            }
+            return null;
+        } 
+
+        public void term(){
+            NumberNode left = this.factor();
+
+            while(this.currToken.value.equals("TT_MUL") || this.currToken.value.equals("TT_DIV")){
+                Token opToken = this.currToken;
+                NumberNode rightNode = this.factor();
+                this.advance();
+            }
+        }
+
+        public void expr(){
+
+        }
+
+    }
+
+    // --------------- RUN --------------------- //
+
     public static ArrayList<Token<?>> run(String fileName, String text) {
         Lexer lexer = new Lexer(fileName, text);
         return lexer.makeTokens();
