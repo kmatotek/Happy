@@ -1,83 +1,97 @@
 package Lexer;
 import java.util.ArrayList;
-import java.util.List;
+import Position.*;
 
-public class Lexer {
-    private String fn, text;
-    private Position pos;
-    private Character currentChar;
+import Errors.IllegalCharError;
+import Token.*;
 
-    public Lexer(String fn, String text) {
-        this.fn = fn;
+public class Lexer{
+    public static final String DIGITS = "0123456789";
+
+    private String text;
+    private Position currPosition;
+    private char currChar;
+    public Lexer(String text){
         this.text = text;
-        this.pos = new Position(-1, 0, -1, fn, text);
+        this.currPosition = new Position(-1, 0, -1, text);
+        this.currChar = '\0';
         this.advance();
     }
-
-    public void advance() {
-        pos.advance(currentChar);
-        if (pos.idx < text.length()) {
-            currentChar = text.charAt(pos.idx);
+    // Advance to next character in text
+    public void advance(){
+        this.currPosition.advance(currChar);
+        if(this.currPosition.index < this.text.length()){
+            this.currChar = this.text.charAt(currPosition.index); 
         } else {
-            currentChar = null;
+            this.currChar = '\0';
         }
     }
 
-    public List<Token> makeTokens() {
-        List<Token> tokens = new ArrayList<>();
+    // Making tokens
+    public ArrayList<Token<?>> makeTokens(){
 
-        while (currentChar != null) {
-            if (Character.isWhitespace(currentChar)) {
-                advance();
-            } else if (Character.isDigit(currentChar)) {
-                tokens.add(makeNumber());
-            } else if (currentChar == '+') {
-                tokens.add(new Token(Token.TT_PLUS, pos, pos.copy().advance(currentChar)));
-                advance();
-            } else if (currentChar == '-') {
-                tokens.add(new Token(Token.TT_MINUS, pos, pos.copy().advance(currentChar)));
-                advance();
-            } else if (currentChar == '*') {
-                tokens.add(new Token(Token.TT_MUL, pos, pos.copy().advance(currentChar)));
-                advance();
-            } else if (currentChar == '/') {
-                tokens.add(new Token(Token.TT_DIV, pos, pos.copy().advance(currentChar)));
-                advance();
-            } else if (currentChar == '(') {
-                tokens.add(new Token(Token.TT_LPAREN, pos, pos.copy().advance(currentChar)));
-                advance();
-            } else if (currentChar == ')') {
-                tokens.add(new Token(Token.TT_RPAREN, pos, pos.copy().advance(currentChar)));
-                advance();
+        ArrayList<Token<?>> tokens = new ArrayList<>();
+
+        while(this.currChar != '\0'){
+            if(" \t".indexOf(this.currChar) != -1){
+                this.advance(); // Skip white space and tabs
+            } else if (DIGITS.indexOf(this.currChar) != -1){
+                tokens.add(this.makeNumber());
+            }
+
+
+            else if(this.currChar == '+'){
+                tokens.add(new Token<>(Token.TT_PLUS));
+                this.advance();
+            } else if(this.currChar == '-'){
+                tokens.add(new Token<>(Token.TT_MINUS));
+                this.advance();
+            } else if(this.currChar == '*'){
+                tokens.add(new Token<>(Token.TT_MUL));
+                this.advance();
+            } else if(this.currChar == '/'){
+                tokens.add(new Token<>(Token.TT_DIV));
+                this.advance();
+            } else if(this.currChar == '('){
+                tokens.add(new Token<>(Token.TT_LPAREN));
+                this.advance();
+            } else if(this.currChar == ')'){
+                tokens.add(new Token<>(Token.TT_RPAREN));
+                this.advance();
             } else {
-                throw new RuntimeException("Illegal Character: " + currentChar);
+                // return some error
+                Position positionStart = this.currPosition.copy();
+                    char invalidChar = this.currChar; // Capture the invalid character
+                    this.advance(); // Move to the next character
+                    throw new IllegalCharError("Line " + this.currPosition.line + ": Unexpected character: " + invalidChar);
             }
         }
 
-        tokens.add(new Token(Token.TT_EOF, pos, pos));
         return tokens;
     }
 
-    private Token makeNumber() {
+    public Token<?> makeNumber() {
         StringBuilder numStr = new StringBuilder();
         int dotCount = 0;
-        Position posStart = pos.copy();
 
-        while (currentChar != null && (Character.isDigit(currentChar) || currentChar == '.')) {
-            if (currentChar == '.') {
-                if (dotCount == 1) break;
-                dotCount += 1;
+        while (this.currChar != '\0' && (DIGITS.indexOf(this.currChar) != -1 || this.currChar == '.')) {
+            if (this.currChar == '.') {
+                if (dotCount == 1) break; // Only allow one dot for a floating-point number
+                dotCount++;
                 numStr.append('.');
             } else {
-                numStr.append(currentChar);
+                numStr.append(this.currChar);
             }
-            advance();
+            this.advance(); // Advance to the next character
         }
 
         if (dotCount == 0) {
-            return new Token(Token.TT_INT, Integer.parseInt(numStr.toString()), posStart, pos);
+            // It's an integer
+            return new Token<>(Token.TT_INT, Integer.parseInt(numStr.toString()));
         } else {
-            return new Token(Token.TT_FLOAT, Double.parseDouble(numStr.toString()), posStart, pos);
+            // It's a float
+            return new Token<>(Token.TT_FLOAT, Double.parseDouble(numStr.toString()));
         }
     }
+
 }
