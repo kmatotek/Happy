@@ -1,13 +1,13 @@
 package Errors;
 import Lexer.Position;
 
-public class Error {
+public class MyError {
     protected Position posStart;
     protected Position posEnd;
     protected String errorName;
     protected String details;
 
-    public Error(Position posStart, Position posEnd, String errorName, String details) {
+    public MyError(Position posStart, Position posEnd, String errorName, String details) {
         this.posStart = posStart;
         this.posEnd = posEnd;
         this.errorName = errorName;

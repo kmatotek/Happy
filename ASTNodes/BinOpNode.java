@@ -3,11 +3,11 @@ import Lexer.Token;
 
 
 public class BinOpNode extends Node{
-    public NumberNode leftNode;
+    public Node leftNode;
     public Token opToken;
-    public NumberNode rightNode;
+    public Node rightNode;
 
-    public BinOpNode(NumberNode leftNode, Token opToken, NumberNode rightNode) {
+    public BinOpNode(Node leftNode, Token opToken, Node rightNode) {
         this.leftNode = leftNode;
         this.opToken = opToken;
         this.rightNode = rightNode;

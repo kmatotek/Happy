@@ -1,3 +1,6 @@
+package Lexer;
+
+
 public class Token {
     public static final String TT_INT = "INT";
     public static final String TT_FLOAT = "FLOAT";

@@ -3,9 +3,9 @@ import Lexer.Token;
 
 public class UnaryOpNode extends Node {
     public Token opToken;
-    public NumberNode node;
+    public Node node;
 
-    public UnaryOpNode(Token opToken, NumberNode node) {
+    public UnaryOpNode(Token opToken, Node node) {
         this.opToken = opToken;
         this.node = node;
     }
