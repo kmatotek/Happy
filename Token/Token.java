@@ -13,8 +13,8 @@ public class Token<T>{
     public static final String TT_RPAREN = "RPAREN";
 
 
-    private String type;
-    private T value;
+    public String type;
+    public T value;
 
     public Token(String type, T value){
         this.type = type;

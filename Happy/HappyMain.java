@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.io.IOException;
 import Token.*;
 import Lexer.*;
+import Parser.*;
+import Operators.*;
 
 public class HappyMain {
     public static void main(String[] args) throws IOException {
@@ -14,12 +16,17 @@ public class HappyMain {
             // Infinite loop to read code from terminal1
             System.out.print("Happy > ");
             String input = reader.readLine();
-            ArrayList<Token<?>> result = run("happy.java", input);
+            ASTNode result = run(input);
             System.out.println(result);
         }
     }
-    public static ArrayList<Token<?>> run(String fileName, String text) {
+    public static ASTNode run(String text) {
         Lexer lexer = new Lexer(text);
-        return lexer.makeTokens();
+        ArrayList<Token<?>> tokens = lexer.makeTokens();
+
+        Parser parser = new Parser(tokens);
+        ASTNode ast = parser.parse();
+        
+        return ast;
     }
 }
