@@ -11,8 +11,8 @@ public class BinOpNode extends ASTNode {
         this.token = token;
         this.rightNode = rightNode;
     }
-
     public String toString(){
         return "(" + leftNode.toString() + " " + token.toString() + " " + rightNode.toString() + ")";
     }
 }
+
