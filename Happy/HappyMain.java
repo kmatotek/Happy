@@ -18,7 +18,7 @@ public class HappyMain {
             String input = reader.readLine();
 
             ASTNode result = run(input);
-            System.out.println(result);
+            System.out.println(result.toString());
     }
 
     public static ASTNode run(String text) {

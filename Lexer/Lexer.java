@@ -64,7 +64,7 @@ public class Lexer{
             }
         }
 
-        tokens.add(new Token(Token.TT_EOF));
+        tokens.add(new Token<>(Token.TT_EOF));
         return tokens;
     }
 

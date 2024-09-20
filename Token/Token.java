@@ -17,8 +17,8 @@ public class Token<T>{
 
     public String type;
     public T value;
-    public Position positionStart;
-    public Position positionEnd;
+    public static Position positionStart;
+    public static Position positionEnd;
 
     public Token(String type, T value, Position positionStart, Position positionEnd){
         this.type = type;
@@ -45,7 +45,7 @@ public class Token<T>{
     @Override
     public String toString(){
         if(this.value != null){
-            return "Type: " + this.type + " Value: " + this.value;
+            return "Type: " + this.type; //+ " Value: " + this.value;
         } else {
             return "Type: " + this.type;
         }
