@@ -37,26 +37,23 @@ public class Lexer{
                 this.advance(); // Skip white space and tabs
             } else if (DIGITS.indexOf(this.currChar) != -1){
                 tokens.add(this.makeNumber());
-            }
-
-
-            else if(this.currChar == '+'){
-                tokens.add(new Token<>(Token.TT_PLUS));
+            } else if(this.currChar == '+'){
+                tokens.add(new Token<>(Token.TT_PLUS, this.currPosition));
                 this.advance();
             } else if(this.currChar == '-'){
-                tokens.add(new Token<>(Token.TT_MINUS));
+                tokens.add(new Token<>(Token.TT_MINUS, this.currPosition));
                 this.advance();
             } else if(this.currChar == '*'){
-                tokens.add(new Token<>(Token.TT_MUL));
+                tokens.add(new Token<>(Token.TT_MUL, this.currPosition));
                 this.advance();
             } else if(this.currChar == '/'){
-                tokens.add(new Token<>(Token.TT_DIV));
+                tokens.add(new Token<>(Token.TT_DIV, this.currPosition));
                 this.advance();
             } else if(this.currChar == '('){
-                tokens.add(new Token<>(Token.TT_LPAREN));
+                tokens.add(new Token<>(Token.TT_LPAREN, this.currPosition));
                 this.advance();
             } else if(this.currChar == ')'){
-                tokens.add(new Token<>(Token.TT_RPAREN));
+                tokens.add(new Token<>(Token.TT_RPAREN, this.currPosition));
                 this.advance();
             } else {
                 // return some error
@@ -67,12 +64,14 @@ public class Lexer{
             }
         }
 
+        tokens.add(new Token(Token.TT_EOF));
         return tokens;
     }
 
     public Token<?> makeNumber() {
         StringBuilder numStr = new StringBuilder();
         int dotCount = 0;
+        Position positionStart = this.currPosition.copy();
 
         while (this.currChar != '\0' && (DIGITS.indexOf(this.currChar) != -1 || this.currChar == '.')) {
             if (this.currChar == '.') {
@@ -87,10 +86,10 @@ public class Lexer{
 
         if (dotCount == 0) {
             // It's an integer
-            return new Token<>(Token.TT_INT, Integer.parseInt(numStr.toString()));
+            return new Token<>(Token.TT_INT, Integer.parseInt(numStr.toString()), positionStart, this.currPosition);
         } else {
             // It's a float
-            return new Token<>(Token.TT_FLOAT, Double.parseDouble(numStr.toString()));
+            return new Token<>(Token.TT_FLOAT, Double.parseDouble(numStr.toString()), positionStart, this.currPosition);
         }
     }
 

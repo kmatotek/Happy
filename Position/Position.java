@@ -3,7 +3,7 @@ package Position;
 public class Position {
     public int index;
     public int line;
-    private int col;
+    public int col;
     public String fileName;
     private String fileText;
 
@@ -30,6 +30,12 @@ public class Position {
             this.line += 1;
             this.col = 0;
         }
+    }
+
+    public void advance(){
+        this.index += 1;
+        this.col += 1;
+
     }
 
     public Position copy(){
