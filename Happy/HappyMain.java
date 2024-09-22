@@ -1,6 +1,9 @@
 package Happy;
 
 import java.util.ArrayList;
+
+import Interpreter.Interpreter;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,11 +25,18 @@ public class HappyMain {
     }
 
     public static ASTNode run(String text) {
+
+        // Generate tokens
         Lexer lexer = new Lexer(text);
-    
         ArrayList<Token<?>> tokens = lexer.makeTokens();
+
+        // Generate AST
         Parser parser = new Parser(tokens);
         ASTNode ast = parser.parse();
+
+        // Run program
+        Interpreter interpreter = new Interpreter();
+        interpreter.visit(ast);
         
         return ast;
     }
