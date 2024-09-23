@@ -10,6 +10,7 @@ import Lexer.*;
 import Parser.*;
 import Operators.*;
 import Interpreter.*;
+import Values.Number;
 
 public class HappyMain {
     public static void main(String[] args) throws IOException {
@@ -18,11 +19,13 @@ public class HappyMain {
             System.out.print("Happy > ");
             String input = reader.readLine();
 
-            ASTNode result = run(input);
+           
+
+            Number result = run(input);
             System.out.println(result.toString());
     }
 
-    public static ASTNode run(String text) {
+    public static Number run(String text) {
         // Make tokens
         Lexer lexer = new Lexer(text);
         ArrayList<Token<?>> tokens = lexer.makeTokens();
@@ -33,8 +36,9 @@ public class HappyMain {
 
         // Run Program
         Interpreter interpreter = new Interpreter();
-        interpreter.visit(ast);
+        Number res = interpreter.visit(ast);
+
         
-        return ast;
+        return res;
     }
 }

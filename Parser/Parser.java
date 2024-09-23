@@ -31,7 +31,7 @@ public class Parser {
 
         if(token.type.equals(Token.TT_PLUS) || token.type.equals(Token.TT_MINUS)){
             parseResult.register(this.advance());
-            NumberNode factor = (NumberNode) parseResult.register(this.factor());
+            ASTNode factor = parseResult.register(this.factor());
             if(parseResult.error != null){
                 throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
             }

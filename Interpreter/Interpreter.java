@@ -2,34 +2,60 @@ package Interpreter;
 
 
 import Operators.*;
+import Values.Number;
+import Token.*;
 
 public class Interpreter {
     
-    public void visit(ASTNode node){
+    public Number visit(ASTNode node){
         if(node instanceof NumberNode){
-            visitNumberNode((NumberNode)node);
+            return visitNumberNode((NumberNode)node);
         } else if(node instanceof BinOpNode){
-            visitBinaryOpNode((BinOpNode)node);
+            return visitBinaryOpNode((BinOpNode)node);
         } if(node instanceof UnaryOpNode){
-            visitUnaryOpNode((UnaryOpNode) node);
+            return visitUnaryOpNode((UnaryOpNode) node);
         } else {
             //System.out.println("not good bro");
+            return null;
         }
     }
 
-    public void visitNumberNode(NumberNode node){
-        System.out.println("Visit Number Node!");
+    public Number visitNumberNode(NumberNode node){
+        Number res = new Number(node.token.value);
+        res.setPosition(node.positionStart,node.positionEnd);
+        return res;
     }
 
-    public void visitBinaryOpNode(BinOpNode node){
+    public Number visitBinaryOpNode(BinOpNode node){
         System.out.println("Visit binOp Node!");
-        this.visit(node.leftNode);
-        this.visit(node.rightNode);
+        Number left = this.visit(node.leftNode);
+        Number right = this.visit(node.rightNode);
+        Number result;
+
+        if(node.token.type.equals(Token.TT_PLUS)){
+            result = left.addBy(right);
+        } else if(node.token.type.equals(Token.TT_MINUS)){
+            result = left.subtractBy(right);
+        } else if(node.token.type.equals(Token.TT_MUL)){
+            result = left.multiplyBy(right);
+        } else if(node.token.type.equals(Token.TT_DIV)){
+            result = left.divideBy(right);
+        } else {
+            throw new IllegalArgumentException("not good bro");
+        }
+        result.setPosition(node.positionStart, node.positionEnd);
+        return result;
     }
 
-    public void visitUnaryOpNode(UnaryOpNode node){
+    public Number visitUnaryOpNode(UnaryOpNode node){
         System.out.println("Visit UnOp Node!");
-        this.visit(node.node);
+        Number num = this.visit(node.node);
+
+        if(node.opToken.type.equals(Token.TT_MINUS)){
+            num = num.multiplyBy(new Number(-1));
+        }
+        num.setPosition(node.positionStart, node.positionEnd);
+        return num;
     }
 
 }
