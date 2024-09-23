@@ -25,19 +25,11 @@ public class Parser {
         return currToken;
     }
 
-    public ASTNode factor(){
+    public ASTNode atom(){
         ParseResult parseResult = new ParseResult();
         Token<?> token = currToken;
 
-        if(token.type.equals(Token.TT_PLUS) || token.type.equals(Token.TT_MINUS)){
-            parseResult.register(this.advance());
-            ASTNode factor = parseResult.register(this.factor());
-            if(parseResult.error != null){
-                throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
-            }
-            return parseResult.success(new UnaryOpNode(token, factor));
-
-        } else if(token.type.equals(Token.TT_INT) || token.type.equals(Token.TT_FLOAT)){
+        if(token.type.equals(Token.TT_INT) || token.type.equals(Token.TT_FLOAT)){
             parseResult.register(this.advance());
 
             return parseResult.success(new NumberNode(token));
@@ -54,9 +46,29 @@ public class Parser {
             } else {
                 throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"Expected ')'");
             }
-        }
+        } 
+        else throw new IllegalCharError("Expected int or float");
+    }
 
-        throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"Expected int or float");
+    public ASTNode power(){
+        return this.binOp(this::atom, this::factor, Token.TT_POW, Token.TT_POW);
+        
+    }
+
+    public ASTNode factor(){
+        ParseResult parseResult = new ParseResult();
+        Token<?> token = currToken;
+
+        if(token.type.equals(Token.TT_PLUS) || token.type.equals(Token.TT_MINUS)){
+            parseResult.register(this.advance());
+            ASTNode factor = parseResult.register(this.factor());
+            if(parseResult.error != null){
+                throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
+            }
+            return parseResult.success(new UnaryOpNode(token, factor));
+        } 
+        return this.power();
+        //throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"Expected int or float");
     }
 
     public ASTNode term(){
@@ -79,6 +91,22 @@ public class Parser {
             Token opToken = currToken;
             parseResult.register(this.advance());
             ASTNode right = parseResult.register(parseFunc.get());  // Use the same parse function for the right side
+            if(parseResult.error != null) throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
+
+            left = new BinOpNode(left, opToken, right);
+        }
+        return parseResult.success(left);
+    }
+
+    public ASTNode binOp(Supplier<ASTNode> parseFuncA, Supplier<ASTNode> parseFuncB,String op1, String op2){
+        ParseResult parseResult = new ParseResult();
+        ASTNode left = parseResult.register(parseFuncA.get());  // Call the provided parse function (e.g., factor or term)
+        if(parseResult.error != null) throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
+        
+        while(currToken.type.equals(op1) || currToken.type.equals(op2)){
+            Token opToken = currToken;
+            parseResult.register(this.advance());
+            ASTNode right = parseResult.register(parseFuncB.get());  // Use the same parse function for the right side
             if(parseResult.error != null) throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
 
             left = new BinOpNode(left, opToken, right);

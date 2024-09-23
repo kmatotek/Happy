@@ -27,7 +27,7 @@ public class Interpreter {
     }
 
     public Number visitBinaryOpNode(BinOpNode node){
-        System.out.println("Visit binOp Node!");
+        //System.out.println("Visit binOp Node!");
         Number left = this.visit(node.leftNode);
         Number right = this.visit(node.rightNode);
         Number result;
@@ -40,6 +40,8 @@ public class Interpreter {
             result = left.multiplyBy(right);
         } else if(node.token.type.equals(Token.TT_DIV)){
             result = left.divideBy(right);
+        } else if(node.token.type.equals(Token.TT_POW)){
+            result = left.powerBy(right);
         } else {
             throw new IllegalArgumentException("not good bro");
         }
@@ -48,7 +50,7 @@ public class Interpreter {
     }
 
     public Number visitUnaryOpNode(UnaryOpNode node){
-        System.out.println("Visit UnOp Node!");
+        //System.out.println("Visit UnOp Node!");
         Number num = this.visit(node.node);
 
         if(node.opToken.type.equals(Token.TT_MINUS)){

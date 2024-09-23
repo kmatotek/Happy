@@ -1,5 +1,6 @@
 package Values;
 
+import Errors.DivideByZero;
 import Position.*;
 
 public class Number {
@@ -38,6 +39,11 @@ public class Number {
 
     public Number divideBy(Number other) {
         Object result = performDivision(this.value, other.value);
+        return new Number(result);
+    }
+
+    public Number powerBy(Number other) {
+        Object result = performPower(this.value, other.value);
         return new Number(result);
     }
 
@@ -84,6 +90,9 @@ public class Number {
     }
 
     private Object performDivision(Object a, Object b) {
+        if(toDouble(b) == 0){
+            throw new DivideByZero();
+        }
         if (a instanceof Double || b instanceof Double) {
             return toDouble(a) / toDouble(b);
         } else if (a instanceof Float || b instanceof Float) {
@@ -92,6 +101,23 @@ public class Number {
             return toInt(a) / toInt(b);
         } else if (a instanceof Long || b instanceof Long) {
             return toLong(a) / toLong(b);
+        } else {
+            throw new IllegalArgumentException("Unsupported types for addition.");
+        }
+    }
+
+    private Object performPower(Object a, Object b) {
+        if(toDouble(b) == 0){
+            throw new DivideByZero();
+        }
+        if (a instanceof Double || b instanceof Double) {
+            return Math.pow(toDouble(a),toDouble(b));
+        } else if (a instanceof Float || b instanceof Float) {
+            return Math.pow(toFloat(a),toFloat(b));
+        } else if (a instanceof Integer || b instanceof Integer) {
+            return Math.pow(toInt(a),toInt(b));
+        } else if (a instanceof Long || b instanceof Long) {
+            return Math.pow(toLong(a),toLong(b));
         } else {
             throw new IllegalArgumentException("Unsupported types for addition.");
         }

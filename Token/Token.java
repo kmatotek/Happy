@@ -4,6 +4,7 @@ import Position.*;
 public class Token<T>{
     // TT : Token Type
 
+    public static final String TT_POW   = "POW";
     public static final String TT_INT    = "TT_INT"; 
     public static final String TT_FLOAT  = "FLOAT";
     public static final String TT_PLUS   = "PLUS";
@@ -13,6 +14,7 @@ public class Token<T>{
     public static final String TT_LPAREN = "LPAREN";
     public static final String TT_RPAREN = "RPAREN";
     public static final String TT_EOF = "EOF";
+    
 
 
     public String type;
