@@ -1,6 +1,5 @@
 package Interpreter;
 
-import java.util.function.BinaryOperator;
 
 import Operators.*;
 
