@@ -34,7 +34,12 @@ public class Parser {
 
             return parseResult.success(new NumberNode(token));
 
-        } else if (token.type.equals(Token.TT_LPAREN)){
+        } else if (token.type.equals(Token.TT_IDENTIFIER)){
+            parseResult.register(this.advance());
+            return parseResult.success(new VarAccessNode(token));
+        }
+        
+        else if (token.type.equals(Token.TT_LPAREN)){
             parseResult.register(this.advance());
             ASTNode expr = parseResult.register(this.expression());
             
@@ -47,7 +52,7 @@ public class Parser {
                 throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"Expected ')'");
             }
         } 
-        else throw new IllegalCharError("Expected int or float");
+        else throw new IllegalCharError("Expected int or float but got " + this.currToken.type);
     }
 
     public ASTNode power(){
@@ -58,7 +63,7 @@ public class Parser {
     public ASTNode factor(){
         ParseResult parseResult = new ParseResult();
         Token<?> token = currToken;
-
+            
         if(token.type.equals(Token.TT_PLUS) || token.type.equals(Token.TT_MINUS)){
             parseResult.register(this.advance());
             ASTNode factor = parseResult.register(this.factor());
@@ -67,6 +72,8 @@ public class Parser {
             }
             return parseResult.success(new UnaryOpNode(token, factor));
         } 
+    
+        
         return this.power();
         //throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"Expected int or float");
     }
@@ -78,6 +85,25 @@ public class Parser {
 
     public ASTNode expression(){
         // Handle addition and subtraction (lower precedence)
+        ParseResult res = new ParseResult();
+        if(this.currToken.matches(Token.TT_KEYWORD, "VAR")){
+            res.register(this.advance());
+
+            if(!this.currToken.type.equals(Token.TT_IDENTIFIER)){
+                throw new IllegalCharError("Expected identifier");
+            }
+            Token<?> varName = this.currToken;
+            res.register(this.advance());
+
+            if(!this.currToken.type.equals(Token.TT_EQ)){
+                throw new IllegalCharError("Excpected =");
+            }
+
+            res.register(this.advance());
+            ASTNode expr = res.register(this.expression());
+            return res.success(new VarAssignNode(varName, expr));
+        }
+
         return this.binOp(this::term, Token.TT_PLUS, Token.TT_MINUS);           
     }
 

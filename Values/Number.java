@@ -47,6 +47,7 @@ public class Number {
         return new Number(result);
     }
 
+
     private Object performAddition(Object a, Object b) {
         if (a instanceof Double || b instanceof Double) {
             return toDouble(a) + toDouble(b);
@@ -60,6 +61,7 @@ public class Number {
             throw new IllegalArgumentException("Unsupported types for addition.");
         }
     }
+
 
     private Object performSubtraction(Object a, Object b) {
         if (a instanceof Double || b instanceof Double) {

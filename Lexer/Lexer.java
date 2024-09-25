@@ -1,5 +1,7 @@
 package Lexer;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import Position.*;
 
 import Errors.IllegalCharError;
@@ -7,6 +9,7 @@ import Token.*;
 
 public class Lexer{
     public static final String DIGITS = "0123456789";
+    public static final ArrayList<String> KEYWORDS = new ArrayList<>(Arrays.asList("VAR"));
 
     private String text;
     private Position currPosition;
@@ -37,7 +40,10 @@ public class Lexer{
                 this.advance(); // Skip white space and tabs
             } else if (DIGITS.indexOf(this.currChar) != -1){
                 tokens.add(this.makeNumber());
-            } else if(this.currChar == '+'){
+            } else if(Character.isLetter(this.currChar)){
+               // System.out.println(this.currChar);
+                tokens.add(this.makeIdentifier());
+            }   else if(this.currChar == '+'){
                 tokens.add(new Token<>(Token.TT_PLUS, this.currPosition));
                 this.advance();
             } else if(this.currChar == '-'){
@@ -58,6 +64,10 @@ public class Lexer{
             } else if(this.currChar == ')'){
                 tokens.add(new Token<>(Token.TT_RPAREN, this.currPosition));
                 this.advance();
+            } else if(this.currChar == '='){
+                tokens.add(new Token<>(Token.TT_EQ, this.currPosition));
+                //out.println(tokens);
+                this.advance();
             } else {
                 // return some error
                 Position positionStart = this.currPosition.copy();
@@ -69,6 +79,20 @@ public class Lexer{
 
         tokens.add(new Token<>(Token.TT_EOF));
         return tokens;
+    }
+
+    public Token<?> makeIdentifier(){
+        String idString = "";
+        Position posStart = this.currPosition.copy();
+
+        while(this.currChar != '\0' && (Character.isLetter(this.currChar) || DIGITS.indexOf(this.currChar) != -1) || this.currChar == '_'){
+            idString += this.currChar;
+            this.advance();
+        }
+
+        String tokenType = KEYWORDS.contains(idString) ? Token.TT_KEYWORD : Token.TT_IDENTIFIER;
+        
+        return new Token(tokenType, idString, posStart, this.currPosition);
     }
 
     public Token<?> makeNumber() {

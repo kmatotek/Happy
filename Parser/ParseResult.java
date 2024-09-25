@@ -13,6 +13,7 @@ public class ParseResult {
 
     public ASTNode register(ParseResult parseResult){ // Takes in parse result 
         if(parseResult.error != null){
+            
             return parseResult.node;
         }
         return null;

@@ -4,6 +4,9 @@ import Position.*;
 public class Token<T>{
     // TT : Token Type
 
+    public static final String TT_IDENTIFIER  = "IDENTIFIER";
+    public static final String TT_KEYWORD   = "KEYWORD";
+    public static final String TT_EQ   = "EQ";
     public static final String TT_POW   = "POW";
     public static final String TT_INT    = "TT_INT"; 
     public static final String TT_FLOAT  = "FLOAT";
@@ -42,6 +45,11 @@ public class Token<T>{
 
     public Token(String type){
         this.type = type;
+    }
+
+    public boolean matches(String type, T value){
+        boolean matches = this.type.equals(type) && this.value.equals(value);
+        return matches;
     }
 
     @Override
