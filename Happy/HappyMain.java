@@ -22,14 +22,14 @@ public class HappyMain {
             System.out.print("Happy > ");
             String input = reader.readLine();
             SymbolTable globalSymbolTable = new SymbolTable();
-            globalSymbolTable.set("poop",new Number(0));
+            globalSymbolTable.set("null",new Number(0));
             
 
            
 
             Number result = run(input, globalSymbolTable);
             
-            System.out.println(result);
+            //System.out.println(result);
            
     }
 
@@ -45,9 +45,12 @@ public class HappyMain {
         // Run Program
         Interpreter interpreter = new Interpreter();
         Context context = new Context("Program");
-        context.symbolTableObject = globalSymbolTable;
-        System.out.println(context.symbolTableObject.symbols);
-        Number res = interpreter.visit(ast, context);
+
+        Number res = interpreter.visit(ast, context).number;
+        globalSymbolTable = context.symbolTableObject;
+       // System.out.println(context.symbolTableObject.toString());
+        
+        //System.out.println(globalSymbolTable.symbols);
         
         return res;
     }

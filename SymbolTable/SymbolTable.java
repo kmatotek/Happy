@@ -23,4 +23,12 @@ public class SymbolTable {
         this.symbols.remove(name);
     }
 
+    public String toString(){
+        String ans = "";
+        for(String s : this.symbols.keySet()){
+            ans += "Variable: " + s + " Value: " + symbols.get(s);
+        }
+        return ans;
+    }
+
 }

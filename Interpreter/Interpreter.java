@@ -6,21 +6,23 @@ import Parser.ParseResult;
 import Values.Number;
 import Token.*;
 import Context.*;
+import DataStructures.numberContext;
 
 public class Interpreter {
     Context Context = new Context("Program");
     
-    public Number visit(ASTNode node, Context context){
+    public numberContext visit(ASTNode node, Context context){
         if(node instanceof NumberNode){
-            return visitNumberNode((NumberNode)node);
+            return new numberContext(visitNumberNode((NumberNode)node, context).number, context);
+    
         } else if(node instanceof BinOpNode){
-            return visitBinaryOpNode((BinOpNode)node);
+            return new numberContext(visitBinaryOpNode((BinOpNode)node, context).number, context);
         } if(node instanceof UnaryOpNode){
-            return visitUnaryOpNode((UnaryOpNode) node);
+            return new numberContext(visitUnaryOpNode((UnaryOpNode) node, context).number, context);
         } else if(node instanceof VarAccessNode){
-            return visitVarAccessNode((VarAccessNode) node, context);
+            return new numberContext(visitVarAccessNode((VarAccessNode) node, context).number, context);
         } else if(node instanceof VarAssignNode){
-            return visitVarAssignedNode((VarAssignNode) node, context);
+            return new numberContext(visitVarAssignedNode((VarAssignNode) node, context).number, context);
         } 
         else {
             //System.out.println("not good bro");
@@ -28,16 +30,16 @@ public class Interpreter {
         }
     }
 
-    public Number visitNumberNode(NumberNode node){
+    public numberContext visitNumberNode(NumberNode node, Context context){
         Number res = new Number(node.token.value);
         res.setPosition(node.positionStart,node.positionEnd);
-        return res;
+        return new numberContext(res, context);
     }
 
-    public Number visitBinaryOpNode(BinOpNode node){
+    public numberContext visitBinaryOpNode(BinOpNode node, Context context){
         //System.out.println("Visit binOp Node!");
-        Number left = this.visit(node.leftNode, new Context("Program"));
-        Number right = this.visit(node.rightNode, new Context("Program"));
+        Number left = this.visit(node.leftNode, context).number;
+        Number right = this.visit(node.rightNode, context).number;
         Number result;
 
         if(node.token.type.equals(Token.TT_PLUS)){
@@ -54,36 +56,38 @@ public class Interpreter {
             throw new IllegalArgumentException("not good bro");
         }
         result.setPosition(node.positionStart, node.positionEnd);
-        return result;
+        return new numberContext(result, context);
     }
 
-    public Number visitUnaryOpNode(UnaryOpNode node){
+    public numberContext visitUnaryOpNode(UnaryOpNode node, Context context){
         //System.out.println("Visit UnOp Node!");
-        Number num = this.visit(node.node, new Context("Program"));
+        Number num = this.visit(node.node, context).number;
 
         if(node.opToken.type.equals(Token.TT_MINUS)){
             num = num.multiplyBy(new Number(-1));
         }
         num.setPosition(node.positionStart, node.positionEnd);
-        return num;
+        return new numberContext(num, context);
     }
 
-    public Number visitVarAccessNode(VarAccessNode node, Context context){
+    public numberContext visitVarAccessNode(VarAccessNode node, Context context){
         ParseResult res = new ParseResult();
         Object varName = node.varNameToken.value;
         Object value = context.symbolTable.get(varName);
         if(value == null) throw new IllegalArgumentException("Variable " + varName + " is not defined");
-        return new Number(value);
+        //System.out.println(value);
+        return new numberContext(new Number(value), context);
     }
 
-    public Number visitVarAssignedNode(VarAssignNode node, Context context){
+    public numberContext visitVarAssignedNode(VarAssignNode node, Context context){
         ParseResult res = new ParseResult();
         Object varName = node.varNameToken.value;
-        Object value = this.visit(node.valueNode, new Context("Program"));
+        Number value = this.visit(node.valueNode, context).number;
         if(value == null) throw new IllegalArgumentException("Variable " + varName + " is not defined");
-        System.out.println("Made it");
-        //context.symbolTableObject.set(varName.toString(), value);
-        return new Number(value);
+    
+        context.symbolTableObject.set(varName.toString(), value);
+        
+        return new numberContext(value, context);
     }
 
 }
