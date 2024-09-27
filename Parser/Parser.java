@@ -1,6 +1,8 @@
 package Parser;
 import java.util.ArrayList;
 import java.util.function.Supplier;
+import java.util.List;
+import java.util.Arrays;
 
 import Errors.*;
 import Operators.*;
@@ -47,7 +49,7 @@ public class Parser {
             
             if(this.currToken.type.equals(Token.TT_RPAREN)){
                 parseResult.register(this.advance());
-                return (BinOpNode) parseResult.success(expr);
+                return parseResult.success(expr);
             } else {
                 throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"Expected ')'");
             }
@@ -56,7 +58,7 @@ public class Parser {
     }
 
     public ASTNode power(){
-        return this.binOp(this::atom, this::factor, Token.TT_POW, Token.TT_POW);
+        return this.binOp(this::atom, this::factor, Arrays.asList("POW"));
         
     }
 
@@ -80,8 +82,13 @@ public class Parser {
 
     public ASTNode term(){
         // Handle multiplication and division first (higher precedence)
-        return this.binOp(this::factor, Token.TT_MUL, Token.TT_DIV);           
+        return this.binOp(this::factor, Arrays.asList(Token.TT_MUL, Token.TT_DIV));           
     }
+
+    public ASTNode artithExpression(){
+        return this.binOp(this::term,Arrays.asList(Token.TT_PLUS,Token.TT_MINUS));
+    }
+
 
     public ASTNode expression(){
         // Handle addition and subtraction (lower precedence)
@@ -104,16 +111,16 @@ public class Parser {
             return res.success(new VarAssignNode(varName, expr));
         }
 
-        return this.binOp(this::term, Token.TT_PLUS, Token.TT_MINUS);           
+        return this.binOp(this::compExpression, Arrays.asList("AND","OR"));           
     }
 
     // binOp accepts a parsing function to handle the correct precedence levels
-    public ASTNode binOp(Supplier<ASTNode> parseFunc, String op1, String op2){
+    public ASTNode binOp(Supplier<ASTNode> parseFunc, List<String> ops){
         ParseResult parseResult = new ParseResult();
         ASTNode left = parseResult.register(parseFunc.get());  // Call the provided parse function (e.g., factor or term)
         if(parseResult.error != null) throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
         
-        while(currToken.type.equals(op1) || currToken.type.equals(op2)){
+        while(ops.contains(currToken.type)){
             Token opToken = currToken;
             parseResult.register(this.advance());
             ASTNode right = parseResult.register(parseFunc.get());  // Use the same parse function for the right side
@@ -124,12 +131,12 @@ public class Parser {
         return parseResult.success(left);
     }
 
-    public ASTNode binOp(Supplier<ASTNode> parseFuncA, Supplier<ASTNode> parseFuncB,String op1, String op2){
+    public ASTNode binOp(Supplier<ASTNode> parseFuncA, Supplier<ASTNode> parseFuncB, List<String> ops){
         ParseResult parseResult = new ParseResult();
         ASTNode left = parseResult.register(parseFuncA.get());  // Call the provided parse function (e.g., factor or term)
         if(parseResult.error != null) throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
         
-        while(currToken.type.equals(op1) || currToken.type.equals(op2)){
+        while(ops.contains(currToken.type)){
             Token opToken = currToken;
             parseResult.register(this.advance());
             ASTNode right = parseResult.register(parseFuncB.get());  // Use the same parse function for the right side
@@ -139,6 +146,24 @@ public class Parser {
         }
         return parseResult.success(left);
     }
+
+    public ASTNode compExpression(){
+        ParseResult result = new ParseResult();
+        Token<?> opToken = null;
+
+        if(this.currToken.value.equals("NOT")){
+            opToken = this.currToken;
+            result.register(this.advance());
+            ASTNode node = result.register(this.compExpression());
+            return new UnaryOpNode(opToken, node);
+        }
+
+        
+        ASTNode node = result.register(this.binOp(this::artithExpression, Arrays.asList(Token.TT_EE,Token.TT_NE,Token.TT_LT,Token.TT_GT,Token.TT_LTE,Token.TT_GTE)));
+         
+        return result.success(node);
+    }
+
 
     public ASTNode parse(){
         ASTNode res = this.expression();

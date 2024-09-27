@@ -8,8 +8,6 @@ import Errors.IllegalCharError;
 import Token.*;
 
 public class Lexer{
-    public static final String DIGITS = "0123456789";
-    public static final ArrayList<String> KEYWORDS = new ArrayList<>(Arrays.asList("var"));
 
     private String text;
     private Position currPosition;
@@ -38,7 +36,7 @@ public class Lexer{
         while(this.currChar != '\0'){
             if(" \t".indexOf(this.currChar) != -1){
                 this.advance(); // Skip white space and tabs
-            } else if (DIGITS.indexOf(this.currChar) != -1){
+            } else if (Token.DIGITS.indexOf(this.currChar) != -1){
                 tokens.add(this.makeNumber());
             } else if(Character.isLetter(this.currChar)){
                // System.out.println(this.currChar);
@@ -64,11 +62,27 @@ public class Lexer{
             } else if(this.currChar == ')'){
                 tokens.add(new Token<>(Token.TT_RPAREN, this.currPosition));
                 this.advance();
-            } else if(this.currChar == '='){
-                tokens.add(new Token<>(Token.TT_EQ, this.currPosition));
+            } else if(this.currChar == '!'){
+                Token<?> token = this.makeNotEquals(this.currPosition);
+                tokens.add(token);
                 //out.println(tokens);
                 this.advance();
-            } else {
+            } else if(this.currChar == '='){
+                tokens.add(this.makeEquals(this.currPosition));
+                //out.println(tokens);
+                this.advance();
+            } else if(this.currChar == '<'){
+                tokens.add(this.makeLessThan(this.currPosition));
+                //out.println(tokens);
+                this.advance();
+            } else if(this.currChar == '>'){
+                tokens.add(this.makeGreaterThan(this.currPosition));
+                //out.println(tokens);
+                this.advance();
+            }
+            
+            
+            else {
                 // return some error
                 Position positionStart = this.currPosition.copy();
                     char invalidChar = this.currChar; // Capture the invalid character
@@ -85,12 +99,12 @@ public class Lexer{
         String idString = "";
         Position posStart = this.currPosition.copy();
 
-        while(this.currChar != '\0' && (Character.isLetter(this.currChar) || DIGITS.indexOf(this.currChar) != -1) || this.currChar == '_'){
+        while(this.currChar != '\0' && (Character.isLetter(this.currChar) || Token.DIGITS.indexOf(this.currChar) != -1) || this.currChar == '_'){
             idString += this.currChar;
             this.advance();
         }
 
-        String tokenType = KEYWORDS.contains(idString) ? Token.TT_KEYWORD : Token.TT_IDENTIFIER;
+        String tokenType = Token.KEYWORDS.contains(idString) ? Token.TT_KEYWORD : Token.TT_IDENTIFIER;
         
         return new Token(tokenType, idString, posStart, this.currPosition);
     }
@@ -100,7 +114,7 @@ public class Lexer{
         int dotCount = 0;
         Position positionStart = this.currPosition.copy();
 
-        while (this.currChar != '\0' && (DIGITS.indexOf(this.currChar) != -1 || this.currChar == '.')) {
+        while (this.currChar != '\0' && (Token.DIGITS.indexOf(this.currChar) != -1 || this.currChar == '.')) {
             if (this.currChar == '.') {
                 if (dotCount == 1) break; // Only allow one dot for a floating-point number
                 dotCount++;
@@ -118,6 +132,54 @@ public class Lexer{
             // It's a float
             return new Token<>(Token.TT_FLOAT, Double.parseDouble(numStr.toString()), positionStart, this.currPosition);
         }
+    }
+
+    public Token<?> makeNotEquals(Position position){
+        Position  currPosition = position.copy();
+        this.advance();
+
+        if(this.currChar == '='){
+            this.advance();
+            return new Token<>(Token.TT_NE, currPosition);
+        }
+
+        this.advance();
+        throw new IllegalCharError("Extected '=' after '!'");
+
+    }
+
+    public Token<?> makeEquals(Position position){
+        Position  currPosition = position.copy();
+        this.advance();
+
+        if(this.currChar == '='){
+            this.advance();
+            return new Token<>(Token.TT_EE, currPosition);
+        }
+        return new Token<>(Token.TT_EQ, currPosition);   
+
+    }
+
+    public Token<?> makeLessThan(Position position){
+        Position  currPosition = position.copy();
+        this.advance();
+
+        if(this.currChar == '='){
+            this.advance();
+            return new Token<>(Token.TT_LTE, currPosition);
+        }
+        return new Token<>(Token.TT_LT, currPosition);   
+    }
+
+    public Token<?> makeGreaterThan(Position position){
+        Position  currPosition = position.copy();
+        this.advance();
+
+        if(this.currChar == '='){
+            this.advance();
+            return new Token<>(Token.TT_GTE, currPosition);
+        }
+        return new Token<>(Token.TT_GT, currPosition);   
     }
 
 }

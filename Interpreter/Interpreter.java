@@ -52,7 +52,26 @@ public class Interpreter {
             result = left.divideBy(right);
         } else if(node.token.type.equals(Token.TT_POW)){
             result = left.powerBy(right);
-        } else {     
+        } else if(node.token.type.equals(Token.TT_EE)){
+            result = left.getComparisonEe(right);
+        } else if(node.token.type.equals(Token.TT_NE)){
+           result = left.getComparisonNe(right);
+        } else if(node.token.type.equals(Token.TT_LT)){
+           result = left.getComparisonLt(right);
+        } else if(node.token.type.equals(Token.TT_GT)){
+            result = left.getComparisonGt(right);
+        } else if(node.token.type.equals(Token.TT_LTE)){
+           result = left.getComparisonLte(right);
+        } else if(node.token.type.equals(Token.TT_GTE)){
+            result = left.getComparisonGte(right);
+        } else if(node.token.matches(Token.TT_KEYWORD, "AND")){
+            result = left.andBy(right);
+        } else if(node.token.matches(Token.TT_KEYWORD,"OR")){
+            result = left.orBy(right);
+        } 
+        
+        
+        else {     
             throw new IllegalArgumentException("not good bro");
         }
         result.setPosition(node.positionStart, node.positionEnd);
@@ -65,6 +84,8 @@ public class Interpreter {
 
         if(node.opToken.type.equals(Token.TT_MINUS)){
             num = num.multiplyBy(new Number(-1));
+        } else if (node.opToken.matches(Token.TT_KEYWORD,"NOT")){
+            num = num.notted();
         }
         num.setPosition(node.positionStart, node.positionEnd);
         return new numberContext(num, context);

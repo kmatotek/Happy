@@ -181,6 +181,58 @@ public class Number {
         }
     }
 
+    public Number getComparisonEe(Number other){
+        if(this.toDouble(this.value) == other.toDouble(other.value)) return new Number(1);
+        else return new Number(0);
+    }
+
+    // TODO does not work
+    public Number notted(){
+        if(this.toInt(this.value) == 1) return new Number(0);
+        else return new Number(1);
+    }
+
+    // TODO does not work
+    public Number orBy(Number other){
+        if(this.value == new Number(1).value || other.value == new Number(1).value) return new Number(1);
+        else return new Number(0);
+    }
+
+    
+    public Number getComparisonNe(Number other){
+        if(this.toDouble(this.value) != other.toDouble(other.value)) return new Number(1);
+        else return new Number(0);
+    }
+
+    public Number getComparisonLt(Number other){
+        if(this.toDouble(this.value) < other.toDouble(other.value)) return new Number(1);
+        else return new Number(0);
+    }
+
+    public Number getComparisonGt(Number other){
+        if(this.toDouble(this.value) > other.toDouble(other.value)) return new Number(1);
+        else return new Number(0);
+    }
+
+    public Number getComparisonLte(Number other){
+        if(this.toDouble(this.value) <= other.toDouble(other.value)) return new Number(1);
+        else return new Number(0);
+    }
+
+    public Number getComparisonGte(Number other){
+        if(this.toDouble(this.value) >= this.toDouble(other.value)) return new Number(1);
+        else return new Number(0);
+    }
+
+    // TODO Does not work
+    public Number andBy(Number other){
+        if(toDouble(this) == toDouble(other)) return new Number(1);
+        else return new Number(0);
+    }
+
+
+
+
     @Override
     public String toString() {
         return String.valueOf(this.value);

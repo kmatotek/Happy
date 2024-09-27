@@ -1,5 +1,7 @@
 package Token;
 import Position.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Token<T>{
     // TT : Token Type
@@ -16,7 +18,16 @@ public class Token<T>{
     public static final String TT_DIV    = "DIV";
     public static final String TT_LPAREN = "LPAREN";
     public static final String TT_RPAREN = "RPAREN";
+    public static final String TT_EE = "EE";
+    public static final String TT_NE = "NE";
+    public static final String TT_LT = "LT";
+    public static final String TT_GT = "GT";
+    public static final String TT_LTE = "LTE";
+    public static final String TT_GTE = "GTE";
     public static final String TT_EOF = "EOF";
+
+    public static final String DIGITS = "0123456789";
+    public static final ArrayList<String> KEYWORDS = new ArrayList<>(Arrays.asList("var","and","or","not"));
     
 
 
