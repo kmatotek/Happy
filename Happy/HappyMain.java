@@ -18,22 +18,23 @@ public class HappyMain {
     
     public static void main(String[] args) throws IOException {
             // Infinite loop to read code from terminal1
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            System.out.print("Happy > ");
-            String input = reader.readLine();
+            Context context = new Context("Program");
             SymbolTable globalSymbolTable = new SymbolTable();
-            globalSymbolTable.set("null",new Number(0));
-            
+                globalSymbolTable.set("null",new Number(0));
+            while(true){
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                System.out.print("Happy > ");
+                String input = reader.readLine();
+                
+  
+                Number result = run(input, globalSymbolTable, context);
 
-           
-
-            Number result = run(input, globalSymbolTable);
-            
-            //System.out.println(result);
-           
+               System.out.println(globalSymbolTable.symbols);
+               System.out.println(result);
+            }    
     }
 
-    public static Number run(String text, SymbolTable globalSymbolTable) {
+    public static Number run(String text, SymbolTable globalSymbolTable, Context context) {
         // Make tokens
         Lexer lexer = new Lexer(text);
         ArrayList<Token<?>> tokens = lexer.makeTokens();
@@ -44,14 +45,11 @@ public class HappyMain {
 
         // Run Program
         Interpreter interpreter = new Interpreter();
-        Context context = new Context("Program");
 
         Number res = interpreter.visit(ast, context).number;
-        globalSymbolTable = context.symbolTableObject;
-       // System.out.println(context.symbolTableObject.toString());
+        globalSymbolTable.symbols = context.symbolTableObject.symbols;
         
-        //System.out.println(globalSymbolTable.symbols);
-        
+
         return res;
     }
 }

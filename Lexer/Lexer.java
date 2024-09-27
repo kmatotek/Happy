@@ -9,7 +9,7 @@ import Token.*;
 
 public class Lexer{
     public static final String DIGITS = "0123456789";
-    public static final ArrayList<String> KEYWORDS = new ArrayList<>(Arrays.asList("VAR"));
+    public static final ArrayList<String> KEYWORDS = new ArrayList<>(Arrays.asList("var"));
 
     private String text;
     private Position currPosition;

@@ -86,7 +86,7 @@ public class Parser {
     public ASTNode expression(){
         // Handle addition and subtraction (lower precedence)
         ParseResult res = new ParseResult();
-        if(this.currToken.matches(Token.TT_KEYWORD, "VAR")){
+        if(this.currToken.matches(Token.TT_KEYWORD, "var")){
             res.register(this.advance());
 
             if(!this.currToken.type.equals(Token.TT_IDENTIFIER)){
