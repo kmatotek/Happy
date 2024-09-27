@@ -73,10 +73,10 @@ public class Interpreter {
     public numberContext visitVarAccessNode(VarAccessNode node, Context context){
         ParseResult res = new ParseResult();
         Object varName = node.varNameToken.value;
-        Object value = context.symbolTable.get(varName);
+        Number value = context.symbolTableObject.symbols.get(varName);
         if(value == null) throw new IllegalArgumentException("Variable " + varName + " is not defined");
         //System.out.println(value);
-        return new numberContext(new Number(value), context);
+        return new numberContext(value, context);
     }
 
     public numberContext visitVarAssignedNode(VarAssignNode node, Context context){
