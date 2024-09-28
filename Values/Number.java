@@ -186,13 +186,12 @@ public class Number {
         else return new Number(0);
     }
 
-    // TODO does not work
+  
     public Number notted(){
         if(this.toInt(this.value) == 1) return new Number(0);
         else return new Number(1);
     }
 
-    // TODO does not work
     public Number orBy(Number other){
         if(this.value == new Number(1).value || other.value == new Number(1).value) return new Number(1);
         else return new Number(0);
@@ -224,9 +223,12 @@ public class Number {
         else return new Number(0);
     }
 
-    // TODO Does not work
+    
     public Number andBy(Number other){
-        if(toDouble(this) == toDouble(other)) return new Number(1);
+        double left = toDouble(this.value);
+        double right = toDouble(other.value);
+        if(left == 0 || right == 0) return new Number(0);
+        if(left == right) return new Number(1);
         else return new Number(0);
     }
 

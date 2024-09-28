@@ -29,7 +29,7 @@ public class HappyMain {
   
                 Number result = run(input, globalSymbolTable, context);
 
-               System.out.println(globalSymbolTable.symbols);
+               //System.out.println(globalSymbolTable.symbols);
                System.out.println(result);
             }    
     }

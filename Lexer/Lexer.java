@@ -39,7 +39,6 @@ public class Lexer{
             } else if (Token.DIGITS.indexOf(this.currChar) != -1){
                 tokens.add(this.makeNumber());
             } else if(Character.isLetter(this.currChar)){
-               // System.out.println(this.currChar);
                 tokens.add(this.makeIdentifier());
             }   else if(this.currChar == '+'){
                 tokens.add(new Token<>(Token.TT_PLUS, this.currPosition));
@@ -105,7 +104,7 @@ public class Lexer{
         }
 
         String tokenType = Token.KEYWORDS.contains(idString) ? Token.TT_KEYWORD : Token.TT_IDENTIFIER;
-        
+       
         return new Token(tokenType, idString, posStart, this.currPosition);
     }
 

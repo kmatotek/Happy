@@ -93,7 +93,7 @@ public class Parser {
     public ASTNode expression(){
         // Handle addition and subtraction (lower precedence)
         ParseResult res = new ParseResult();
-        if(this.currToken.matches(Token.TT_KEYWORD, "var")){
+        if(this.currToken.matches(Token.TT_KEYWORD, "VAR")){
             res.register(this.advance());
 
             if(!this.currToken.type.equals(Token.TT_IDENTIFIER)){
@@ -110,7 +110,7 @@ public class Parser {
             ASTNode expr = res.register(this.expression());
             return res.success(new VarAssignNode(varName, expr));
         }
-
+        
         return this.binOp(this::compExpression, Arrays.asList("AND","OR"));           
     }
 
@@ -120,14 +120,15 @@ public class Parser {
         ASTNode left = parseResult.register(parseFunc.get());  // Call the provided parse function (e.g., factor or term)
         if(parseResult.error != null) throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
         
-        while(ops.contains(currToken.type)){
-            Token opToken = currToken;
+        while(ops.contains(this.currToken.type) || ops.contains(this.currToken.value)){
+            Token opToken = this.currToken;
             parseResult.register(this.advance());
             ASTNode right = parseResult.register(parseFunc.get());  // Use the same parse function for the right side
             if(parseResult.error != null) throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
 
             left = new BinOpNode(left, opToken, right);
         }
+       
         return parseResult.success(left);
     }
 
@@ -136,8 +137,8 @@ public class Parser {
         ASTNode left = parseResult.register(parseFuncA.get());  // Call the provided parse function (e.g., factor or term)
         if(parseResult.error != null) throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
         
-        while(ops.contains(currToken.type)){
-            Token opToken = currToken;
+        while(ops.contains(this.currToken.value) || ops.contains(this.currToken.value)){
+            Token opToken = this.currToken;
             parseResult.register(this.advance());
             ASTNode right = parseResult.register(parseFuncB.get());  // Use the same parse function for the right side
             if(parseResult.error != null) throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");

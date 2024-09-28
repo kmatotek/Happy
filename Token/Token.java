@@ -27,7 +27,7 @@ public class Token<T>{
     public static final String TT_EOF = "EOF";
 
     public static final String DIGITS = "0123456789";
-    public static final ArrayList<String> KEYWORDS = new ArrayList<>(Arrays.asList("var","and","or","not"));
+    public static final ArrayList<String> KEYWORDS = new ArrayList<>(Arrays.asList("VAR","AND","OR","NOT"));
     
 
 

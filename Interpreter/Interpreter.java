@@ -70,7 +70,6 @@ public class Interpreter {
             result = left.orBy(right);
         } 
         
-        
         else {     
             throw new IllegalArgumentException("not good bro");
         }
