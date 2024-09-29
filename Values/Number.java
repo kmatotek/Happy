@@ -4,7 +4,7 @@ import Errors.DivideByZero;
 import Position.*;
 
 public class Number {
-    private Object value;
+    public Object value;
     public Position positionStart;
     public Position positionEnd;
 
@@ -153,7 +153,7 @@ public class Number {
         }
     }
 
-    private int toInt(Object value) {
+    public int toInt(Object value) {
         if (value instanceof Integer) {
             return (Integer) value;
         } else if (value instanceof Double) {

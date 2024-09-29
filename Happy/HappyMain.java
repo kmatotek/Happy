@@ -15,12 +15,14 @@ import SymbolTable.*;
 import Context.*;
 
 public class HappyMain {
-    
+    public static SymbolTable globalSymbolTable = new SymbolTable();
     public static void main(String[] args) throws IOException {
             // Infinite loop to read code from terminal1
             Context context = new Context("Program");
             SymbolTable globalSymbolTable = new SymbolTable();
-                globalSymbolTable.set("null",new Number(0));
+                globalSymbolTable.set("NULL",new Number(0));
+                globalSymbolTable.set("TRUE",new Number(1));
+                globalSymbolTable.set("FALSE",new Number(0));
             while(true){
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 System.out.print("Happy > ");
@@ -29,7 +31,7 @@ public class HappyMain {
   
                 Number result = run(input, globalSymbolTable, context);
 
-               //System.out.println(globalSymbolTable.symbols);
+             
                System.out.println(result);
             }    
     }
@@ -48,7 +50,7 @@ public class HappyMain {
         Interpreter interpreter = new Interpreter();
 
         Number res = interpreter.visit(ast, context).number;
-        globalSymbolTable.symbols = context.symbolTableObject.symbols;
+        //globalSymbolTable.symbols = context.symbolTableObject.symbols;
         
 
         return res;

@@ -7,6 +7,8 @@ import Values.Number;
 import Token.*;
 import Context.*;
 import DataStructures.numberContext;
+import Happy.*;
+import java.util.List;
 
 public class Interpreter {
     Context Context = new Context("Program");
@@ -23,6 +25,8 @@ public class Interpreter {
             return new numberContext(visitVarAccessNode((VarAccessNode) node, context).number, context);
         } else if(node instanceof VarAssignNode){
             return new numberContext(visitVarAssignedNode((VarAssignNode) node, context).number, context);
+        } else if(node instanceof IfNode){
+            return new numberContext(visitIfNode((IfNode) node, context).number, context);
         } 
         else {
             //System.out.println("not good bro");
@@ -94,6 +98,8 @@ public class Interpreter {
         ParseResult res = new ParseResult();
         Object varName = node.varNameToken.value;
         Number value = context.symbolTableObject.symbols.get(varName);
+
+        //if(value == null) System.out.println(HappyMain.globalSymbolTable.symbols.get();
         if(value == null) throw new IllegalArgumentException("Variable " + varName + " is not defined");
         //System.out.println(value);
         return new numberContext(value, context);
@@ -108,6 +114,29 @@ public class Interpreter {
         context.symbolTableObject.set(varName.toString(), value);
         
         return new numberContext(value, context);
+    }
+
+    public numberContext visitIfNode(IfNode node, Context context){
+        ParseResult res = new ParseResult();
+        //for(List<ASTNode> list : node.cases){
+        for(int i = 0; i < node.cases.size(); i++){
+        
+            ASTNode condition = node.cases.get(i).get(0);
+            ASTNode expr = node.cases.get(i).get(1);
+
+            System.out.println(condition);
+
+            Number conditionValue = this.visit(condition,context).number;
+            if(conditionValue.toInt(conditionValue.value) != 0){
+                Number exprValue = this.visit(expr,context).number;
+                return new numberContext(exprValue, context);
+            } 
+        }
+        if(node.elseCase != null){
+            Number elseValue = this.visit(node.elseCase,context).number;
+            return new numberContext(elseValue, context);
+        }
+        return new numberContext(null,context);
     }
 
 }

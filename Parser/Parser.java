@@ -27,6 +27,51 @@ public class Parser {
         return currToken;
     }
 
+    public ASTNode ifExpression(){
+        ParseResult res = new ParseResult();
+        List<List<ASTNode>> cases = new ArrayList<>();
+        ASTNode elseCase = null;
+
+        if(!this.currToken.matches(Token.TT_KEYWORD,"IF")){
+            throw new IllegalArgumentException("Expected 'IF'");
+        }
+
+        this.advance();
+        ASTNode condition = res.register(this.expression());
+
+        if(!this.currToken.matches(Token.TT_KEYWORD,"THEN")){
+            throw new IllegalArgumentException("Expected 'THEN'");
+        }
+
+        this.advance();
+        ASTNode expr = res.register(this.expression());
+        cases.add(Arrays.asList(condition,expr));
+
+        while(this.currToken.matches(Token.TT_KEYWORD, "ELIF")){
+            this.advance();
+
+            condition = res.register(this.expression());
+            if(!this.currToken.matches(Token.TT_KEYWORD,"THEN")){
+                throw new IllegalArgumentException("Expected 'THEN'");
+            }
+            
+            this.advance();
+            expr = res.register(this.expression());
+            cases.add(Arrays.asList(condition,expr));
+
+        }
+
+        if(this.currToken.matches(Token.TT_KEYWORD,"ELSE")){
+            this.advance();
+            expr = res.register(this.expression());
+            elseCase = expr;
+        }
+
+        return res.success(new IfNode(cases,elseCase));
+
+
+    }
+
     public ASTNode atom(){
         ParseResult parseResult = new ParseResult();
         Token<?> token = currToken;
@@ -53,7 +98,10 @@ public class Parser {
             } else {
                 throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"Expected ')'");
             }
-        } 
+        } else if(token.matches(Token.TT_KEYWORD,"IF")){
+            ASTNode ifExpr = parseResult.register(this.ifExpression());
+            return ifExpr;
+        }
         else throw new IllegalCharError("Expected int or float but got " + this.currToken.type);
     }
 

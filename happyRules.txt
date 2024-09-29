@@ -15,6 +15,10 @@ power : atom (POW factor)*
 atom : INT|FLOAT
      : LPAREN expr RPAREN
 
+if-expr : KEYWORD:IF expr KEYWORD:THEN expr 
+          (KEYWORD:ELIF expr KEYWORD:THEN expr)*
+          (KEYWORD:ELSE expr)?
+
 
 VAR            variable_name                 =         <expr>
 ^                   ^                        ^            ^
@@ -22,3 +26,5 @@ KEYWORD          IDENTIFIER                EQUALS
 
 
 var isEqual = (5 == 5)
+
+IF <condition> THEN <expression> ELIF <condition> THEN <expression> ELSE <expression>

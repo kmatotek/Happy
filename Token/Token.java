@@ -27,7 +27,7 @@ public class Token<T>{
     public static final String TT_EOF = "EOF";
 
     public static final String DIGITS = "0123456789";
-    public static final ArrayList<String> KEYWORDS = new ArrayList<>(Arrays.asList("VAR","AND","OR","NOT"));
+    public static final ArrayList<String> KEYWORDS = new ArrayList<>(Arrays.asList("VAR","AND","OR","NOT","IF","THEN","ELIF","ELSE"));
     
 
 
@@ -59,6 +59,11 @@ public class Token<T>{
     }
 
     public boolean matches(String type, T value){
+        boolean matches = this.type.equals(type) && this.value.equals(value);
+        return matches;
+    }
+
+    public boolean matches(String type, String value){
         boolean matches = this.type.equals(type) && this.value.equals(value);
         return matches;
     }
