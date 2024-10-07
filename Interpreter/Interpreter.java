@@ -27,9 +27,11 @@ public class Interpreter {
             return new numberContext(visitVarAssignedNode((VarAssignNode) node, context).number, context);
         } else if(node instanceof IfNode){
             return new numberContext(visitIfNode((IfNode) node, context).number, context);
-        } 
+        } else if(node instanceof ForNode){
+            return new numberContext(visitForNode((ForNode) node, context).number, context);
+        }
         else {
-            //System.out.println("not good bro");
+            System.out.println("no instance found");
             return null;
         }
     }
@@ -124,7 +126,7 @@ public class Interpreter {
             ASTNode condition = node.cases.get(i).get(0);
             ASTNode expr = node.cases.get(i).get(1);
 
-            System.out.println(condition);
+            //System.out.println(condition);
 
             Number conditionValue = this.visit(condition,context).number;
             if(conditionValue.toInt(conditionValue.value) != 0){
@@ -137,6 +139,42 @@ public class Interpreter {
             return new numberContext(elseValue, context);
         }
         return new numberContext(null,context);
+    }
+
+    public numberContext visitForNode(ForNode node, Context context){
+        ParseResult res = new ParseResult();
+        
+        Number startValue = this.visit(node.startValueNode, context).number;
+        Number endValue = this.visit(node.endValueNode, context).number;
+        Number stepValue = null;
+        
+
+        if(node.stepValueNode != null){
+            stepValue = this.visit(node.stepValueNode,context).number;
+        } else {
+            stepValue = new Number(1);
+        }
+        int i = Number.toInt(startValue.value);
+        if(Number.toInt(stepValue.value) > 0){
+            while(i < Number.toInt(endValue.value)){
+                context.symbolTableObject.set(node.varNameToken.value.toString(), new Number(i));
+                i += Number.toInt(stepValue.value);
+                //System.out.println(i);
+                this.visit(node.bodyNode, context);
+            }
+        }
+        //System.out.println(context.symbolTableObject.toString());
+        return new numberContext(null,context);
+    }
+
+    public void visitWhileNode(WhileNode node, Context context){
+        while(true){
+            Number condition = this.visit(node.conditionNode, context).number;
+            if(Number.toInt(condition) == 0){
+                break;
+            }
+            this.visit(node.bodyNode, context);
+        }
     }
 
 }

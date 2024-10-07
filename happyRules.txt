@@ -19,6 +19,9 @@ if-expr : KEYWORD:IF expr KEYWORD:THEN expr
           (KEYWORD:ELIF expr KEYWORD:THEN expr)*
           (KEYWORD:ELSE expr)?
 
+for-expr : KEYWORD:FOR IDENTIFIER EQ expr KEYWORD: TO expr
+          (KEYWORD:STEP expr)? KEYWORD:THEN expr
+
 
 VAR            variable_name                 =         <expr>
 ^                   ^                        ^            ^
@@ -28,3 +31,5 @@ KEYWORD          IDENTIFIER                EQUALS
 var isEqual = (5 == 5)
 
 IF <condition> THEN <expression> ELIF <condition> THEN <expression> ELSE <expression>
+FOR <var_name> = <start_value> TO <end_value> (OPTIONAL STEP #) THEN <expr>
+WHILE <condition> THEN <expr>

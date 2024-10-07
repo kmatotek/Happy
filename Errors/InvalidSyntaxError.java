@@ -8,5 +8,5 @@ public class InvalidSyntaxError extends Error{
         super(positionStart, positionEnd, "Invalid Syntax Error", errorDetails);
         //TODO Auto-generated constructor stub
     }
-    
+
 }

@@ -72,6 +72,72 @@ public class Parser {
 
     }
 
+    public ASTNode forExpression(){
+        ParseResult res = new ParseResult();
+
+        if(!this.currToken.matches(Token.TT_KEYWORD,"FOR")){
+            throw new IllegalCharError("Expected FOR");
+        }
+        this.advance();
+        if(this.currToken.type != Token.TT_IDENTIFIER){
+            throw new IllegalCharError("Expected identifier");
+        }
+
+        Token varName = this.currToken;
+        this.advance();
+
+        if(this.currToken.type != Token.TT_EQ){
+            throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected identifier");
+        }
+        this.advance();
+        ASTNode startValue = this.expression();
+        
+
+        if(!this.currToken.matches(Token.TT_KEYWORD,"TO")){
+            throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected TO");
+        }
+        this.advance();
+        ASTNode endValue = this.expression();
+
+        ASTNode stepValue = null;
+
+        if(this.currToken.matches(Token.TT_KEYWORD, "STEP")){
+            this.advance();
+            stepValue = this.expression();
+        }
+
+        if(!this.currToken.matches(Token.TT_KEYWORD, "THEN")){
+            throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected THEN");
+        }
+        this.advance();
+
+        ASTNode body = this.expression();
+
+        ForNode resultForNode = null;
+        if(stepValue == null) resultForNode = new ForNode(varName, body, startValue, endValue);
+        else resultForNode = new ForNode(varName,body, startValue, endValue, stepValue);
+
+        return res.success(resultForNode);
+    }
+
+    public ASTNode whileExpression(){
+        ParseResult res = new ParseResult();
+        if(!this.currToken.matches(Token.TT_KEYWORD, "WHILE")){
+            throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected WHILE");
+        }
+        this.advance();
+
+        ASTNode condition = this.expression();
+        if(!this.currToken.matches(Token.TT_KEYWORD, "THEN")){
+            throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected THEN");
+        }
+        this.advance();
+        ASTNode body = this.expression();
+
+        return res.success(new WhileNode(condition,body));
+        
+    }
+
     public ASTNode atom(){
         ParseResult parseResult = new ParseResult();
         Token<?> token = currToken;
@@ -101,6 +167,12 @@ public class Parser {
         } else if(token.matches(Token.TT_KEYWORD,"IF")){
             ASTNode ifExpr = parseResult.register(this.ifExpression());
             return ifExpr;
+        } else if (token.matches(Token.TT_KEYWORD,"FOR")){
+            ASTNode forExpr = parseResult.register(this.forExpression());
+            return forExpr;
+        }  else if (token.matches(Token.TT_KEYWORD,"WHILE")){
+            ASTNode WhileExpr = parseResult.register(this.whileExpression());
+            return WhileExpr;
         }
         else throw new IllegalCharError("Expected int or float but got " + this.currToken.type);
     }

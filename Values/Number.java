@@ -153,7 +153,7 @@ public class Number {
         }
     }
 
-    public int toInt(Object value) {
+    public static int toInt(Object value) {
         if (value instanceof Integer) {
             return (Integer) value;
         } else if (value instanceof Double) {
