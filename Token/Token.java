@@ -73,7 +73,7 @@ public class Token<T>{
     @Override
     public String toString(){
         if(this.value != null){
-            return "Type: " + this.type; //+ " Value: " + this.value;
+            return "Type: " + this.type + " Value: " + this.value;
         } else {
             return "Type: " + this.type;
         }
