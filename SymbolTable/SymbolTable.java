@@ -1,21 +1,29 @@
 package SymbolTable;
 
 import java.util.HashMap;
-import Values.Number;
+import Values.*;
 
 public class SymbolTable {
-    public HashMap<String,Number> symbols = new HashMap<>();
-    public HashMap<String,Number> parentSymbols = new HashMap<>();
+    public HashMap<String,Value> symbols = new HashMap<>();
+    public HashMap<String,Value> parentSymbols = new HashMap<>();
+    public SymbolTable parent;
+
+    public SymbolTable(SymbolTable parent){
+        this.parent = parent;
+    }
+
+    public SymbolTable(){
+    }
     
-    public Number get(String name){
-        Number value = symbols.getOrDefault(name,null);
+    public Value get(String name){
+        Value value = symbols.getOrDefault(name,null);
         if(value == null && !parentSymbols.isEmpty()){
             return this.parentSymbols.get(name);
         }
         return value;
     }
  
-    public void set(String name, Number value){
+    public void set(String name, Value value){
         this.symbols.put(name, value);
     }
 

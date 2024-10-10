@@ -1,7 +1,5 @@
 package Lexer;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import Position.*;
 
 import Errors.IllegalCharError;
@@ -44,7 +42,7 @@ public class Lexer{
                 tokens.add(new Token<>(Token.TT_PLUS, this.currPosition));
                 this.advance();
             } else if(this.currChar == '-'){
-                tokens.add(new Token<>(Token.TT_MINUS, this.currPosition));
+                tokens.add(this.makeMinusOrArrow());
                 this.advance();
             } else if(this.currChar == '*'){
                 tokens.add(new Token<>(Token.TT_MUL, this.currPosition));
@@ -78,12 +76,16 @@ public class Lexer{
                 tokens.add(this.makeGreaterThan(this.currPosition));
                 //out.println(tokens);
                 this.advance();
+            } else if(this.currChar == ','){
+                tokens.add(new Token<>(Token.TT_COMMA, this.currPosition));
+                //out.println(tokens);
+                this.advance();
             }
             
             
             else {
                 // return some error
-                Position positionStart = this.currPosition.copy();
+                //Position positionStart = this.currPosition.copy();
                     char invalidChar = this.currChar; // Capture the invalid character
                     this.advance(); // Move to the next character
                     throw new IllegalCharError("Line " + this.currPosition.line + ": Unexpected character: " + invalidChar);
@@ -105,7 +107,7 @@ public class Lexer{
 
         String tokenType = Token.KEYWORDS.contains(idString) ? Token.TT_KEYWORD : Token.TT_IDENTIFIER;
        
-        return new Token(tokenType, idString, posStart, this.currPosition);
+        return new Token<>(tokenType, idString, posStart, this.currPosition);
     }
 
     public Token<?> makeNumber() {
@@ -179,6 +181,19 @@ public class Lexer{
             return new Token<>(Token.TT_GTE, currPosition);
         }
         return new Token<>(Token.TT_GT, currPosition);   
+    }
+
+    public Token<?> makeMinusOrArrow(){
+        String tokType = Token.TT_MINUS;
+        Position posStart = this.currPosition.copy();
+        this.advance();
+
+        if(this.currChar == '>'){
+            this.advance();
+            tokType = Token.TT_ARROW;
+        }
+
+        return new Token<> (tokType, posStart);
     }
 
 }

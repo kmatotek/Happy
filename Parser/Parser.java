@@ -12,14 +12,14 @@ public class Parser {
 
     public ArrayList<Token<?>> tokens;
     public int currTokenIndex;
-    public Token currToken;
+    public Token<?> currToken;
     public Parser(ArrayList<Token<?>> tokens){
         this.tokens = tokens;
         this.currTokenIndex = -1;
         this.advance();
     }
 
-    public Token advance(){
+    public Token<?> advance(){
         currTokenIndex += 1;
         if(currTokenIndex < tokens.size()){
             this.currToken = tokens.get(currTokenIndex);
@@ -83,7 +83,7 @@ public class Parser {
             throw new IllegalCharError("Expected identifier");
         }
 
-        Token varName = this.currToken;
+        Token<?> varName = this.currToken;
         this.advance();
 
         if(this.currToken.type != Token.TT_EQ){
@@ -138,6 +138,35 @@ public class Parser {
         
     }
 
+    public ASTNode call(){
+        //ParseResult res = new ParseResult();
+        ASTNode atom = this.atom();
+
+        if(this.currToken.type.equals(Token.TT_LPAREN)){
+            this.advance();
+            ArrayList<ASTNode> argNodes = new ArrayList<>();
+
+            if(this.currToken.type.equals(Token.TT_RPAREN)){
+                this.advance();
+            } else {
+                argNodes.add(this.expression());
+
+                while(this.currToken.type.equals(Token.TT_COMMA)){
+                    this.advance();
+                    argNodes.add(this.expression());
+
+                }
+
+                if(!this.currToken.type.equals(Token.TT_RPAREN)){
+                     throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd, "Expected ',' or ')'");
+                }
+                this.advance();
+            }
+            return new CallNode(atom,argNodes);
+        }
+        return atom;
+    }
+
     public ASTNode atom(){
         ParseResult parseResult = new ParseResult();
         Token<?> token = currToken;
@@ -156,13 +185,13 @@ public class Parser {
             parseResult.register(this.advance());
             ASTNode expr = parseResult.register(this.expression());
             
-            if(parseResult.error != null) throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
+            if(parseResult.error != null) throw new InvalidSyntaxError(token.positionStart,token.positionEnd,"You fond a hidden error!");
             
             if(this.currToken.type.equals(Token.TT_RPAREN)){
                 parseResult.register(this.advance());
                 return parseResult.success(expr);
             } else {
-                throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"Expected ')'");
+                throw new InvalidSyntaxError(token.positionStart, token.positionEnd,"Expected ')'");
             }
         } else if(token.matches(Token.TT_KEYWORD,"IF")){
             ASTNode ifExpr = parseResult.register(this.ifExpression());
@@ -173,12 +202,15 @@ public class Parser {
         }  else if (token.matches(Token.TT_KEYWORD,"WHILE")){
             ASTNode WhileExpr = parseResult.register(this.whileExpression());
             return WhileExpr;
+        } else if (token.matches(Token.TT_KEYWORD,"FUNC")){
+            ASTNode FuncDef = parseResult.register(this.funcDef());
+            return FuncDef;
         }
         else throw new IllegalCharError("Expected int or float but got " + this.currToken.type);
     }
 
     public ASTNode power(){
-        return this.binOp(this::atom, this::factor, Arrays.asList("POW"));
+        return this.binOp(this::call, this::factor, Arrays.asList("POW"));
         
     }
 
@@ -190,7 +222,7 @@ public class Parser {
             parseResult.register(this.advance());
             ASTNode factor = parseResult.register(this.factor());
             if(parseResult.error != null){
-                throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
+                throw new InvalidSyntaxError(token.positionStart,token.positionEnd,"You fond a hidden error!");
             }
             return parseResult.success(new UnaryOpNode(token, factor));
         } 
@@ -238,13 +270,13 @@ public class Parser {
     public ASTNode binOp(Supplier<ASTNode> parseFunc, List<String> ops){
         ParseResult parseResult = new ParseResult();
         ASTNode left = parseResult.register(parseFunc.get());  // Call the provided parse function (e.g., factor or term)
-        if(parseResult.error != null) throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
+        if(parseResult.error != null) throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"You fond a hidden error!");
         
         while(ops.contains(this.currToken.type) || ops.contains(this.currToken.value)){
-            Token opToken = this.currToken;
+            Token<?> opToken = this.currToken;
             parseResult.register(this.advance());
             ASTNode right = parseResult.register(parseFunc.get());  // Use the same parse function for the right side
-            if(parseResult.error != null) throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
+            if(parseResult.error != null) throw new InvalidSyntaxError(opToken.positionStart,opToken.positionEnd,"You fond a hidden error!");
 
             left = new BinOpNode(left, opToken, right);
         }
@@ -255,13 +287,13 @@ public class Parser {
     public ASTNode binOp(Supplier<ASTNode> parseFuncA, Supplier<ASTNode> parseFuncB, List<String> ops){
         ParseResult parseResult = new ParseResult();
         ASTNode left = parseResult.register(parseFuncA.get());  // Call the provided parse function (e.g., factor or term)
-        if(parseResult.error != null) throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
+        if(parseResult.error != null) throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"You fond a hidden error!");
         
         while(ops.contains(this.currToken.value) || ops.contains(this.currToken.value)){
-            Token opToken = this.currToken;
+            Token<?> opToken = this.currToken;
             parseResult.register(this.advance());
             ASTNode right = parseResult.register(parseFuncB.get());  // Use the same parse function for the right side
-            if(parseResult.error != null) throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"You fond a hidden error!");
+            if(parseResult.error != null) throw new InvalidSyntaxError(opToken.positionStart,opToken.positionEnd,"You fond a hidden error!");
 
             left = new BinOpNode(left, opToken, right);
         }
@@ -292,5 +324,62 @@ public class Parser {
             throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Extecpted '+', '-', '*', or '/'");
         }
         return res;
+    }
+
+    public ASTNode funcDef(){
+       // ParseResult res = new ParseResult();
+
+        if(!this.currToken.matches(Token.TT_KEYWORD,"FUNC")){
+            throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected 'FUNC'");
+        }
+        this.advance();
+
+        Token<?> varNameTok = null;
+        if(this.currToken.type.equals(Token.TT_IDENTIFIER)){
+            varNameTok = this.currToken;
+            this.advance();
+            if(!this.currToken.type.equals(Token.TT_LPAREN)){
+                throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected '('");
+            }
+        } else {
+            if(!this.currToken.type.equals(Token.TT_LPAREN)){
+                throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected identifier or '('");
+            }
+        }
+        
+        this.advance();
+        ArrayList<Token<?>> argNameTokens = new ArrayList<>();
+        if(this.currToken.type.equals(Token.TT_IDENTIFIER)){
+            argNameTokens.add(this.currToken);
+            this.advance();
+
+            while(this.currToken.type.equals(Token.TT_COMMA)){
+                this.advance();
+                if(!this.currToken.type.equals(Token.TT_IDENTIFIER)){
+                    throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected identifier");
+                } else {
+                    argNameTokens.add(this.currToken);
+                    this.advance();
+                }
+            }
+
+            if(!this.currToken.type.equals(Token.TT_RPAREN)){
+                throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected ',' or ')'");
+            }
+
+        } else {
+            if(!this.currToken.type.equals(Token.TT_RPAREN)){
+                throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected identifier or ')'");
+            }
+        }
+        this.advance();
+
+        if(!this.currToken.type.equals(Token.TT_ARROW)){
+            throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected identifier or '->'");
+        }
+        this.advance();
+        ASTNode nodeToReturn = this.expression();
+
+        return new FuncDefNode(varNameTok, argNameTokens, nodeToReturn);
     }
 }

@@ -13,6 +13,7 @@ import Interpreter.*;
 import Values.Number;
 import SymbolTable.*;
 import Context.*;
+import Values.*;
 
 public class HappyMain {
     public static SymbolTable globalSymbolTable = new SymbolTable();
@@ -29,14 +30,14 @@ public class HappyMain {
                 String input = reader.readLine();
                 
   
-                Number result = run(input, globalSymbolTable, context);
+                Value result = run(input, globalSymbolTable, context);
 
              
                System.out.println(result);
             }    
     }
 
-    public static Number run(String text, SymbolTable globalSymbolTable, Context context) {
+    public static Value run(String text, SymbolTable globalSymbolTable, Context context) {
         // Make tokens
         Lexer lexer = new Lexer(text);
         ArrayList<Token<?>> tokens = lexer.makeTokens();
@@ -49,7 +50,7 @@ public class HappyMain {
         // Run Program
         Interpreter interpreter = new Interpreter();
 
-        Number res = interpreter.visit(ast, context).number;
+        Value res = interpreter.visit(ast, context).value;
         //globalSymbolTable.symbols = context.symbolTableObject.symbols;
         
 

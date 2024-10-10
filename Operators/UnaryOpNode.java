@@ -3,12 +3,12 @@ import Position.Position;
 import Token.*;
 
 public class UnaryOpNode extends ASTNode {
-    public Token opToken;
+    public Token<?> opToken;
     public ASTNode node;
     public Position positionStart;
     public Position positionEnd;
 
-    public UnaryOpNode(Token opToken, ASTNode node){
+    public UnaryOpNode(Token<?> opToken, ASTNode node){
         this.opToken = opToken;
         this.node = node;
         this.positionStart = opToken.positionStart;

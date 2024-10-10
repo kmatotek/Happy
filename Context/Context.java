@@ -9,6 +9,7 @@ public class Context {
     public HashMap<String,Number> symbolTable = new HashMap<>();
     public int parentEntryPos;
     public SymbolTable symbolTableObject = new SymbolTable();
+    public Context parent;
 
     public Context(String displayName, HashMap<String,Number> parent, HashMap<String,Number> symbols){
         this.displayName = displayName;
@@ -21,4 +22,10 @@ public class Context {
         
     }
 
+    public Context(String displayName, Context parent){
+        this.displayName = displayName;
+        this.parent = parent;
+        
+    }
+    
 }

@@ -3,18 +3,13 @@ package Values;
 import Errors.DivideByZero;
 import Position.*;
 
-public class Number {
+public class Number extends Value {
     public Object value;
     public Position positionStart;
     public Position positionEnd;
 
     public Number(Object obj) {
-        if (obj instanceof Integer || obj instanceof Double || obj instanceof Float || obj instanceof Long) {
-            this.value = obj;
-            this.setPosition(positionStart, positionEnd);
-        } else {
-            throw new IllegalArgumentException("Unsupported type for Number class.");
-        }
+        this.value = obj;
     }
 
     public void setPosition(Position posStart, Position posEnd){
@@ -188,7 +183,7 @@ public class Number {
 
   
     public Number notted(){
-        if(this.toInt(this.value) == 1) return new Number(0);
+        if(toInt(this.value) == 1) return new Number(0);
         else return new Number(1);
     }
 

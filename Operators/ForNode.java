@@ -5,14 +5,14 @@ import Position.*;
 public class ForNode extends ASTNode {
     public Position posStart;
     public Position posEnd;
-    public Token varNameToken;
+    public Token<?> varNameToken;
     public ASTNode startValueNode;
     public ASTNode endValueNode;
     public ASTNode stepValueNode;
     public ASTNode bodyNode;
     
 
-    public ForNode(Token varNameToken, ASTNode bodyNode, ASTNode startValueNode, ASTNode endValueNode, ASTNode stepValuNode){
+    public ForNode(Token <?> varNameToken, ASTNode bodyNode, ASTNode startValueNode, ASTNode endValueNode, ASTNode stepValuNode){
         this.posStart = varNameToken.positionStart;
         this.posEnd = bodyNode.positionEnd;
         this.startValueNode = startValueNode;
@@ -23,7 +23,7 @@ public class ForNode extends ASTNode {
 
     }
 
-    public ForNode(Token varNameToken, ASTNode bodyNode, ASTNode startValueNode, ASTNode endValueNode){
+    public ForNode(Token<?> varNameToken, ASTNode bodyNode, ASTNode startValueNode, ASTNode endValueNode){
         this.posStart = varNameToken.positionStart;
         this.posEnd = bodyNode.positionEnd;
         this.startValueNode = startValueNode;

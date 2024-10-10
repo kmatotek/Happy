@@ -5,11 +5,11 @@ import Position.*;
 public class BinOpNode extends ASTNode {
     public ASTNode leftNode;
     public ASTNode rightNode;
-    public Token token;
+    public Token<?> token;
     public Position positionStart;
     public Position positionEnd;
     
-    public BinOpNode(ASTNode leftNode, Token token, ASTNode rightNode){
+    public BinOpNode(ASTNode leftNode, Token<?> token, ASTNode rightNode){
         this.leftNode = leftNode;
         this.token = token;
         this.rightNode = rightNode;

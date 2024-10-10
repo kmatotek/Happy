@@ -22,7 +22,7 @@ public class ParseResult {
         return node;
     }
 
-    public Token register(Token token){ // Takes in Node 
+    public Token<?> register(Token<?> token){ // Takes in Node 
         return token;
     }
 

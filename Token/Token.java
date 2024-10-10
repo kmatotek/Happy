@@ -24,19 +24,21 @@ public class Token<T>{
     public static final String TT_GT = "GT";
     public static final String TT_LTE = "LTE";
     public static final String TT_GTE = "GTE";
+    public static final String TT_COMMA = "COMMA";
+    public static final String TT_ARROW = "ARROW";
     public static final String TT_EOF = "EOF";
 
     public static final String DIGITS = "0123456789";
     public static final ArrayList<String> KEYWORDS = new ArrayList<>(Arrays.asList(
     "VAR","AND","OR","NOT",
-    "IF","THEN","ELIF","ELSE", "FOR", "TO", "STEP", "WHILE"));
+    "IF","THEN","ELIF","ELSE", "FOR", "TO", "STEP", "WHILE","FUNC"));
     
 
 
     public String type;
     public T value;
-    public static Position positionStart;
-    public static Position positionEnd;
+    public Position positionStart;
+    public Position positionEnd;
 
     public Token(String type, T value, Position positionStart, Position positionEnd){
         this.type = type;
