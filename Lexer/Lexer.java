@@ -1,5 +1,6 @@
 package Lexer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import Position.*;
 
 import Errors.IllegalCharError;
@@ -80,6 +81,10 @@ public class Lexer{
                 tokens.add(new Token<>(Token.TT_COMMA, this.currPosition));
                 //out.println(tokens);
                 this.advance();
+            } else if(this.currChar == '"'){
+                tokens.add(this.makeString(this.currPosition));
+                //out.println(tokens);
+                this.advance();
             }
             
             
@@ -134,6 +139,37 @@ public class Lexer{
             return new Token<>(Token.TT_FLOAT, Double.parseDouble(numStr.toString()), positionStart, this.currPosition);
         }
     }
+
+    public Token<?> makeString(Position position) {
+        StringBuilder sb = new StringBuilder();
+        Position posStart = this.currPosition.copy();
+        boolean escapeChar = false;
+        HashMap<Character, String> escape_characters = new HashMap<>();
+        escape_characters.put('n', "\n");
+        escape_characters.put('t', "\t");
+    
+        this.advance();
+        while (this.currChar != '\0' && (this.currChar != '"' || escapeChar)) {
+            if (escapeChar) {
+                if (escape_characters.containsKey(this.currChar)) {
+                    sb.append(escape_characters.get(this.currChar));
+                } else {
+                    sb.append(this.currChar);
+                }
+                escapeChar = false; // Reset escapeChar after handling the escape sequence
+            } else {
+                if (this.currChar == '\\') {
+                    escapeChar = true; // Set escapeChar if backslash is found
+                } else {
+                    sb.append(this.currChar);
+                }
+            }
+            this.advance();
+        }
+        this.advance();
+        return new Token<>(Token.TT_STRING, sb.toString(), posStart, this.currPosition);
+    }
+    
 
     public Token<?> makeNotEquals(Position position){
         Position  currPosition = position.copy();

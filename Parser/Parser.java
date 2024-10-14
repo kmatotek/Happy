@@ -176,6 +176,11 @@ public class Parser {
 
             return parseResult.success(new NumberNode(token));
 
+        } else if(token.type.equals(Token.TT_STRING)){
+            parseResult.register(this.advance());
+
+            return parseResult.success(new StringNode(token));
+
         } else if (token.type.equals(Token.TT_IDENTIFIER)){
             parseResult.register(this.advance());
             return parseResult.success(new VarAccessNode(token));

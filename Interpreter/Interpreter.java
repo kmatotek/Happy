@@ -5,6 +5,8 @@ import Values.Number;
 import Token.*;
 import Context.*;
 import DataStructures.*;
+import Errors.InvalidSyntaxError;
+
 import java.util.ArrayList;
 import Values.*;
 
@@ -15,7 +17,10 @@ public class Interpreter {
     public valueContext visit(ASTNode node, Context context){
         if(node instanceof NumberNode){
             return new valueContext(visitNumberNode((NumberNode)node, context).value, context);
+        } else if(node instanceof StringNode){
+            return new valueContext(visitStringNode((StringNode) node, context).value, context);
         } else if(node instanceof BinOpNode){
+            
             return new valueContext(visitBinaryOpNode((BinOpNode)node, context).value, context);
         } if(node instanceof UnaryOpNode){
             return new valueContext(visitUnaryOpNode((UnaryOpNode) node, context).value, context);
@@ -48,11 +53,43 @@ public class Interpreter {
 
     public valueContext visitBinaryOpNode(BinOpNode node, Context context){
         //System.out.println("Visit binOp Node!");
-        Number left = (Number) this.visit(node.leftNode, context).value;
+        Value value1 = this.visit(node.leftNode, context).value;
+        Value value2 = this.visit(node.rightNode, context).value;
+        if(value1 instanceof MyString && value2 instanceof MyString){
+            MyString left = (MyString) value1;
+            MyString right = (MyString) value2;
+            MyString res = null;
+            if(node.token.type.equals(Token.TT_PLUS)){
+                res = left.addedTo(right);
+            } else {
+                throw new InvalidSyntaxError(node.positionStart, node.positionEnd, "Invalid operator on Strings");
+            }
+            return new valueContext(res,context);
+        } else if (value1 instanceof MyString && value2 instanceof Number){
+            MyString left = (MyString) value1;
+            Number right = (Number) value2;
+            MyString res = null;
+            if(node.token.type.equals(Token.TT_MUL)){
+                int goTo = Number.toInt(right.value);
+                StringBuilder sb = new StringBuilder();
+                for(int i = 0; i < goTo; i++){
+                    sb.append(left);
+                }
+                res = new MyString(sb.toString());
+            }  else {
+                throw new InvalidSyntaxError(node.positionStart, node.positionEnd, "Invalid operator on Strings");
+            }
+            return new valueContext(res,context);
+        }
+
+
+        
+        Number left = (Number) value1;
         //System.out.println(this.visit(node.leftNode, context).value);
-        Number right = (Number) this.visit(node.rightNode, context).value;
+        Number right = (Number) value2;
         Number result;
 
+        
         if(node.token.type.equals(Token.TT_PLUS)){
             result = left.addBy(right);
         } else if(node.token.type.equals(Token.TT_MINUS)){
@@ -224,6 +261,13 @@ public class Interpreter {
         Value returnValue = valueToCall.execute(args,context).value;
         return new valueContext(returnValue,context);
 
+    }
+
+    public valueContext visitStringNode(StringNode node, Context context){
+        MyString str = new MyString(node.token.value.toString());
+        str.setContext(context);
+        str.setPosition(node.positionStart,node.positionEnd);
+        return new valueContext(str,context);
     }
 
 }

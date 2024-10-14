@@ -17,4 +17,9 @@ public abstract class Value {
     public void setContext(Context context){
         this.context = context;
     }
+
+    public void setPosition(Position posStart, Position posEnd){
+        this.positionStart = posStart;
+        this.positionEnd = posEnd;
+    }
 }

@@ -29,7 +29,7 @@ public class HappyMain {
                 System.out.print("Happy > ");
                 String input = reader.readLine();
                 
-  
+                
                 Value result = run(input, globalSymbolTable, context);
 
              

@@ -14,7 +14,7 @@ power : call (POW factor)*
 
 call   : atom (LPAREN (expr (COMA expr)*)? RPAREN)?
 
-atom : INT|FLOAT
+atom : INT|FLOAT|STRING|IDENTIFIER
      : LPAREN expr RPAREN
 
 
@@ -43,3 +43,8 @@ var isEqual = (5 == 5)
 IF <condition> THEN <expression> ELIF <condition> THEN <expression> ELSE <expression>
 FOR <var_name> = <start_value> TO <end_value> (OPTIONAL STEP #) THEN <expr>
 WHILE <condition> THEN <expr>
+
+"Text"
+"Text with \"quotes\""
+"Text with \\ backslashes \\"
+"Text \n with \n new lines"
