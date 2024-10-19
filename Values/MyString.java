@@ -8,7 +8,6 @@ public class MyString extends Value {
     }
 
     public MyString addedTo(MyString other){
-
         return new MyString(this.s + other.s);
     }
 

@@ -198,6 +198,9 @@ public class Parser {
             } else {
                 throw new InvalidSyntaxError(token.positionStart, token.positionEnd,"Expected ')'");
             }
+        } else if (token.type.equals(Token.TT_LSQUAREB)){
+            ASTNode listExpr = parseResult.register(this.listExpression());
+            return listExpr;
         } else if(token.matches(Token.TT_KEYWORD,"IF")){
             ASTNode ifExpr = parseResult.register(this.ifExpression());
             return ifExpr;
@@ -210,7 +213,7 @@ public class Parser {
         } else if (token.matches(Token.TT_KEYWORD,"FUNC")){
             ASTNode FuncDef = parseResult.register(this.funcDef());
             return FuncDef;
-        }
+        } 
         else throw new IllegalCharError("Expected int or float but got " + this.currToken.type);
     }
 
@@ -243,7 +246,7 @@ public class Parser {
     }
 
     public ASTNode artithExpression(){
-        return this.binOp(this::term,Arrays.asList(Token.TT_PLUS,Token.TT_MINUS));
+        return this.binOp(this::term,Arrays.asList(Token.TT_PLUS,Token.TT_MINUS, Token.TT_EXCLM));
     }
 
 
@@ -269,6 +272,33 @@ public class Parser {
         }
         
         return this.binOp(this::compExpression, Arrays.asList("AND","OR"));           
+    }
+
+    public ASTNode listExpression(){
+        ArrayList<ASTNode> elementNodes = new ArrayList<>();
+
+        if(!this.currToken.type.equals(Token.TT_LSQUAREB)){
+            throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected '[");
+        }
+        this.advance();
+        
+        if(this.currToken.type.equals(Token.TT_RSQUAREB)){
+            this.advance();
+        } else {
+            elementNodes.add(this.expression());
+
+            while(this.currToken.type.equals(Token.TT_COMMA)){
+                this.advance();
+                elementNodes.add(this.expression());
+            }
+
+            if(!this.currToken.type.equals(Token.TT_RSQUAREB)){
+                throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd, "Expected ',' or ']'");
+            }
+            this.advance();
+        }
+        if(this.currToken.positionEnd == null || this.currToken.positionStart == null) return new ListNode(elementNodes);
+        else return new ListNode(elementNodes);
     }
 
     // binOp accepts a parsing function to handle the correct precedence levels

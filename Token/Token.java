@@ -17,8 +17,11 @@ public class Token<T>{
     public static final String TT_MINUS  = "MINUS";
     public static final String TT_MUL    = "MUL";
     public static final String TT_DIV    = "DIV";
+    public static final String TT_EXCLM = "EXCLM";
     public static final String TT_LPAREN = "LPAREN";
     public static final String TT_RPAREN = "RPAREN";
+    public static final String TT_LSQUAREB = "LSQUAREB";
+    public static final String TT_RSQUAREB = "RSQUAREB";
     public static final String TT_EE = "EE";
     public static final String TT_NE = "NE";
     public static final String TT_LT = "LT";

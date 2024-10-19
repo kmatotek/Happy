@@ -16,6 +16,13 @@ call   : atom (LPAREN (expr (COMA expr)*)? RPAREN)?
 
 atom : INT|FLOAT|STRING|IDENTIFIER
      : LPAREN expr RPAREN
+     : list-expr
+     : if-expr
+     : for-expr
+     : while-expr
+     : func-def
+
+list-expr : LSQUAREB (expr (COMA expr)*)? RSQUAREB
 
 
 if-expr : KEYWORD:IF expr KEYWORD:THEN expr 
@@ -48,3 +55,9 @@ WHILE <condition> THEN <expr>
 "Text with \"quotes\""
 "Text with \\ backslashes \\"
 "Text \n with \n new lines"
+
+[1,2,3] + 4 => [1,2,3,4]
+[1,2] + [3,4] => [1,2,3,4]
+
+[1,2,3] ! 0 => 1
+[1,2,3] ! 1 => 2

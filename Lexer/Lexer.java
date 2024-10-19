@@ -60,6 +60,12 @@ public class Lexer{
             } else if(this.currChar == ')'){
                 tokens.add(new Token<>(Token.TT_RPAREN, this.currPosition));
                 this.advance();
+            } else if(this.currChar == '['){
+                tokens.add(new Token<>(Token.TT_LSQUAREB, this.currPosition));
+                this.advance();
+            } else if(this.currChar == ']'){
+                tokens.add(new Token<>(Token.TT_RSQUAREB, this.currPosition));
+                this.advance();
             } else if(this.currChar == '!'){
                 Token<?> token = this.makeNotEquals(this.currPosition);
                 tokens.add(token);
@@ -104,6 +110,7 @@ public class Lexer{
     public Token<?> makeIdentifier(){
         String idString = "";
         Position posStart = this.currPosition.copy();
+       
 
         while(this.currChar != '\0' && (Character.isLetter(this.currChar) || Token.DIGITS.indexOf(this.currChar) != -1) || this.currChar == '_'){
             idString += this.currChar;
@@ -111,7 +118,7 @@ public class Lexer{
         }
 
         String tokenType = Token.KEYWORDS.contains(idString) ? Token.TT_KEYWORD : Token.TT_IDENTIFIER;
-       
+       //System.out.println(idString);
         return new Token<>(tokenType, idString, posStart, this.currPosition);
     }
 
@@ -179,9 +186,9 @@ public class Lexer{
             this.advance();
             return new Token<>(Token.TT_NE, currPosition);
         }
-
-        this.advance();
-        throw new IllegalCharError("Extected '=' after '!'");
+        else return new Token<>(Token.TT_EXCLM, currPosition);
+        
+        // throw new IllegalCharError("Extected '=' after '!'");
 
     }
 

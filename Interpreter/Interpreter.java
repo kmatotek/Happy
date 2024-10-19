@@ -38,6 +38,8 @@ public class Interpreter {
             return new valueContext(visitCallNode((CallNode) node, context).value, context);
         } else if(node instanceof FuncDefNode){
             return new valueContext(visitFuncDefNode((FuncDefNode) node, context).value, context);
+        } else if(node instanceof ListNode){
+            return new valueContext(visitListNode((ListNode) node, context).value, context);
         }
         else {
             System.out.println("no instance found");
@@ -55,7 +57,9 @@ public class Interpreter {
         //System.out.println("Visit binOp Node!");
         Value value1 = this.visit(node.leftNode, context).value;
         Value value2 = this.visit(node.rightNode, context).value;
+        
         if(value1 instanceof MyString && value2 instanceof MyString){
+            
             MyString left = (MyString) value1;
             MyString right = (MyString) value2;
             MyString res = null;
@@ -66,6 +70,7 @@ public class Interpreter {
             }
             return new valueContext(res,context);
         } else if (value1 instanceof MyString && value2 instanceof Number){
+            
             MyString left = (MyString) value1;
             Number right = (Number) value2;
             MyString res = null;
@@ -76,14 +81,47 @@ public class Interpreter {
                     sb.append(left);
                 }
                 res = new MyString(sb.toString());
-            }  else {
+            } else {
+                
                 throw new InvalidSyntaxError(node.positionStart, node.positionEnd, "Invalid operator on Strings");
             }
             return new valueContext(res,context);
+        } else if (value1 instanceof MyList && value2 instanceof Number){
+            MyList left = (MyList) value1;
+            Number right = (Number) value2;
+            if(node.token.type.equals(Token.TT_PLUS)){  
+                MyList res = left.copy();
+                res.elements.add(right);
+                return new valueContext(res, context);
+
+            } else if(node.token.type.equals(Token.TT_EXCLM)){
+                int get = Number.toInt(right.value);
+                if(get < 0 || get > left.elements.size()){
+                    throw new InvalidSyntaxError(node.positionStart,node.positionEnd, "Index " + get + " out of bounds");
+                }
+                Number res = new Number(left.elements.get(get));
+                return new valueContext(res,context);
+               
+            }
+
+
+        } else if (value1 instanceof MyList && value2 instanceof MyList){
+            
+            if(node.token.type.equals(Token.TT_PLUS)){
+                MyList left = (MyList) value1;
+                MyList right = (MyList) value2;
+                MyList res = left.copy();
+
+                for(Value v : right.elements){
+                    res.elements.add(v);
+                }
+            
+                return new valueContext(res, context);
+            } 
         }
 
 
-        
+    
         Number left = (Number) value1;
         //System.out.println(this.visit(node.leftNode, context).value);
         Number right = (Number) value2;
@@ -128,6 +166,7 @@ public class Interpreter {
     public valueContext visitUnaryOpNode(UnaryOpNode node, Context context){
         //System.out.println("Visit UnOp Node!");
         Number num = (Number) this.visit(node.node, context).value;
+        
 
         if(node.opToken.type.equals(Token.TT_MINUS)){
             num = num.multiplyBy(new Number(-1));
@@ -185,6 +224,8 @@ public class Interpreter {
 
     public valueContext visitForNode(ForNode node, Context context){
         //ParseResult res = new ParseResult();
+        ArrayList<Value> elements = new ArrayList<>();
+
         
         Value startValue = this.visit(node.startValueNode, context).value;
         Value endValue = this.visit(node.endValueNode, context).value;
@@ -204,7 +245,7 @@ public class Interpreter {
                 //System.out.println(context.symbolTableObject.toString());
                 i += Number.toInt(stepValue.value);
                 //System.out.println(i);
-                this.visit(node.bodyNode, context);
+                elements.add(this.visit(node.bodyNode, context).value);
 
             }
         } else {
@@ -214,23 +255,32 @@ public class Interpreter {
                 context.symbolTableObject.set(node.varNameToken.value.toString(), new Number(i));
                 i += Number.toInt(stepValue.value);
                 System.out.println(i);
-                this.visit(node.bodyNode, context);
+                elements.add(this.visit(node.bodyNode, context).value);
 
             }
         }
-       
-        return new valueContext(null,context);
+        
+        MyList res = new MyList(elements);
+        res.setContext(context);
+        res.setPosition(node.posStart,node.posEnd);
+        return new valueContext(res,context);
     }
 
     public valueContext visitWhileNode(WhileNode node, Context context){
+        ArrayList<Value> elements = new ArrayList<>();
+
         while(true){
             Value condition = this.visit(node.conditionNode, context).value;
             if(Number.toInt(condition.value) == 0){
                 break;
             }
-            this.visit(node.bodyNode, context);
+            elements.add(this.visit(node.bodyNode, context).value);
         }
-        return new valueContext(null,context);
+
+        MyList res = new MyList(elements);
+        res.setContext(context);
+        res.setPosition(node.posStart, node.posEnd);
+        return new valueContext(res,context);
     }
 
     public valueContext visitFuncDefNode(FuncDefNode node, Context context){
@@ -268,6 +318,20 @@ public class Interpreter {
         str.setContext(context);
         str.setPosition(node.positionStart,node.positionEnd);
         return new valueContext(str,context);
+    }
+
+    public valueContext visitListNode(ListNode node, Context context){
+        ArrayList<Value> elements = new ArrayList<>();
+
+        for(ASTNode n : node.elementNodes){
+            elements.add(this.visit(n, context).value);
+        }
+
+        MyList res = new MyList(elements);
+        res.setContext(context);
+        res.setPosition(node.posStart,node.posEnd);
+
+        return new valueContext(res, context);
     }
 
 }
