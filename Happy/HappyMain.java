@@ -20,16 +20,19 @@ public class HappyMain {
     public static void main(String[] args) throws IOException {
             // Infinite loop to read code from terminal1
             Context context = new Context("Program");
-            SymbolTable globalSymbolTable = new SymbolTable();
-                globalSymbolTable.set("NULL",new Number(0));
-                globalSymbolTable.set("TRUE",new Number(1));
-                globalSymbolTable.set("FALSE",new Number(0));
+            //SymbolTable globalSymbolTable = new SymbolTable();
+            context.symbolTableObject.set("NULL",new Number(0));
+            context.symbolTableObject.set("TRUE",new Number(1));
+            context.symbolTableObject.set("FALSE",new Number(0));
+            context.symbolTableObject.set("PRINT",new BuiltInFunction("print"));
+            context.symbolTableObject.set("PI",new Number(Math.PI));
+            context.symbolTableObject.set("HAPPY",new MyString(":)"));
             while(true){
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 System.out.print("Happy > ");
                 String input = reader.readLine();
                 
-                
+                //System.out.println(context.symbolTableObject);
                 Value result = run(input, globalSymbolTable, context);
 
              

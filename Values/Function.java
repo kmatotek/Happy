@@ -7,7 +7,7 @@ import Interpreter.*;
 import Context.*;
 import DataStructures.*;
 
-public class Function extends Value {
+public class Function extends BaseFunction {
     public Context context;
     public String name;
     public ASTNode bodyNode;
@@ -16,6 +16,7 @@ public class Function extends Value {
     public ArrayList<String> argNames = new ArrayList<>();
 
     public Function(String name, ASTNode bodyNode, ArrayList<Number> argNodes, ArrayList<String> argNames){
+        super(name);
         this.name = name;
         this.bodyNode = bodyNode;
         this.argNodes = argNodes;
@@ -23,6 +24,7 @@ public class Function extends Value {
     }
 
     public Function(String name, ASTNode bodyNode, ArrayList<String> argNames){
+        super(name);
         this.name = name;
         this.bodyNode = bodyNode;
         this.argNames = argNames;
@@ -33,13 +35,8 @@ public class Function extends Value {
        
         
         // Add errors for too little and too many args
+        this.checkAndPopulateArgs(this.argNames, args, context);
         
-        for(int i = 0; i < args.size(); i++){
-            String argName = this.argNames.get(i);
-            Value argValue = args.get(i);
-            context.symbolTableObject.set(argName,argValue);
-          
-        }
         Value value = interpreter.visit(this.bodyNode, context).value;
         return new valueContext(value,context);
     }

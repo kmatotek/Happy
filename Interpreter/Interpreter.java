@@ -302,15 +302,26 @@ public class Interpreter {
 
     public valueContext visitCallNode(CallNode node, Context context){
         ArrayList<Value> args = new ArrayList<>();
-        Function valueToCall = (Function) this.visit(node.nodeToCall,context).value;
+        if (this.visit(node.nodeToCall,context).value instanceof BuiltInFunction){
+            BuiltInFunction valueToCall = (BuiltInFunction) this.visit(node.nodeToCall,context).value;
+            //System.out.println(valueToCall.name);
+            for(ASTNode argNode : node.argNodes){
+                args.add(this.visit(argNode,context).value);
+            }
         
-        for(ASTNode argNode : node.argNodes){
-            args.add(this.visit(argNode,context).value);
+            Value returnValue = valueToCall.execute(args,context);
+            
+            return new valueContext(returnValue,context);
+        } else {
+            Function valueToCall = (Function) this.visit(node.nodeToCall,context).value;
+            
+            for(ASTNode argNode : node.argNodes){
+                args.add(this.visit(argNode,context).value);
+            }
+        
+            Value returnValue = valueToCall.execute(args,context).value;
+            return new valueContext(returnValue,context);
         }
-        
-        Value returnValue = valueToCall.execute(args,context).value;
-        return new valueContext(returnValue,context);
-
     }
 
     public valueContext visitStringNode(StringNode node, Context context){
