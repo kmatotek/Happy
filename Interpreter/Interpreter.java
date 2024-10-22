@@ -17,7 +17,8 @@ public class Interpreter {
     public valueContext visit(ASTNode node, Context context){
         if(node instanceof NumberNode){
             return new valueContext(visitNumberNode((NumberNode)node, context).value, context);      
-        } else if(node instanceof StringNode){
+        } else if(node instanceof StringNode){ 
+            
             return new valueContext(visitStringNode((StringNode) node, context).value, context);
         } else if(node instanceof BinOpNode){
             
@@ -179,6 +180,7 @@ public class Interpreter {
 
     public valueContext visitVarAccessNode(VarAccessNode node, Context context){
         //ParseResult res = new ParseResult();
+        //System.out.println("Visit var access!");
         Object varName = node.varNameToken.value;
         Value value = context.symbolTableObject.symbols.get(varName);
 
@@ -258,7 +260,7 @@ public class Interpreter {
                 //System.out.println(context.symbolTableObject.toString());
                 context.symbolTableObject.set(node.varNameToken.value.toString(), new Number(i));
                 i += 1;
-                System.out.println(i);
+                //System.out.println(i);
                 elements.add(this.visit(node.bodyNode, context).value);
 
             }
@@ -288,6 +290,7 @@ public class Interpreter {
     }
 
     public valueContext visitFuncDefNode(FuncDefNode node, Context context){
+        //System.out.println("Func def Node");
         String funcName = node.varNameTok.value.toString();
         ASTNode bodyNode = node.bodyNode;
         ArrayList<String> argNames = new ArrayList<>();
@@ -305,10 +308,12 @@ public class Interpreter {
     }
 
     public valueContext visitCallNode(CallNode node, Context context){
+        //System.out.println("Call Node");
         ArrayList<Value> args = new ArrayList<>();
         if (this.visit(node.nodeToCall,context).value instanceof BuiltInFunction){
             BuiltInFunction valueToCall = (BuiltInFunction) this.visit(node.nodeToCall,context).value;
             //System.out.println(valueToCall.name);
+            
             for(ASTNode argNode : node.argNodes){
                 args.add(this.visit(argNode,context).value);
             }
@@ -329,6 +334,7 @@ public class Interpreter {
     }
 
     public valueContext visitStringNode(StringNode node, Context context){
+        
         MyString str = new MyString(node.token.value.toString());
         str.setContext(context);
         str.setPosition(node.positionStart,node.positionEnd);

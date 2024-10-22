@@ -150,20 +150,22 @@ public class Parser {
                 this.advance();
             } else {
                 argNodes.add(this.expression());
-
+                
                 while(this.currToken.type.equals(Token.TT_COMMA)){
                     this.advance();
                     argNodes.add(this.expression());
 
                 }
-
+                
                 if(!this.currToken.type.equals(Token.TT_RPAREN)){
+                    System.out.println("failed in call");
                      throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd, "Expected ',' or ')'");
                 }
                 this.advance();
             }
             return new CallNode(atom,argNodes);
         }
+        
         return atom;
     }
 
@@ -178,10 +180,11 @@ public class Parser {
 
         } else if(token.type.equals(Token.TT_STRING)){
             parseResult.register(this.advance());
-
+            
             return parseResult.success(new StringNode(token));
 
         } else if (token.type.equals(Token.TT_IDENTIFIER)){
+            //System.out.println(token.value);
             parseResult.register(this.advance());
             return parseResult.success(new VarAccessNode(token));
         }
@@ -246,7 +249,7 @@ public class Parser {
     }
 
     public ASTNode artithExpression(){
-        return this.binOp(this::term,Arrays.asList(Token.TT_PLUS,Token.TT_MINUS, Token.TT_EXCLM));
+        return this.binOp(this::term, Arrays.asList(Token.TT_PLUS,Token.TT_MINUS, Token.TT_EXCLM));
     }
 
 
@@ -265,8 +268,9 @@ public class Parser {
             if(!this.currToken.type.equals(Token.TT_EQ)){
                 throw new IllegalCharError("Excpected =");
             }
-
+            
             res.register(this.advance());
+            
             ASTNode expr = res.register(this.expression());
             
             return res.success(new VarAssignNode(varName, expr));
@@ -294,6 +298,7 @@ public class Parser {
             }
 
             if(!this.currToken.type.equals(Token.TT_RSQUAREB)){
+                
                 throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd, "Expected ',' or ']'");
             }
             this.advance();
@@ -305,24 +310,29 @@ public class Parser {
     // binOp accepts a parsing function to handle the correct precedence levels
     public ASTNode binOp(Supplier<ASTNode> parseFunc, List<String> ops){
         ParseResult parseResult = new ParseResult();
-        ASTNode left = parseResult.register(parseFunc.get());  // Call the provided parse function (e.g., factor or term)
+        ASTNode left = parseResult.register(parseFunc.get());
+          // Call the provided parse function (e.g., factor or term)
         if(parseResult.error != null) throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"You fond a hidden error!");
         
         while(ops.contains(this.currToken.type) || ops.contains(this.currToken.value)){
             Token<?> opToken = this.currToken;
             parseResult.register(this.advance());
-            ASTNode right = parseResult.register(parseFunc.get());  // Use the same parse function for the right side
+            ASTNode right = parseResult.register(parseFunc.get());
+            // Use the same parse function for the right side
             if(parseResult.error != null) throw new InvalidSyntaxError(opToken.positionStart,opToken.positionEnd,"You fond a hidden error!");
 
             left = new BinOpNode(left, opToken, right);
+           
         }
-       
         return parseResult.success(left);
     }
 
     public ASTNode binOp(Supplier<ASTNode> parseFuncA, Supplier<ASTNode> parseFuncB, List<String> ops){
+       
         ParseResult parseResult = new ParseResult();
-        ASTNode left = parseResult.register(parseFuncA.get());  // Call the provided parse function (e.g., factor or term)
+        ASTNode left = parseResult.register(parseFuncA.get());
+        
+          // Call the provided parse function (e.g., factor or term)
         if(parseResult.error != null) throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"You fond a hidden error!");
         
         while(ops.contains(this.currToken.value) || ops.contains(this.currToken.value)){
@@ -333,6 +343,7 @@ public class Parser {
 
             left = new BinOpNode(left, opToken, right);
         }
+
         return parseResult.success(left);
     }
 
@@ -349,7 +360,6 @@ public class Parser {
 
         
         ASTNode node = result.register(this.binOp(this::artithExpression, Arrays.asList(Token.TT_EE,Token.TT_NE,Token.TT_LT,Token.TT_GT,Token.TT_LTE,Token.TT_GTE)));
-         
         return result.success(node);
     }
 
@@ -359,6 +369,7 @@ public class Parser {
         if(this.currToken.type != Token.TT_EOF){
             throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Extecpted '+', '-', '*', or '/'");
         }
+        
         return res;
     }
 
@@ -398,7 +409,6 @@ public class Parser {
                     this.advance();
                 }
             }
-
             if(!this.currToken.type.equals(Token.TT_RPAREN)){
                 throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected ',' or ')'");
             }

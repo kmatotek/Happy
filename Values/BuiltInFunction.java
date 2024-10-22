@@ -47,6 +47,8 @@ public class BuiltInFunction extends BaseFunction {
             return new ArrayList<>(Arrays.asList("value"));
         } else if (method.getName().equals("factorial")) {
             return new ArrayList<>(Arrays.asList("value"));
+        } else if (method.getName().equals("length")) {
+            return new ArrayList<>(Arrays.asList("value"));
         }
         return new ArrayList<>();
     }
@@ -67,6 +69,19 @@ public class BuiltInFunction extends BaseFunction {
             res = res * i;
         }
         return new Number(res);
+    }
+
+    public Value length(Context context){
+        Value v = context.symbolTableObject.get("value");
+        if (v instanceof MyString){
+            MyString s = (MyString) v;
+            return new Number(s.s.length());
+        } else if (v instanceof MyList){
+            MyList lis = (MyList) v;
+            return new Number(lis.elements.size());
+        } else {
+            throw new IllegalArgumentException("Invalid use of 'LENGTH' method");
+        }
     }
   
 }

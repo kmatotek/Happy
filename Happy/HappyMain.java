@@ -29,6 +29,7 @@ public class HappyMain {
 
             context.symbolTableObject.set("PRINT",new BuiltInFunction("print"));
             context.symbolTableObject.set("FAC", new BuiltInFunction("factorial"));
+            context.symbolTableObject.set("LENGTH", new BuiltInFunction("length"));
             
             
             while(true){

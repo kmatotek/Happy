@@ -173,7 +173,7 @@ public class Lexer{
             }
             this.advance();
         }
-        this.advance();
+       // this.advance();
         return new Token<>(Token.TT_STRING, sb.toString(), posStart, this.currPosition);
     }
     
