@@ -82,8 +82,10 @@ public class Interpreter {
                     sb.append(left);
                 }
                 res = new MyString(sb.toString());
+            } else if (node.token.type.equals(Token.TT_EXCLM)){
+                int index = Number.toInt(right.value);
+                res = new MyString(String.valueOf(left.s.charAt(index)));
             } else {
-                
                 throw new InvalidSyntaxError(node.positionStart, node.positionEnd, "Invalid operator on Strings");
             }
             return new valueContext(res,context);
@@ -96,6 +98,7 @@ public class Interpreter {
                 return new valueContext(res, context);
 
             } else if(node.token.type.equals(Token.TT_EXCLM)){
+                
                 int get = Number.toInt(right.value);
                 if(get < 0 || get > left.elements.size()){
                     throw new InvalidSyntaxError(node.positionStart,node.positionEnd, "Index " + get + " out of bounds");

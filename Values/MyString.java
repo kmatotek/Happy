@@ -1,7 +1,7 @@
 package Values;
 
 public class MyString extends Value {
-    String s;
+    public String s;
 
    public  MyString(String s){
         this.s = s;
