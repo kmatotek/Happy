@@ -45,6 +45,8 @@ public class BuiltInFunction extends BaseFunction {
         // Placeholder for argument names; manually define for now
         if (method.getName().equals("print")) {
             return new ArrayList<>(Arrays.asList("value"));
+        } else if (method.getName().equals("factorial")) {
+            return new ArrayList<>(Arrays.asList("value"));
         }
         return new ArrayList<>();
     }
@@ -58,12 +60,13 @@ public class BuiltInFunction extends BaseFunction {
         return v;
     }
 
-    // Static method to create an instance of BuiltInFunction
-    public static BuiltInFunction createPrintFunction() {
-        BuiltInFunction printFunction = new BuiltInFunction("print");
-        return printFunction;
+    public Value factorial(Context context) {
+        Number num = (Number) context.symbolTableObject.get("value");
+        int res = 1;
+        for(int i = 1; i <= Number.toInt(num.value); i++){
+            res = res * i;
+        }
+        return new Number(res);
     }
+  
 }
-
-// Instantiate the print function in a separate context or method
-//BuiltInFunction printFunction = BuiltInFunction.createPrintFunction();

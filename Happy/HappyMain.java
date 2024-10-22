@@ -24,9 +24,13 @@ public class HappyMain {
             context.symbolTableObject.set("NULL",new Number(0));
             context.symbolTableObject.set("TRUE",new Number(1));
             context.symbolTableObject.set("FALSE",new Number(0));
-            context.symbolTableObject.set("PRINT",new BuiltInFunction("print"));
             context.symbolTableObject.set("PI",new Number(Math.PI));
             context.symbolTableObject.set("HAPPY",new MyString(":)"));
+
+            context.symbolTableObject.set("PRINT",new BuiltInFunction("print"));
+            context.symbolTableObject.set("FAC", new BuiltInFunction("factorial"));
+            
+            
             while(true){
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 System.out.print("Happy > ");

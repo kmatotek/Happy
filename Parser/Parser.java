@@ -73,7 +73,6 @@ public class Parser {
     }
 
     public ASTNode forExpression(){
-        ParseResult res = new ParseResult();
 
         if(!this.currToken.matches(Token.TT_KEYWORD,"FOR")){
             throw new IllegalCharError("Expected FOR");
@@ -92,13 +91,14 @@ public class Parser {
         this.advance();
         ASTNode startValue = this.expression();
         
+        
 
         if(!this.currToken.matches(Token.TT_KEYWORD,"TO")){
             throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected TO");
         }
         this.advance();
         ASTNode endValue = this.expression();
-
+        
         ASTNode stepValue = null;
 
         if(this.currToken.matches(Token.TT_KEYWORD, "STEP")){
@@ -117,7 +117,7 @@ public class Parser {
         if(stepValue == null) resultForNode = new ForNode(varName, body, startValue, endValue);
         else resultForNode = new ForNode(varName,body, startValue, endValue, stepValue);
 
-        return res.success(resultForNode);
+        return resultForNode;
     }
 
     public ASTNode whileExpression(){
@@ -268,6 +268,7 @@ public class Parser {
 
             res.register(this.advance());
             ASTNode expr = res.register(this.expression());
+            
             return res.success(new VarAssignNode(varName, expr));
         }
         

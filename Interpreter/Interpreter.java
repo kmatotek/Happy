@@ -16,7 +16,7 @@ public class Interpreter {
     
     public valueContext visit(ASTNode node, Context context){
         if(node instanceof NumberNode){
-            return new valueContext(visitNumberNode((NumberNode)node, context).value, context);
+            return new valueContext(visitNumberNode((NumberNode)node, context).value, context);      
         } else if(node instanceof StringNode){
             return new valueContext(visitStringNode((StringNode) node, context).value, context);
         } else if(node instanceof BinOpNode){
@@ -225,35 +225,39 @@ public class Interpreter {
     public valueContext visitForNode(ForNode node, Context context){
         //ParseResult res = new ParseResult();
         ArrayList<Value> elements = new ArrayList<>();
-
         
-        Value startValue = this.visit(node.startValueNode, context).value;
-        Value endValue = this.visit(node.endValueNode, context).value;
-        Value stepValue = null;
+        
+        Number startValue = (Number) this.visit(node.startValueNode, context).value;
+        Number endValue = (Number) this.visit(node.endValueNode, context).value;
+        Number stepValue = null;
+        
         
 
         if(node.stepValueNode != null){
-            stepValue = this.visit(node.stepValueNode,context).value;
+            stepValue = (Number) this.visit(node.stepValueNode,context).value;
         } else {
             stepValue = new Number(1);
         }
+        
         int i = Number.toInt(startValue.value);
-        System.out.println(node.varNameToken.toString());
-        if(Number.toInt(stepValue.value) > 0){
+        int step = Number.toInt(stepValue.value);
+        
+        if(step != 1){
             while(i < Number.toInt(endValue.value)){
                 context.symbolTableObject.set(node.varNameToken.value.toString(), new Number(i));
                 //System.out.println(context.symbolTableObject.toString());
-                i += Number.toInt(stepValue.value);
+                i += step;
                 //System.out.println(i);
                 elements.add(this.visit(node.bodyNode, context).value);
 
             }
         } else {
-            while(i > Number.toInt(endValue.value)){
-                //System.out.println(stepValue.value);
+            
+            while(i < Number.toInt(endValue.value)){
+                
                 //System.out.println(context.symbolTableObject.toString());
                 context.symbolTableObject.set(node.varNameToken.value.toString(), new Number(i));
-                i += Number.toInt(stepValue.value);
+                i += 1;
                 System.out.println(i);
                 elements.add(this.visit(node.bodyNode, context).value);
 

@@ -116,7 +116,7 @@ public class Lexer{
             idString += this.currChar;
             this.advance();
         }
-
+        
         String tokenType = Token.KEYWORDS.contains(idString) ? Token.TT_KEYWORD : Token.TT_IDENTIFIER;
        //System.out.println(idString);
         return new Token<>(tokenType, idString, posStart, this.currPosition);
