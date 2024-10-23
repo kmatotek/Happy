@@ -5,10 +5,19 @@ This programming language supports variable assignments, conditional expressions
 
 ## Syntax Overview
 
-### Variable Assignment
-Variables are assigned using the `VAR` keyword followed by an identifier, the equals sign `=`, and an expression.
+### Types
+Happy consists of the following types
+~~~
+Number
+String
+List
+~~
+Booleans are Numbers, `1` for True and `0` for False
 
-~~~plaintext
+### Variable Assignment
+Variables are assigned using the `VAR` keyword followed by a name, then the equals sign `=`, and an expression.
+
+~~~
 VAR variable_name = expr
 
 ex.
@@ -18,17 +27,17 @@ VAR isEqual = (5 == 5)
 VAR myString = "Hello World"
 ~~~
 
+
 ### Conditional Expressions
 There is no limit on amount of ELIF's
+
 IF <condition> THEN <expression> 
     ELIF <condition> THEN <expression> 
     ELSE <expression>
 
 ex.
 ~~~
-IF x == 10 THEN PRINT("x is 10") 
-    ELIF x > 10 THEN PRINT("x is greater than 10")
-    ELSE PRINT("x is less than 10")
+IF x == 10 THEN PRINT("x is 10") ELIF x > 10 THEN PRINT("x is greater than 10") ELSE PRINT("x is less than 10")
 ~~~
 
 ### Loops
@@ -38,8 +47,8 @@ For Loops
 FOR <var_name> = <start_value> TO <end_value> (OPTIONAL STEP <step_value>) THEN <expr>
 
 ~~~
-FOR i = 0 TO 10 THEN PRINT(i)
-FOR i = 0 TO 10 STEP 2 THEN PRINT(i)
+FOR i = 0 TO 5 THEN PRINT(i) -> [0,1,2,3,4]
+FOR i = 0 TO 5 STEP 2 THEN PRINT(i) - > [0,2,3,4]
 ~~~
 
 While Loops
@@ -47,17 +56,29 @@ While Loops
 WHILE <condition> THEN <expression>
 
 ~~~
-WHILE x < 10 THEN VAR x = x + 1
+WHILE x < 5 THEN VAR x = x + 1
 ~~~
 
 ### Functions
-Functions are defined using the FUNC keyword followed by an optional identifier, a parameter list, and an arrow -> leading to the expression.
+Built in Functions
+The `PRINT` function takes in any Type in prints that Type as a String.
+The `LENGTH` function returns the length of a List or a String.
 
-FUNC <identifier>? (param1, param2, ...) -> <expression>
+~~~
+PRINT("Be happy") -> "Be happy"
+LENGTH([1,2,3]) -> 3
+~~~
+
+Happy comes with some built in functions, but as programmers true happiness comes from creating our own functions.
+
+FUNC <name> (param1, param2, ...) -> <expression>
 
 ~~~
 FUNC add(x, y) -> x + y
+VAR addTest = add(3, 4)
+PRINT(addTest)
 ~~~
+output: 7
 
 ### List Operations
 Lists are enclosed in square brackets and support operations such as addition and accessing elements by index.
@@ -76,9 +97,9 @@ Strings are enclosed in double quotes and support escape characters such as \" f
 "Text \n with \n new lines"
 ~~~
 
-### Built in Functions
-The PRINT function outputs anything to the console
-The LENGTH function returns the length of a list or string
+## String Operations
+"Sup" * 5 => "SupSupSupSupSup"
+
 
 ## Future Features
 Use of :) and :( in syntax
