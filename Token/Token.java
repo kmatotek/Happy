@@ -34,8 +34,8 @@ public class Token<T>{
 
     public static final String DIGITS = "0123456789";
     public static final ArrayList<String> KEYWORDS = new ArrayList<>(Arrays.asList(
-    "VAR","AND","OR","NOT",
-    "IF","THEN","ELIF","ELSE", "FOR", "TO", "STEP", "WHILE","FUNC"));
+    "var","and","or","not",
+    "if","then","elif","else", "for", "to", "step", "while","func"));
     
 
 

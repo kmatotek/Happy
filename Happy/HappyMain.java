@@ -21,15 +21,15 @@ public class HappyMain {
             // Infinite loop to read code from terminal1
             Context context = new Context("Program");
             //SymbolTable globalSymbolTable = new SymbolTable();
-            context.symbolTableObject.set("NULL",new Number(0));
-            context.symbolTableObject.set("TRUE",new Number(1));
-            context.symbolTableObject.set("FALSE",new Number(0));
-            context.symbolTableObject.set("PI",new Number(Math.PI));
-            context.symbolTableObject.set("HAPPY",new MyString(":)"));
+            context.symbolTableObject.set("null",new Number(0));
+            context.symbolTableObject.set("true",new Number(1));
+            context.symbolTableObject.set("false",new Number(0));
+            context.symbolTableObject.set("pi",new Number(Math.PI));
+            context.symbolTableObject.set("hapy",new MyString(":)"));
 
-            context.symbolTableObject.set("PRINT",new BuiltInFunction("print"));
-            context.symbolTableObject.set("FAC", new BuiltInFunction("factorial"));
-            context.symbolTableObject.set("LENGTH", new BuiltInFunction("length"));
+            context.symbolTableObject.set("print",new BuiltInFunction("print"));
+            context.symbolTableObject.set("fac", new BuiltInFunction("factorial"));
+            context.symbolTableObject.set("length", new BuiltInFunction("length"));
             
             
             while(true){

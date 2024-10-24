@@ -64,3 +64,8 @@ WHILE <condition> THEN <expr>
 
 PRINT(anything)
 LENGTH(MyList or MyString)
+
+Things I want to implement:
+
+a readme!!
+:) at the end of lines (possibly a :( as well)

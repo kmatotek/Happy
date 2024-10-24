@@ -32,27 +32,27 @@ public class Parser {
         List<List<ASTNode>> cases = new ArrayList<>();
         ASTNode elseCase = null;
 
-        if(!this.currToken.matches(Token.TT_KEYWORD,"IF")){
-            throw new IllegalArgumentException("Expected 'IF'");
+        if(!this.currToken.matches(Token.TT_KEYWORD,"if")){
+            throw new IllegalArgumentException("Expected 'if'");
         }
 
         this.advance();
         ASTNode condition = res.register(this.expression());
 
-        if(!this.currToken.matches(Token.TT_KEYWORD,"THEN")){
-            throw new IllegalArgumentException("Expected 'THEN'");
+        if(!this.currToken.matches(Token.TT_KEYWORD,"then")){
+            throw new IllegalArgumentException("Expected 'then'");
         }
 
         this.advance();
         ASTNode expr = res.register(this.expression());
         cases.add(Arrays.asList(condition,expr));
 
-        while(this.currToken.matches(Token.TT_KEYWORD, "ELIF")){
+        while(this.currToken.matches(Token.TT_KEYWORD, "elif")){
             this.advance();
 
             condition = res.register(this.expression());
-            if(!this.currToken.matches(Token.TT_KEYWORD,"THEN")){
-                throw new IllegalArgumentException("Expected 'THEN'");
+            if(!this.currToken.matches(Token.TT_KEYWORD,"then")){
+                throw new IllegalArgumentException("Expected 'then'");
             }
             
             this.advance();
@@ -61,7 +61,7 @@ public class Parser {
 
         }
 
-        if(this.currToken.matches(Token.TT_KEYWORD,"ELSE")){
+        if(this.currToken.matches(Token.TT_KEYWORD,"else")){
             this.advance();
             expr = res.register(this.expression());
             elseCase = expr;
@@ -74,8 +74,8 @@ public class Parser {
 
     public ASTNode forExpression(){
 
-        if(!this.currToken.matches(Token.TT_KEYWORD,"FOR")){
-            throw new IllegalCharError("Expected FOR");
+        if(!this.currToken.matches(Token.TT_KEYWORD,"for")){
+            throw new IllegalCharError("Expected for");
         }
         this.advance();
         if(this.currToken.type != Token.TT_IDENTIFIER){
@@ -93,7 +93,7 @@ public class Parser {
         
         
 
-        if(!this.currToken.matches(Token.TT_KEYWORD,"TO")){
+        if(!this.currToken.matches(Token.TT_KEYWORD,"to")){
             throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected TO");
         }
         this.advance();
@@ -101,12 +101,12 @@ public class Parser {
         
         ASTNode stepValue = null;
 
-        if(this.currToken.matches(Token.TT_KEYWORD, "STEP")){
+        if(this.currToken.matches(Token.TT_KEYWORD, "step")){
             this.advance();
             stepValue = this.expression();
         }
 
-        if(!this.currToken.matches(Token.TT_KEYWORD, "THEN")){
+        if(!this.currToken.matches(Token.TT_KEYWORD, "then")){
             throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected THEN");
         }
         this.advance();
@@ -122,13 +122,13 @@ public class Parser {
 
     public ASTNode whileExpression(){
         ParseResult res = new ParseResult();
-        if(!this.currToken.matches(Token.TT_KEYWORD, "WHILE")){
+        if(!this.currToken.matches(Token.TT_KEYWORD, "while")){
             throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected WHILE");
         }
         this.advance();
 
         ASTNode condition = this.expression();
-        if(!this.currToken.matches(Token.TT_KEYWORD, "THEN")){
+        if(!this.currToken.matches(Token.TT_KEYWORD, "then")){
             throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected THEN");
         }
         this.advance();
@@ -204,16 +204,16 @@ public class Parser {
         } else if (token.type.equals(Token.TT_LSQUAREB)){
             ASTNode listExpr = parseResult.register(this.listExpression());
             return listExpr;
-        } else if(token.matches(Token.TT_KEYWORD,"IF")){
+        } else if(token.matches(Token.TT_KEYWORD,"if")){
             ASTNode ifExpr = parseResult.register(this.ifExpression());
             return ifExpr;
-        } else if (token.matches(Token.TT_KEYWORD,"FOR")){
+        } else if (token.matches(Token.TT_KEYWORD,"for")){
             ASTNode forExpr = parseResult.register(this.forExpression());
             return forExpr;
-        }  else if (token.matches(Token.TT_KEYWORD,"WHILE")){
+        }  else if (token.matches(Token.TT_KEYWORD,"while")){
             ASTNode WhileExpr = parseResult.register(this.whileExpression());
             return WhileExpr;
-        } else if (token.matches(Token.TT_KEYWORD,"FUNC")){
+        } else if (token.matches(Token.TT_KEYWORD,"func")){
             ASTNode FuncDef = parseResult.register(this.funcDef());
             return FuncDef;
         } 
@@ -256,7 +256,7 @@ public class Parser {
     public ASTNode expression(){
         // Handle addition and subtraction (lower precedence)
         ParseResult res = new ParseResult();
-        if(this.currToken.matches(Token.TT_KEYWORD, "VAR")){
+        if(this.currToken.matches(Token.TT_KEYWORD, "var")){
             res.register(this.advance());
 
             if(!this.currToken.type.equals(Token.TT_IDENTIFIER)){
@@ -276,7 +276,7 @@ public class Parser {
             return res.success(new VarAssignNode(varName, expr));
         }
         
-        return this.binOp(this::compExpression, Arrays.asList("AND","OR"));           
+        return this.binOp(this::compExpression, Arrays.asList("and","or"));           
     }
 
     public ASTNode listExpression(){
@@ -351,7 +351,7 @@ public class Parser {
         ParseResult result = new ParseResult();
         Token<?> opToken = null;
 
-        if(this.currToken.value.equals("NOT")){
+        if(this.currToken.value.equals("not")){
             opToken = this.currToken;
             result.register(this.advance());
             ASTNode node = result.register(this.compExpression());
@@ -376,7 +376,7 @@ public class Parser {
     public ASTNode funcDef(){
        // ParseResult res = new ParseResult();
 
-        if(!this.currToken.matches(Token.TT_KEYWORD,"FUNC")){
+        if(!this.currToken.matches(Token.TT_KEYWORD,"func")){
             throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected 'FUNC'");
         }
         this.advance();

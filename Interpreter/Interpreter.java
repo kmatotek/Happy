@@ -154,9 +154,9 @@ public class Interpreter {
            result = left.getComparisonLte(right);
         } else if(node.token.type.equals(Token.TT_GTE)){
             result = left.getComparisonGte(right);
-        } else if(node.token.matches(Token.TT_KEYWORD, "AND")){
+        } else if(node.token.matches(Token.TT_KEYWORD, "and")){
             result = left.andBy(right);
-        } else if(node.token.matches(Token.TT_KEYWORD,"OR")){
+        } else if(node.token.matches(Token.TT_KEYWORD,"or")){
             result = left.orBy(right);
         } 
         
@@ -174,7 +174,7 @@ public class Interpreter {
 
         if(node.opToken.type.equals(Token.TT_MINUS)){
             num = num.multiplyBy(new Number(-1));
-        } else if (node.opToken.matches(Token.TT_KEYWORD,"NOT")){
+        } else if (node.opToken.matches(Token.TT_KEYWORD,"not")){
             num = num.notted();
         }
         num.setPosition(node.positionStart, node.positionEnd);
