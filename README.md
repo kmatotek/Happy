@@ -11,7 +11,7 @@ Happy consists of the following types
 Number
 String
 List
-~~
+~~~
 Booleans are Numbers, `1` for True and `0` for False
 
 ### Variable Assignment
