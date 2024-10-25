@@ -254,7 +254,6 @@ public class Interpreter {
                 i += step;
                 //System.out.println(i);
                 elements.add(this.visit(node.bodyNode, context).value);
-
             }
         } else {
             
@@ -265,7 +264,6 @@ public class Interpreter {
                 i += 1;
                 //System.out.println(i);
                 elements.add(this.visit(node.bodyNode, context).value);
-
             }
         }
         
