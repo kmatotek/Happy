@@ -1,6 +1,11 @@
 package Operators;
 
-public abstract class ASTNode {
+import Position.*;
+import Token.*;
 
+public abstract class ASTNode {
+    public Position positionStart;
+    public Position positionEnd; 
+    public Token<?> token; 
     
 }

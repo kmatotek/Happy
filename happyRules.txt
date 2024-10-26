@@ -1,0 +1,71 @@
+expr : KEYWORD:VAR IDENTIFIER EQ expr
+     : comp-expr *(AND | OR) comp-expr)*
+
+comp-expr : NOT comp-expr
+          : arith-expr ((EE | LT | GT | GTE | LTE ) arith-expr)*
+
+arith-expr: term ((PLUS|MINUS) term)*
+
+term : factor ((MUL|DIV) factor)*
+
+factor : (PLUS|MINUS) power
+
+power : call (POW factor)*
+
+call   : atom (LPAREN (expr (COMA expr)*)? RPAREN)?
+
+atom : INT|FLOAT|STRING|IDENTIFIER
+     : LPAREN expr RPAREN
+     : list-expr
+     : if-expr
+     : for-expr
+     : while-expr
+     : func-def
+
+list-expr : LSQUAREB (expr (COMA expr)*)? RSQUAREB
+
+
+if-expr : KEYWORD:IF expr KEYWORD:THEN expr 
+          (KEYWORD:ELIF expr KEYWORD:THEN expr)*
+          (KEYWORD:ELSE expr)?
+
+for-expr : KEYWORD:FOR IDENTIFIER EQ expr KEYWORD: TO expr
+          (KEYWORD:STEP expr)? KEYWORD:THEN expr
+
+while-expr : KEYWORD:WHILE expr KEYWORD: THEN expr
+
+func-def : KEYWORD:FUNC IDENTIFIER? 
+           LPAREN (IDENTIFIER (COMA IDENTIFIER)*)? RPAREN
+           ARROW expr
+           
+
+
+VAR            variable_name                 =         <expr>
+^                   ^                        ^            ^
+KEYWORD          IDENTIFIER                EQUALS 
+
+
+var isEqual = (5 == 5)
+
+IF <condition> THEN <expression> ELIF <condition> THEN <expression> ELSE <expression>
+FOR <var_name> = <start_value> TO <end_value> (OPTIONAL STEP #) THEN <expr>
+WHILE <condition> THEN <expr>
+
+"Text"
+"Text with \"quotes\""
+"Text with \\ backslashes \\"
+"Text \n with \n new lines"
+
+[1,2,3] + 4 => [1,2,3,4]
+[1,2] + [3,4] => [1,2,3,4]
+
+[1,2,3] ! 0 => 1
+[1,2,3] ! 1 => 2
+
+PRINT(anything)
+LENGTH(MyList or MyString)
+
+Things I want to implement:
+
+a readme!!
+:) at the end of lines (possibly a :( as well)

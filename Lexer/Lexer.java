@@ -1,12 +1,12 @@
 package Lexer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import Position.*;
 
 import Errors.IllegalCharError;
 import Token.*;
 
 public class Lexer{
-    public static final String DIGITS = "0123456789";
 
     private String text;
     private Position currPosition;
@@ -35,13 +35,15 @@ public class Lexer{
         while(this.currChar != '\0'){
             if(" \t".indexOf(this.currChar) != -1){
                 this.advance(); // Skip white space and tabs
-            } else if (DIGITS.indexOf(this.currChar) != -1){
+            } else if (Token.DIGITS.indexOf(this.currChar) != -1){
                 tokens.add(this.makeNumber());
-            } else if(this.currChar == '+'){
+            } else if(Character.isLetter(this.currChar)){
+                tokens.add(this.makeIdentifier());
+            }   else if(this.currChar == '+'){
                 tokens.add(new Token<>(Token.TT_PLUS, this.currPosition));
                 this.advance();
             } else if(this.currChar == '-'){
-                tokens.add(new Token<>(Token.TT_MINUS, this.currPosition));
+                tokens.add(this.makeMinusOrArrow());
                 this.advance();
             } else if(this.currChar == '*'){
                 tokens.add(new Token<>(Token.TT_MUL, this.currPosition));
@@ -49,15 +51,52 @@ public class Lexer{
             } else if(this.currChar == '/'){
                 tokens.add(new Token<>(Token.TT_DIV, this.currPosition));
                 this.advance();
+            } else if(this.currChar == '^'){
+                tokens.add(new Token<>(Token.TT_POW, this.currPosition));
+                this.advance();
             } else if(this.currChar == '('){
                 tokens.add(new Token<>(Token.TT_LPAREN, this.currPosition));
                 this.advance();
             } else if(this.currChar == ')'){
                 tokens.add(new Token<>(Token.TT_RPAREN, this.currPosition));
                 this.advance();
-            } else {
+            } else if(this.currChar == '['){
+                tokens.add(new Token<>(Token.TT_LSQUAREB, this.currPosition));
+                this.advance();
+            } else if(this.currChar == ']'){
+                tokens.add(new Token<>(Token.TT_RSQUAREB, this.currPosition));
+                this.advance();
+            } else if(this.currChar == '!'){
+                Token<?> token = this.makeNotEquals(this.currPosition);
+                tokens.add(token);
+                //out.println(tokens);
+                this.advance();
+            } else if(this.currChar == '='){
+                tokens.add(this.makeEquals(this.currPosition));
+                //out.println(tokens);
+                this.advance();
+            } else if(this.currChar == '<'){
+                tokens.add(this.makeLessThan(this.currPosition));
+                //out.println(tokens);
+                this.advance();
+            } else if(this.currChar == '>'){
+                tokens.add(this.makeGreaterThan(this.currPosition));
+                //out.println(tokens);
+                this.advance();
+            } else if(this.currChar == ','){
+                tokens.add(new Token<>(Token.TT_COMMA, this.currPosition));
+                //out.println(tokens);
+                this.advance();
+            } else if(this.currChar == '"'){
+                tokens.add(this.makeString(this.currPosition));
+                //out.println(tokens);
+                this.advance();
+            }
+            
+            
+            else {
                 // return some error
-                Position positionStart = this.currPosition.copy();
+                //Position positionStart = this.currPosition.copy();
                     char invalidChar = this.currChar; // Capture the invalid character
                     this.advance(); // Move to the next character
                     throw new IllegalCharError("Line " + this.currPosition.line + ": Unexpected character: " + invalidChar);
@@ -68,12 +107,27 @@ public class Lexer{
         return tokens;
     }
 
+    public Token<?> makeIdentifier(){
+        String idString = "";
+        Position posStart = this.currPosition.copy();
+       
+
+        while(this.currChar != '\0' && (Character.isLetter(this.currChar) || Token.DIGITS.indexOf(this.currChar) != -1) || this.currChar == '_'){
+            idString += this.currChar;
+            this.advance();
+        }
+        
+        String tokenType = Token.KEYWORDS.contains(idString) ? Token.TT_KEYWORD : Token.TT_IDENTIFIER;
+       //System.out.println(idString);
+        return new Token<>(tokenType, idString, posStart, this.currPosition);
+    }
+
     public Token<?> makeNumber() {
         StringBuilder numStr = new StringBuilder();
         int dotCount = 0;
         Position positionStart = this.currPosition.copy();
 
-        while (this.currChar != '\0' && (DIGITS.indexOf(this.currChar) != -1 || this.currChar == '.')) {
+        while (this.currChar != '\0' && (Token.DIGITS.indexOf(this.currChar) != -1 || this.currChar == '.')) {
             if (this.currChar == '.') {
                 if (dotCount == 1) break; // Only allow one dot for a floating-point number
                 dotCount++;
@@ -91,6 +145,98 @@ public class Lexer{
             // It's a float
             return new Token<>(Token.TT_FLOAT, Double.parseDouble(numStr.toString()), positionStart, this.currPosition);
         }
+    }
+
+    public Token<?> makeString(Position position) {
+        StringBuilder sb = new StringBuilder();
+        Position posStart = this.currPosition.copy();
+        boolean escapeChar = false;
+        HashMap<Character, String> escape_characters = new HashMap<>();
+        escape_characters.put('n', "\n");
+        escape_characters.put('t', "\t");
+    
+        this.advance();
+        while (this.currChar != '\0' && (this.currChar != '"' || escapeChar)) {
+            if (escapeChar) {
+                if (escape_characters.containsKey(this.currChar)) {
+                    sb.append(escape_characters.get(this.currChar));
+                } else {
+                    sb.append(this.currChar);
+                }
+                escapeChar = false; // Reset escapeChar after handling the escape sequence
+            } else {
+                if (this.currChar == '\\') {
+                    escapeChar = true; // Set escapeChar if backslash is found
+                } else {
+                    sb.append(this.currChar);
+                }
+            }
+            this.advance();
+        }
+       // this.advance();
+        return new Token<>(Token.TT_STRING, sb.toString(), posStart, this.currPosition);
+    }
+    
+
+    public Token<?> makeNotEquals(Position position){
+        Position  currPosition = position.copy();
+        this.advance();
+
+        if(this.currChar == '='){
+            this.advance();
+            return new Token<>(Token.TT_NE, currPosition);
+        }
+        else return new Token<>(Token.TT_EXCLM, currPosition);
+        
+        // throw new IllegalCharError("Extected '=' after '!'");
+
+    }
+
+    public Token<?> makeEquals(Position position){
+        Position  currPosition = position.copy();
+        this.advance();
+
+        if(this.currChar == '='){
+            this.advance();
+            return new Token<>(Token.TT_EE, currPosition);
+        }
+        return new Token<>(Token.TT_EQ, currPosition);   
+
+    }
+
+    public Token<?> makeLessThan(Position position){
+        Position  currPosition = position.copy();
+        this.advance();
+
+        if(this.currChar == '='){
+            this.advance();
+            return new Token<>(Token.TT_LTE, currPosition);
+        }
+        return new Token<>(Token.TT_LT, currPosition);   
+    }
+
+    public Token<?> makeGreaterThan(Position position){
+        Position  currPosition = position.copy();
+        this.advance();
+
+        if(this.currChar == '='){
+            this.advance();
+            return new Token<>(Token.TT_GTE, currPosition);
+        }
+        return new Token<>(Token.TT_GT, currPosition);   
+    }
+
+    public Token<?> makeMinusOrArrow(){
+        String tokType = Token.TT_MINUS;
+        Position posStart = this.currPosition.copy();
+        this.advance();
+
+        if(this.currChar == '>'){
+            this.advance();
+            tokType = Token.TT_ARROW;
+        }
+
+        return new Token<> (tokType, posStart);
     }
 
 }

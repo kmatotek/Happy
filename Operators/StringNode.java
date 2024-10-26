@@ -3,12 +3,12 @@ import Position.Position;
 import Token.*;
 
 
-public class NumberNode extends ASTNode{
+public class StringNode extends ASTNode{
     public Token<?> token;
     public Position positionStart;
     public Position positionEnd;
     
-    public NumberNode(Token<?> token){
+    public StringNode(Token<?> token){
         this.token = token;
         this.positionStart = this.token.positionStart;
         this.positionEnd = this.token.positionEnd;

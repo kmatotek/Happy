@@ -12,17 +12,17 @@ public class ParseResult {
     }
 
     public ASTNode register(ParseResult parseResult){ // Takes in parse result 
-        if(parseResult.error != null){
+        if(parseResult.error != null){  
             return parseResult.node;
         }
-        return null;
+        return parseResult.node;
     }
 
     public ASTNode register(ASTNode node){ // Takes in Node 
         return node;
     }
 
-    public Token register(Token token){ // Takes in Node 
+    public Token<?> register(Token<?> token){ // Takes in Node 
         return token;
     }
 
