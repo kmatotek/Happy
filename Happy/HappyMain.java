@@ -39,12 +39,20 @@ public class HappyMain {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 System.out.print("Happy > ");
                 String input = reader.readLine();
+                if(input.replaceAll(" ","").equals("")) continue;
                 
                 //System.out.println(context.symbolTableObject);
                 Value result = run(input, globalSymbolTable, context);
-
+                if(result instanceof MyList){
+                    MyList listRes = (MyList) result;
+                    if(listRes.elements.size() == 1){
+                        System.out.println(listRes.elements.get(0));
+                    }
+                } else {
+                    System.out.println(result);
+                }
              
-               System.out.println(result);
+
             }    
     }
 
@@ -52,7 +60,7 @@ public class HappyMain {
         // Make tokens
         Lexer lexer = new Lexer(text);
         ArrayList<Token<?>> tokens = lexer.makeTokens();
-        System.out.println(tokens);
+        //System.out.println(tokens);
         
         // Generate AST
         Parser parser = new Parser(tokens);

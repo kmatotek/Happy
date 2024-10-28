@@ -21,18 +21,27 @@ public class Parser {
 
     public Token<?> advance(){
         currTokenIndex += 1;
-        if(currTokenIndex < tokens.size()){
-            this.currToken = tokens.get(currTokenIndex);
-        }
+        updateCurrToken();
         return currToken;
     }
 
-    public ASTNode ifExpression(){
+    public void updateCurrToken(){
+        if(this.currTokenIndex >= 0 && this.currTokenIndex < this.tokens.size()){
+            this.currToken = this.tokens.get(this.currTokenIndex);
+        }
+    }
+
+    public void ifExpressionNew(){
+        //ASTNode allCases = this.ifExpressionCases("if");
+        //return new IfNode(cases,elseCase);
+    }
+
+    public ASTNode ifExpression(String keyword){
         ParseResult res = new ParseResult();
         List<List<ASTNode>> cases = new ArrayList<>();
         ASTNode elseCase = null;
 
-        if(!this.currToken.matches(Token.TT_KEYWORD,"if")){
+        if(!this.currToken.matches(Token.TT_KEYWORD,keyword)){
             throw new IllegalArgumentException("Expected 'if'");
         }
 
@@ -205,7 +214,7 @@ public class Parser {
             ASTNode listExpr = parseResult.register(this.listExpression());
             return listExpr;
         } else if(token.matches(Token.TT_KEYWORD,"if")){
-            ASTNode ifExpr = parseResult.register(this.ifExpression());
+            ASTNode ifExpr = parseResult.register(this.ifExpression("if"));
             return ifExpr;
         } else if (token.matches(Token.TT_KEYWORD,"for")){
             ASTNode forExpr = parseResult.register(this.forExpression());
@@ -429,6 +438,7 @@ public class Parser {
         return new FuncDefNode(varNameTok, argNameTokens, nodeToReturn);
     }
     public ASTNode statements(){
+        //ParseResult res = new ParseResult();
         ArrayList<ASTNode> statements = new ArrayList<>();
        // Position posStart = this.currToken.positionStart.copy();
 
@@ -453,6 +463,7 @@ public class Parser {
             
             if(this.currToken.type.equals(Token.TT_EOF)){
                 moreStatements = false;
+                //this.reverse(res.toReverseCount);
                 continue;
             } else {
                 statement = this.expression();
