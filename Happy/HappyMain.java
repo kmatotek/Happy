@@ -52,7 +52,7 @@ public class HappyMain {
         // Make tokens
         Lexer lexer = new Lexer(text);
         ArrayList<Token<?>> tokens = lexer.makeTokens();
-        //System.out.println(tokens);
+        System.out.println(tokens);
         
         // Generate AST
         Parser parser = new Parser(tokens);

@@ -1,3 +1,5 @@
+statements: NEWLINE* expr (NEWLINE+ expr)* NEWLINE+   + means one or more new lines
+
 expr : KEYWORD:VAR IDENTIFIER EQ expr
      : comp-expr *(AND | OR) comp-expr)*
 
@@ -26,17 +28,30 @@ list-expr : LSQUAREB (expr (COMA expr)*)? RSQUAREB
 
 
 if-expr : KEYWORD:IF expr KEYWORD:THEN expr 
-          (KEYWORD:ELIF expr KEYWORD:THEN expr)*
-          (KEYWORD:ELSE expr)?
+          (expr if-expr-b | if-expr-c?)
+          | (NEWLINE statements KEYWORD: END | if-expr-b | if-expr-c)
+
+if-expr-b : KEYWORD:ELIF expr KEYWORD:THEN expr 
+          (expr if-expr-b | if-expr-c?)
+          | (NEWLINE statements KEYWORD: END | if-expr-b | if-expr-c)
+      
+if-expr-c : KEYWORD: ELSE
+          expr 
+          | (NEWLINE statements KEYWORD: END)
 
 for-expr : KEYWORD:FOR IDENTIFIER EQ expr KEYWORD: TO expr
           (KEYWORD:STEP expr)? KEYWORD:THEN expr
+          expr
+          | (NEWLINE statements KEYWORD: END)
 
 while-expr : KEYWORD:WHILE expr KEYWORD: THEN expr
+          expr
+          | (NEWLINE statements KEYWORD: END)
 
 func-def : KEYWORD:FUNC IDENTIFIER? 
            LPAREN (IDENTIFIER (COMA IDENTIFIER)*)? RPAREN
-           ARROW expr
+           (ARROW expr)
+           | | (NEWLINE statements KEYWORD: END)
            
 
 
@@ -64,6 +79,29 @@ WHILE <condition> THEN <expr>
 
 PRINT(anything)
 LENGTH(MyList or MyString)
+
+print("hiii");
+
+if <expr> then 
+     <expr1>
+     <expr2>
+        .
+        .
+end
+
+for i = 0 to 10 then
+     <expr1>
+     <expr2>
+        .
+        .
+end
+
+func hi() ->
+     <expr1>
+     <expr2>
+        .
+        .
+end
 
 Things I want to implement:
 

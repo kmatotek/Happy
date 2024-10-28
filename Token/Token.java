@@ -30,12 +30,13 @@ public class Token<T>{
     public static final String TT_GTE = "GTE";
     public static final String TT_COMMA = "COMMA";
     public static final String TT_ARROW = "ARROW";
+    public static final String TT_NEWLINE = "NEWLINE";
     public static final String TT_EOF = "EOF";
 
     public static final String DIGITS = "0123456789";
     public static final ArrayList<String> KEYWORDS = new ArrayList<>(Arrays.asList(
     "var","and","or","not",
-    "if","then","elif","else", "for", "to", "step", "while","func"));
+    "if","then","elif","else", "for", "to", "step", "while","func","end"));
     
 
 

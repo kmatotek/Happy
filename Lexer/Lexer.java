@@ -69,27 +69,24 @@ public class Lexer{
             } else if(this.currChar == '!'){
                 Token<?> token = this.makeNotEquals(this.currPosition);
                 tokens.add(token);
-                //out.println(tokens);
                 this.advance();
             } else if(this.currChar == '='){
                 tokens.add(this.makeEquals(this.currPosition));
-                //out.println(tokens);
                 this.advance();
             } else if(this.currChar == '<'){
                 tokens.add(this.makeLessThan(this.currPosition));
-                //out.println(tokens);
                 this.advance();
             } else if(this.currChar == '>'){
                 tokens.add(this.makeGreaterThan(this.currPosition));
-                //out.println(tokens);
                 this.advance();
             } else if(this.currChar == ','){
                 tokens.add(new Token<>(Token.TT_COMMA, this.currPosition));
-                //out.println(tokens);
                 this.advance();
             } else if(this.currChar == '"'){
                 tokens.add(this.makeString(this.currPosition));
-                //out.println(tokens);
+                this.advance();
+            } else if(this.currChar == ';' || this.currChar == '\n'){
+                tokens.add(new Token<>(Token.TT_NEWLINE, this.currPosition));
                 this.advance();
             }
             
@@ -229,13 +226,12 @@ public class Lexer{
     public Token<?> makeMinusOrArrow(){
         String tokType = Token.TT_MINUS;
         Position posStart = this.currPosition.copy();
-        this.advance();
 
         if(this.currChar == '>'){
             this.advance();
             tokType = Token.TT_ARROW;
         }
-
+        
         return new Token<> (tokType, posStart);
     }
 

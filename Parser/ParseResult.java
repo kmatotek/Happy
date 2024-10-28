@@ -5,6 +5,9 @@ import Token.*;
 public class ParseResult {
     public Error error;
     public ASTNode node;
+    public int lastRegisteredAdvanceCount = 0;
+    public int advanceCount = 0;
+    public int toReverseCount = 0;
 
     public ParseResult(){
         this.error = null;
@@ -15,6 +18,8 @@ public class ParseResult {
         if(parseResult.error != null){  
             return parseResult.node;
         }
+        this.lastRegisteredAdvanceCount = parseResult.advanceCount;
+        this.advanceCount += 1;
         return parseResult.node;
     }
 
@@ -33,5 +38,9 @@ public class ParseResult {
 
     public void failure(Error error){
         this.error = error;
+    }
+
+    public ASTNode tryRegister(ParseResult res){
+        return this.register(res);
     }
 }

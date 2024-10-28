@@ -365,7 +365,7 @@ public class Parser {
 
 
     public ASTNode parse(){
-        ASTNode res = this.expression();
+        ASTNode res = this.statements();
         if(this.currToken.type != Token.TT_EOF){
             throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Extecpted '+', '-', '*', or '/'");
         }
@@ -427,5 +427,40 @@ public class Parser {
         ASTNode nodeToReturn = this.expression();
 
         return new FuncDefNode(varNameTok, argNameTokens, nodeToReturn);
+    }
+    public ASTNode statements(){
+        ArrayList<ASTNode> statements = new ArrayList<>();
+       // Position posStart = this.currToken.positionStart.copy();
+
+        while(this.currToken.type.equals(Token.TT_NEWLINE)){
+            this.advance();
+        }
+
+        boolean moreStatements = true;
+        ASTNode statement = this.expression();
+        statements.add(statement);
+
+        while(true){
+            int newLineCount = 0;
+            while(this.currToken.type.equals(Token.TT_NEWLINE)){
+                this.advance();
+                newLineCount += 1;
+            }
+            if (newLineCount == 0){
+                moreStatements = false;
+            }
+            if (!moreStatements) break;
+            
+            if(this.currToken.type.equals(Token.TT_EOF)){
+                moreStatements = false;
+                continue;
+            } else {
+                statement = this.expression();
+                statements.add(statement);
+            }
+        }
+
+
+        return new ListNode(statements);
     }
 }
