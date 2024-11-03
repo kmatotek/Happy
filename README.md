@@ -25,6 +25,7 @@ var x = 10
 var x = PI
 var isEqual = (5 == 5)
 var myString = "Hello World"
+var test = if 3 >= 1 then "math works" else "math broken"
 ~~~
 
 
