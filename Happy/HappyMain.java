@@ -47,10 +47,13 @@ public class HappyMain {
                     MyList listRes = (MyList) result;
                     if(listRes.elements.size() == 1){
                         System.out.println(listRes.elements.get(0));
+                    } else {
+                        System.out.println(result);
                     }
-                } else {
+                }else {
                     System.out.println(result);
                 }
+                 
              
 
             }    

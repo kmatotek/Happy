@@ -7,6 +7,7 @@ import java.util.Arrays;
 import Errors.*;
 import Operators.*;
 import Token.*;
+import DataStructures.*;
 
 public class Parser {
 
@@ -31,53 +32,115 @@ public class Parser {
         }
     }
 
-    public void ifExpressionNew(){
-        //ASTNode allCases = this.ifExpressionCases("if");
-        //return new IfNode(cases,elseCase);
+    public ASTNode ifExpression(){
+        IfCases allCases = (IfCases) this.ifExpressionCases("if");
+        
+        return new IfNode(allCases.cases,allCases.elseCase);
     }
 
-    public ASTNode ifExpression(String keyword){
-        ParseResult res = new ParseResult();
-        List<List<ASTNode>> cases = new ArrayList<>();
-        ASTNode elseCase = null;
+    public IfCases ifExpressionCases(String keyword){    
+        //ParseResult res = new ParseResult();
+        List<Case> cases = new ArrayList<>();
+        ElseCase elseCase = null;
 
+        //System.out.println(this.currToken.value);
         if(!this.currToken.matches(Token.TT_KEYWORD,keyword)){
+            
             throw new IllegalArgumentException("Expected 'if'");
         }
-
+        
         this.advance();
-        ASTNode condition = res.register(this.expression());
-
+        
+        ASTNode condition = this.expression();
+        
         if(!this.currToken.matches(Token.TT_KEYWORD,"then")){
             throw new IllegalArgumentException("Expected 'then'");
         }
 
         this.advance();
-        ASTNode expr = res.register(this.expression());
-        cases.add(Arrays.asList(condition,expr));
-
-        while(this.currToken.matches(Token.TT_KEYWORD, "elif")){
+       
+        
+        if(this.currToken.type.equals(Token.TT_NEWLINE)){
+            System.out.println("made it");
             this.advance();
-
-            condition = res.register(this.expression());
-            if(!this.currToken.matches(Token.TT_KEYWORD,"then")){
-                throw new IllegalArgumentException("Expected 'then'");
-            }
             
+            ASTNode statements = this.statements();
+            
+            
+            cases.add(new Case(condition,statements,true));
+            
+
+            if(this.currToken.matches(Token.TT_KEYWORD, "end")){
+                this.advance();
+            } else {
+             
+                
+                IfCases allCases = (IfCases) this.ifExprBorC();
+                
+                List<Case> newCases = allCases.cases;
+                elseCase = allCases.elseCase;
+                cases.addAll(newCases);
+                
+            }
+        } else {
+            ASTNode expr = this.expression();
+            cases.add(new Case(condition, expr, false));
+
+            IfCases allCases = this.ifExprBorC();
+            
+            List<Case> newCases = allCases.cases;
+            elseCase = allCases.elseCase;
+           // Printing null System.out.println(elseCase);
+            cases.addAll(newCases);
+            
+        }     
+        
+        return new IfCases(cases,elseCase);
+    }
+
+    public IfCases ifExprB(){
+        return this.ifExpressionCases("elif");
+    }
+
+    public ElseCase ifExprC(){
+        ElseCase elseCase = null;
+        
+        if(this.currToken.matches(Token.TT_KEYWORD, "else")){
             this.advance();
-            expr = res.register(this.expression());
-            cases.add(Arrays.asList(condition,expr));
 
+            if(this.currToken.type.equals(Token.TT_NEWLINE)){
+                this.advance();
+
+                ASTNode statements = this.statements();
+                elseCase = new ElseCase(statements, true);
+
+                if(this.currToken.matches(Token.TT_KEYWORD, "end")){
+                    this.advance();
+                } else {
+                    throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"expected 'end'");
+                }
+            } else {
+                ASTNode expr = this.expression();
+                
+                elseCase = new ElseCase(expr,false);
+            }
         }
+        return elseCase;
+    }
 
-        if(this.currToken.matches(Token.TT_KEYWORD,"else")){
-            this.advance();
-            expr = res.register(this.expression());
-            elseCase = expr;
+    public IfCases ifExprBorC(){
+        List<Case> cases = new ArrayList<>();
+        ElseCase elseCase = null;
+
+        if(this.currToken.matches(Token.TT_KEYWORD, "elif")){
+            IfCases allCases = this.ifExprB();
+            cases = allCases.cases;
+            elseCase = allCases.elseCase;
+        } else {
+            elseCase = this.ifExprC();
         }
-
-        return res.success(new IfNode(cases,elseCase));
-
+        
+        return new IfCases(cases, elseCase);
 
     }
 
@@ -214,7 +277,8 @@ public class Parser {
             ASTNode listExpr = parseResult.register(this.listExpression());
             return listExpr;
         } else if(token.matches(Token.TT_KEYWORD,"if")){
-            ASTNode ifExpr = parseResult.register(this.ifExpression("if"));
+            ASTNode ifExpr = parseResult.register(this.ifExpression());
+            //System.out.println(ifExpr);
             return ifExpr;
         } else if (token.matches(Token.TT_KEYWORD,"for")){
             ASTNode forExpr = parseResult.register(this.forExpression());
@@ -437,7 +501,7 @@ public class Parser {
 
         return new FuncDefNode(varNameTok, argNameTokens, nodeToReturn);
     }
-    public ASTNode statements(){
+    public ListNode statements(){
         //ParseResult res = new ParseResult();
         ArrayList<ASTNode> statements = new ArrayList<>();
        // Position posStart = this.currToken.positionStart.copy();
@@ -467,7 +531,9 @@ public class Parser {
                 continue;
             } else {
                 statement = this.expression();
+                
                 statements.add(statement);
+                
             }
         }
 

@@ -207,22 +207,31 @@ public class Interpreter {
     public valueContext visitIfNode(IfNode node, Context context){
         //ParseResult res = new ParseResult();
         //for(List<ASTNode> list : node.cases){
+        boolean shouldReturnNull = node.elseCase.shouldReturnNull;
         for(int i = 0; i < node.cases.size(); i++){
         
-            ASTNode condition = node.cases.get(i).get(0);
-            ASTNode expr = node.cases.get(i).get(1);
+            ASTNode condition = node.cases.get(i).condition;
+            ASTNode expr = node.cases.get(i).expression;
 
-            //System.out.println(condition);
-
+            
             Number conditionValue = (Number) this.visit(condition,context).value;
             if(Number.toInt(conditionValue.value) != 0){
                 Value exprValue = this.visit(expr,context).value;
+                if(shouldReturnNull){
+                    return new valueContext(null,context);
+                } else {
                 return new valueContext(exprValue, context);
+                }
             } 
         }
         if(node.elseCase != null){
-            Value elseValue = this.visit(node.elseCase,context).value;
-            return new valueContext(elseValue, context);
+            ASTNode expr = node.elseCase.elseCase;
+            Value elseValue = this.visit(expr,context).value;
+            if(shouldReturnNull){
+                return new valueContext(null, context);
+            } else {
+                return new valueContext(elseValue, context);
+            }
         }
         return new valueContext(null,context);
     }
