@@ -10,10 +10,10 @@ public class ForNode extends ASTNode {
     public ASTNode endValueNode;
     public ASTNode stepValueNode;
     public ASTNode bodyNode;
-    public boolean shouldRetunNull;
+    public boolean shouldReturnNull;
     
 
-    public ForNode(Token <?> varNameToken, ASTNode bodyNode, ASTNode startValueNode, ASTNode endValueNode, ASTNode stepValuNode, boolean shouldReturnNull;){
+    public ForNode(Token <?> varNameToken, ASTNode bodyNode, ASTNode startValueNode, ASTNode endValueNode, ASTNode stepValuNode, boolean shouldReturnNull){
         this.posStart = varNameToken.positionStart;
         this.posEnd = bodyNode.positionEnd;
         this.startValueNode = startValueNode;
@@ -25,14 +25,13 @@ public class ForNode extends ASTNode {
 
     }
 
-    public ForNode(Token<?> varNameToken, ASTNode bodyNode, ASTNode startValueNode, ASTNode endValueNode, boolean shouldReturnNull){
+    public ForNode(Token<?> varNameToken, ASTNode bodyNode, ASTNode startValueNode, ASTNode endValueNode){
         this.posStart = varNameToken.positionStart;
         this.posEnd = bodyNode.positionEnd;
         this.startValueNode = startValueNode;
         this.endValueNode = endValueNode;
         this.varNameToken = varNameToken;
         this.bodyNode = bodyNode;
-        this.shouldReturnNull = shouldReturnNull;
 
     }
 }

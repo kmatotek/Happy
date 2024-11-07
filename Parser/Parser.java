@@ -7,6 +7,7 @@ import java.util.Arrays;
 import Errors.*;
 import Operators.*;
 //import Position.Position;
+//import Position.Position;
 import Token.*;
 import DataStructures.*;
 
@@ -62,6 +63,7 @@ public class Parser {
        
         
         if(this.currToken.type.equals(Token.TT_NEWLINE)){
+            
             
             this.advance();
             
@@ -194,16 +196,29 @@ public class Parser {
             this.advance();
             return new ForNode(varName, body, startValue, endValue, stepValue, true);
         }
+        
+        if(this.currToken.type.equals(Token.TT_NEWLINE)){
+            this.advance();
+            ASTNode body = this.statements();
+            if(!this.currToken.matches(Token.TT_KEYWORD,"end")){
+                throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected 'end'");
+
+            }
+            this.advance();
+            return new ForNode(varName, body, startValue, endValue, stepValue, true);
+        }
 
         ASTNode body = this.expression();
 
         ForNode resultForNode = null;
+        resultForNode = new ForNode(varName,body, startValue, endValue, stepValue, false);
         resultForNode = new ForNode(varName,body, startValue, endValue, stepValue, false);
 
         return resultForNode;
     }
 
     public ASTNode whileExpression(){
+        //ParseResult res = new ParseResult();
         //ParseResult res = new ParseResult();
         if(!this.currToken.matches(Token.TT_KEYWORD, "while")){
             throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected WHILE");
@@ -215,7 +230,24 @@ public class Parser {
             throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected THEN");
         }
 
+
         this.advance();
+       
+        if(this.currToken.type.equals(Token.TT_NEWLINE)){
+            this.advance();
+            ASTNode body = this.statements();
+
+            if(!this.currToken.matches(Token.TT_KEYWORD,"end")){
+                throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd,"Expected end");
+            }
+            this.advance();
+
+            return new WhileNode(condition, body, true);
+           
+        }
+        
+
+        
        
         if(this.currToken.type.equals(Token.TT_NEWLINE)){
             this.advance();
@@ -236,6 +268,9 @@ public class Parser {
         
     
         return (new WhileNode(condition,body,false));
+        
+    
+       
         
     }
 
@@ -359,6 +394,7 @@ public class Parser {
         ParseResult res = new ParseResult();
         if(this.currToken.matches(Token.TT_KEYWORD, "var")){
             res.register(this.advance());
+            
             
             if(!this.currToken.type.equals(Token.TT_IDENTIFIER)){
                 throw new IllegalCharError("Expected identifier");

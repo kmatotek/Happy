@@ -149,6 +149,7 @@ public class Number extends Value {
     }
 
     public static int toInt(Object value) {
+        
         if (value instanceof Integer) {
             return (Integer) value;
         } else if (value instanceof Double) {
