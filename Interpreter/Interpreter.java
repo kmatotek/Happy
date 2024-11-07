@@ -159,6 +159,7 @@ public class Interpreter {
         } else if(node.token.matches(Token.TT_KEYWORD,"or")){
             result = left.orBy(right);
         } 
+
         
         else {     
             throw new IllegalArgumentException("not good bro");
