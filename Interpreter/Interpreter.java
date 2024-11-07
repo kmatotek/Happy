@@ -255,8 +255,9 @@ public class Interpreter {
         
         int i = Number.toInt(startValue.value);
         int step = Number.toInt(stepValue.value);
+      
         
-        if(step != 1){
+        if(step >= 0){
             while(i < Number.toInt(endValue.value)){
                 context.symbolTableObject.set(node.varNameToken.value.toString(), new Number(i));
                 //System.out.println(context.symbolTableObject.toString());
@@ -265,12 +266,11 @@ public class Interpreter {
                 elements.add(this.visit(node.bodyNode, context).value);
             }
         } else {
-            
-            while(i < Number.toInt(endValue.value)){
+            while(i > Number.toInt(endValue.value)){
                 
                 //System.out.println(context.symbolTableObject.toString());
                 context.symbolTableObject.set(node.varNameToken.value.toString(), new Number(i));
-                i += 1;
+                i += step;
                 //System.out.println(i);
                 elements.add(this.visit(node.bodyNode, context).value);
             }
@@ -279,6 +279,7 @@ public class Interpreter {
         MyList res = new MyList(elements);
         res.setContext(context);
         res.setPosition(node.posStart,node.posEnd);
+        
         return new valueContext(res,context);
     }
 
@@ -286,13 +287,15 @@ public class Interpreter {
         ArrayList<Value> elements = new ArrayList<>();
 
         while(true){
-            Value condition = this.visit(node.conditionNode, context).value;
+            Number condition = (Number) this.visit(node.conditionNode, context).value;
             if(Number.toInt(condition.value) == 0){
+                
                 break;
             }
+            
             elements.add(this.visit(node.bodyNode, context).value);
         }
-
+        
         MyList res = new MyList(elements);
         res.setContext(context);
         res.setPosition(node.posStart, node.posEnd);
