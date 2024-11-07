@@ -58,6 +58,7 @@ while <condition> then <expression>
 
 ~~~
 while x < 5 then var x = x + 1
+while a < 10 then ; var a = a + 1 ; print(a) end
 ~~~
 
 ### Functions
