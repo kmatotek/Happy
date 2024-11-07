@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import Errors.*;
 import Operators.*;
+//import Position.Position;
 import Token.*;
 import DataStructures.*;
 
@@ -61,7 +62,7 @@ public class Parser {
        
         
         if(this.currToken.type.equals(Token.TT_NEWLINE)){
-            System.out.println("made it");
+            
             this.advance();
             
             ASTNode statements = this.statements();
@@ -182,18 +183,28 @@ public class Parser {
             throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected THEN");
         }
         this.advance();
+        
+        if(this.currToken.type.equals(Token.TT_NEWLINE)){
+            this.advance();
+            ASTNode body = this.statements();
+            if(!this.currToken.matches(Token.TT_KEYWORD,"end")){
+                throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected 'end'");
+
+            }
+            this.advance();
+            return new ForNode(varName, body, startValue, endValue, stepValue, true);
+        }
 
         ASTNode body = this.expression();
 
         ForNode resultForNode = null;
-        if(stepValue == null) resultForNode = new ForNode(varName, body, startValue, endValue);
-        else resultForNode = new ForNode(varName,body, startValue, endValue, stepValue);
+        resultForNode = new ForNode(varName,body, startValue, endValue, stepValue, false);
 
         return resultForNode;
     }
 
     public ASTNode whileExpression(){
-        ParseResult res = new ParseResult();
+        //ParseResult res = new ParseResult();
         if(!this.currToken.matches(Token.TT_KEYWORD, "while")){
             throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected WHILE");
         }
@@ -203,10 +214,28 @@ public class Parser {
         if(!this.currToken.matches(Token.TT_KEYWORD, "then")){
             throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected THEN");
         }
-        this.advance();
-        ASTNode body = this.expression();
 
-        return res.success(new WhileNode(condition,body));
+        this.advance();
+       
+        if(this.currToken.type.equals(Token.TT_NEWLINE)){
+            this.advance();
+            ASTNode body = this.statements();
+
+            if(!this.currToken.matches(Token.TT_KEYWORD,"end")){
+                throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd,"Expected end");
+            }
+            this.advance();
+
+            return new WhileNode(condition, body, true);
+           
+        }
+        
+
+        
+        ASTNode body = this.expression();
+        
+    
+        return (new WhileNode(condition,body,false));
         
     }
 
@@ -237,7 +266,6 @@ public class Parser {
             }
             return new CallNode(atom,argNodes);
         }
-        
         return atom;
     }
 
@@ -331,7 +359,7 @@ public class Parser {
         ParseResult res = new ParseResult();
         if(this.currToken.matches(Token.TT_KEYWORD, "var")){
             res.register(this.advance());
-
+            
             if(!this.currToken.type.equals(Token.TT_IDENTIFIER)){
                 throw new IllegalCharError("Expected identifier");
             }
@@ -540,4 +568,30 @@ public class Parser {
 
         return new ListNode(statements);
     }
+    /** 
+    public ASTNode statement(){
+        Position posStart = this.currToken.positionStart.copy();
+        if(this.currToken.matches(Token.TT_KEYWORD, "return")){
+            this.advance();
+            // add try register
+            ASTNode expr = this.expression();
+
+            
+        }
+
+        if(this.currToken.matches(Token.TT_KEYWORD, "continue")){
+            this.advance();
+            return new ContinueNode(posStart, this.currToken.positionStart.copy());
+        }
+
+        if(this.currToken.matches(Token.TT_KEYWORD, "break")){
+            return new BreakNode(posStart, this.currToken.positionStart.copy());
+        }
+
+        ASTNode expr = this.expression();
+
+
+        return expr;
+    }
+    **/
 }
