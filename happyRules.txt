@@ -1,4 +1,9 @@
-statements: NEWLINE* expr (NEWLINE+ expr)* NEWLINE+   + means one or more new lines
+statements: NEWLINE* statement (NEWLINE+ statement)* NEWLINE+   + means one or more new lines
+
+statement : KEYWORD: return expr?
+          : KEYWORD: continue
+          : KEYWORD: break
+          : expr
 
 expr : KEYWORD:VAR IDENTIFIER EQ expr
      : comp-expr *(AND | OR) comp-expr)*
