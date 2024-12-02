@@ -1,7 +1,7 @@
 package Operators;
 import Position.*;
 
-public class BreakNode {
+public class BreakNode extends ASTNode{
     public Position posStart;
     public Position posEnd;
 

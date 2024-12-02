@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 import Token.*;
 import Lexer.*;
 import Parser.*;
-import Operators.*;
+//import Operators.*;
 //import Interpreter.*;
 import Values.Number;
 import SymbolTable.*;
@@ -53,8 +53,7 @@ public class HappyMain {
                 }else {
                     System.out.println(result);
                 }
-                 
-             
+                   
 
             }    
     }
@@ -67,14 +66,15 @@ public class HappyMain {
         
         // Generate AST
         Parser parser = new Parser(tokens);
-        ASTNode ast = parser.parse();
+        ParseResult ast = parser.parse();
+        if(ast.error != null) return null;
 
         // Run Program
         Interpreter interpreter = new Interpreter();
 
-        Value res = interpreter.visit(ast, context).value;
+        Value res = interpreter.visit(ast.node, context).value;
         //globalSymbolTable.symbols = context.symbolTableObject.symbols;
-        
+
 
         return res;
     }

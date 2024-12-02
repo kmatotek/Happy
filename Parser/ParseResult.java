@@ -1,10 +1,12 @@
 package Parser;
 import Operators.*;
-import Token.*;
+import DataStructures.*;
+
 
 public class ParseResult {
     public Error error;
     public ASTNode node;
+    public ElseCase elseCase;
     public int lastRegisteredAdvanceCount = 0;
     public int advanceCount = 0;
     public int toReverseCount = 0;
@@ -23,24 +25,23 @@ public class ParseResult {
         return parseResult.node;
     }
 
-    public ASTNode register(ASTNode node){ // Takes in Node 
-        return node;
-    }
-
-    public Token<?> register(Token<?> token){ // Takes in Node 
-        return token;
-    }
-
-    public ASTNode success(ASTNode node){
+    public ParseResult success(ASTNode node){
         this.node = node;
-        return this.node;
+        return this;
     }
+
 
     public void failure(Error error){
         this.error = error;
     }
 
     public ASTNode tryRegister(ParseResult res){
+        if(res.error != null) this.toReverseCount = res.advanceCount;
         return this.register(res);
+    }
+
+    public void registerAdvancement(){
+        this.lastRegisteredAdvanceCount = 1;
+        this.advanceCount += 1;
     }
 }

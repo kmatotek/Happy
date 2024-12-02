@@ -9,12 +9,15 @@ public class FuncDefNode extends ASTNode {
     public ASTNode bodyNode;
     public Position posStart;
     public Position posEnd;
+    public boolean shouldAutoReturn;
+
 
     
-    public FuncDefNode(Token<?> varNameTok, ArrayList<Token<?>> argNameTokens, ASTNode bodyNode){
+    public FuncDefNode(Token<?> varNameTok, ArrayList<Token<?>> argNameTokens, ASTNode bodyNode, boolean autoRet){
         this.varNameTok = varNameTok;
         this.argNameTokens = argNameTokens;
         this.bodyNode = bodyNode;
+        this.shouldAutoReturn = autoRet;
 
         if(argNameTokens.size() > 0) this.posStart = argNameTokens.get(0).positionStart;
         else this.posStart = bodyNode.positionStart;

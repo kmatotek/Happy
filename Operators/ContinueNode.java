@@ -1,7 +1,7 @@
 package Operators;
 import Position.*;
 
-public class ContinueNode {
+public class ContinueNode extends ASTNode{
     public Position posStart;
     public Position posEnd;
 

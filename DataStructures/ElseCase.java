@@ -1,7 +1,7 @@
 package DataStructures;
 import Operators.*;
 
-public class ElseCase{
+public class ElseCase extends ASTNode{
     public ASTNode elseCase;
     public boolean shouldReturnNull;
 
