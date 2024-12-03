@@ -3,6 +3,9 @@
 Current bugs
 - For loops
 - Functions
+- cant do 3>5 getting EOF
+- same with 3>=5
+- and with 3<5
 
 ## Introduction
 This programming language supports variable assignments, conditional expressions, loops, function definitions, list operations, and string formatting. It aims to provide a clean and concise syntax for common programming constructs while supporting features such as function calls, list manipulation, and control flow.

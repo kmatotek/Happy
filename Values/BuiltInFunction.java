@@ -5,6 +5,7 @@ import Errors.InvalidSyntaxError;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import Parser.*;
 
 public class BuiltInFunction extends BaseFunction {
     public String name;
@@ -14,9 +15,9 @@ public class BuiltInFunction extends BaseFunction {
         this.name = name;  // Store the function name
     }
 
-    public Value execute(ArrayList<Value> args, Context context) {
+    public RTResult execute(ArrayList<Value> args, Context context) {
          // Generate a new execution context
-
+        RTResult res = new RTResult();
         try {
             // Retrieve the method by name; assuming it takes an ArrayList<Value>
             
@@ -26,18 +27,19 @@ public class BuiltInFunction extends BaseFunction {
             
             // Check and populate arguments in the new context
             ArrayList<String> argNames = getArgumentNames(method); // Get the expected argument names
-            this.checkAndPopulateArgs(argNames, args, context); // Check and populate arguments
+            res.register(this.checkAndPopulateArgs(argNames, args, context)); // Check and populate arguments
+            if(res.shouldReturn()) return res;
 
             // Invoke the method with populated args
             
-            return (Value) method.invoke(this, context);
+            return res.success((Value) method.invoke(this, context));
              // Pass the context as the argument
         } catch (NoSuchMethodException e) {
             noVisitMethod(); // Handle method not found
         } catch (Exception e) {
             e.printStackTrace(); // Handle any other exceptions
         }
-        return new Number(0);
+        return res.success(new Number(0));
     }
 
     // Method to retrieve argument names; in Java, you may need to define these manually

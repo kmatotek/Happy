@@ -5,8 +5,8 @@ import Position.*;
 
 public class VarAccessNode extends ASTNode {
     public Token<?> varNameToken;
-    Position positionStart;
-    Position positionEnd;
+    public Position positionStart;
+    public Position positionEnd;
 
     public VarAccessNode(Token<?> varNameToken){
         this.varNameToken = varNameToken;

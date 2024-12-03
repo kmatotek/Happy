@@ -2,6 +2,7 @@ package Values;
 
 import Context.*;
 import Errors.InvalidSyntaxError;
+import Parser.RTResult;
 import SymbolTable.SymbolTable;
 import java.util.ArrayList;
 
@@ -18,10 +19,13 @@ public class BaseFunction extends Value {
         return newContext;
     }
 
-    public void checkArgs(ArrayList<String> argNames, ArrayList<Value> args){
+    public RTResult checkArgs(ArrayList<String> argNames, ArrayList<Value> args){
+        RTResult res = new RTResult();
+
         if(argNames.size() != args.size()){
             throw new InvalidSyntaxError(positionStart, positionEnd, "Illegal amount of arguments");
         }
+        return res.success(null);
     }
 
     public void populateArgs(ArrayList<String> argNames, ArrayList<Value> args, Context context){
@@ -32,8 +36,11 @@ public class BaseFunction extends Value {
         }
     }
 
-    public void checkAndPopulateArgs(ArrayList<String> argNames, ArrayList<Value> args, Context context){
-        checkArgs(argNames, args);
-        populateArgs(argNames, args, context);
+    public RTResult checkAndPopulateArgs(ArrayList<String> argNames, ArrayList<Value> args, Context context){
+        RTResult res = new RTResult();
+        res.register(this.checkArgs(argNames, args));
+        if(res.shouldReturn()) return res;
+        this.populateArgs(argNames, args, context);
+        return res.success(null);
     }
 }

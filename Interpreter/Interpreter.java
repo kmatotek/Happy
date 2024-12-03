@@ -6,6 +6,7 @@ import Token.*;
 import Context.*;
 import DataStructures.*;
 import Errors.InvalidSyntaxError;
+import Parser.*;
 
 import java.util.ArrayList;
 import Values.*;
@@ -14,33 +15,32 @@ import Values.*;
 public class Interpreter {
     public Context Context = new Context("Program");
     
-    public valueContext visit(ASTNode node, Context context){
+    public RTResult visit(ASTNode node, Context context){
+        RTResult res = new RTResult();
         if(node instanceof NumberNode){
-            return new valueContext(visitNumberNode((NumberNode)node, context).value, context);      
+            return res.success(new ValueContext(visitNumberNode((NumberNode)node, context).value, context).value);      
         } else if(node instanceof StringNode){ 
-            
-            return new valueContext(visitStringNode((StringNode) node, context).value, context);
+            return res.success(new ValueContext(visitStringNode((StringNode) node, context).value, context).value);
         } else if(node instanceof BinOpNode){
-            
-            return new valueContext(visitBinaryOpNode((BinOpNode)node, context).value, context);
+            return res.success(new ValueContext(visitBinaryOpNode((BinOpNode)node, context).value, context).value);
         } if(node instanceof UnaryOpNode){
-            return new valueContext(visitUnaryOpNode((UnaryOpNode) node, context).value, context);
+            return res.success(new ValueContext(visitUnaryOpNode((UnaryOpNode) node, context).value, context).value);
         } else if(node instanceof VarAccessNode){
-            return new valueContext(visitVarAccessNode((VarAccessNode) node, context).value, context);
+            return res.success(new ValueContext(visitVarAccessNode((VarAccessNode) node, context).value, context).value);
         } else if(node instanceof VarAssignNode){
-            return new valueContext(visitVarAssignedNode((VarAssignNode) node, context).value, context);
+            return res.success(new ValueContext(visitVarAssignedNode((VarAssignNode) node, context).value, context).value);
         } else if(node instanceof IfNode){
-            return new valueContext(visitIfNode((IfNode) node, context).value, context);
+            return res.success(new ValueContext(visitIfNode((IfNode) node, context).value, context).value);
         } else if(node instanceof ForNode){
-            return new valueContext(visitForNode((ForNode) node, context).value, context);
+            return res.success(new ValueContext(visitForNode((ForNode) node, context).value, context).value);
         } else if(node instanceof WhileNode){
-            return new valueContext(visitWhileNode((WhileNode) node, context).value, context);
+            return res.success(new ValueContext(visitWhileNode((WhileNode) node, context).value, context).value);
         } else if(node instanceof CallNode){
-            return new valueContext(visitCallNode((CallNode) node, context).value, context);
+            return res.success(new ValueContext(visitCallNode((CallNode) node, context).value, context).value);
         } else if(node instanceof FuncDefNode){
-            return new valueContext(visitFuncDefNode((FuncDefNode) node, context).value, context);
+            return res.success(new ValueContext(visitFuncDefNode((FuncDefNode) node, context).value, context).value);
         } else if(node instanceof ListNode){
-            return new valueContext(visitListNode((ListNode) node, context).value, context);
+            return res.success(new ValueContext(visitListNode((ListNode) node, context).value, context).value);
         }
         else {
             System.out.println("no instance found");
@@ -48,54 +48,60 @@ public class Interpreter {
         }
     }
 
-    public valueContext visitNumberNode(NumberNode node, Context context){
-        Number res = new Number(node.token.value);
-        res.setPosition(node.positionStart,node.positionEnd);
-        return new valueContext(res, context);
+    public void noVisitMethod(ASTNode node, Context context){
+        throw new IllegalArgumentException("no visit method");
     }
 
-    public valueContext visitBinaryOpNode(BinOpNode node, Context context){
-        //System.out.println("Visit binOp Node!");
-        Value value1 = this.visit(node.leftNode, context).value;
-        Value value2 = this.visit(node.rightNode, context).value;
+    public ValueContext visitNumberNode(NumberNode node, Context context){
+        Number num = new Number(node.token.value);
+        num.setPosition(node.positionStart,node.positionEnd);
+        return new ValueContext(num,context);
+    }
+
+    public RTResult visitBinaryOpNode(BinOpNode node, Context context){
+        RTResult res = new RTResult();
+        Value value1 = res.register(this.visit(node.leftNode, context));
+        if(res.shouldReturn()) return res;
+        Value value2 = res.register(this.visit(node.rightNode, context));
+        if(res.shouldReturn()) return res;
         
         if(value1 instanceof MyString && value2 instanceof MyString){
             
             MyString left = (MyString) value1;
             MyString right = (MyString) value2;
-            MyString res = null;
+            MyString ans = null;
             if(node.token.type.equals(Token.TT_PLUS)){
-                res = left.addedTo(right);
+                ans = left.addedTo(right);
             } else {
                 throw new InvalidSyntaxError(node.positionStart, node.positionEnd, "Invalid operator on Strings");
             }
-            return new valueContext(res,context);
+            return res.success(ans);
         } else if (value1 instanceof MyString && value2 instanceof Number){
             
             MyString left = (MyString) value1;
             Number right = (Number) value2;
-            MyString res = null;
+            MyString ans = null;
             if(node.token.type.equals(Token.TT_MUL)){
                 int goTo = Number.toInt(right.value);
                 StringBuilder sb = new StringBuilder();
                 for(int i = 0; i < goTo; i++){
                     sb.append(left);
                 }
-                res = new MyString(sb.toString());
+                ans = new MyString(sb.toString());
             } else if (node.token.type.equals(Token.TT_EXCLM)){
                 int index = Number.toInt(right.value);
-                res = new MyString(String.valueOf(left.s.charAt(index)));
+                ans = new MyString(String.valueOf(left.s.charAt(index)));
             } else {
                 throw new InvalidSyntaxError(node.positionStart, node.positionEnd, "Invalid operator on Strings");
             }
-            return new valueContext(res,context);
+            return res.success(ans);
         } else if (value1 instanceof MyList && value2 instanceof Number){
             MyList left = (MyList) value1;
             Number right = (Number) value2;
             if(node.token.type.equals(Token.TT_PLUS)){  
-                MyList res = left.copy();
-                res.elements.add(right);
-                return new valueContext(res, context);
+                MyList ans = left.copy();
+                ans.elements.add(right);
+                return res.success(ans);
 
             } else if(node.token.type.equals(Token.TT_EXCLM)){
                 
@@ -103,9 +109,8 @@ public class Interpreter {
                 if(get < 0 || get > left.elements.size()){
                     throw new InvalidSyntaxError(node.positionStart,node.positionEnd, "Index " + get + " out of bounds");
                 }
-                Number res = new Number(left.elements.get(get));
-                return new valueContext(res,context);
-               
+                Number ans = new Number(left.elements.get(get));
+                return res.success(ans);
             }
 
 
@@ -114,13 +119,13 @@ public class Interpreter {
             if(node.token.type.equals(Token.TT_PLUS)){
                 MyList left = (MyList) value1;
                 MyList right = (MyList) value2;
-                MyList res = left.copy();
+                MyList ans = left.copy();
 
                 for(Value v : right.elements){
-                    res.elements.add(v);
+                    ans.elements.add(v);
                 }
             
-                return new valueContext(res, context);
+                return res.success(ans);
             } 
         }
 
@@ -165,12 +170,14 @@ public class Interpreter {
             throw new IllegalArgumentException("not good bro");
         }
         result.setPosition(node.positionStart, node.positionEnd);
-        return new valueContext(result, context);
+        return res.success(result);
     }
 
-    public valueContext visitUnaryOpNode(UnaryOpNode node, Context context){
-        //System.out.println("Visit UnOp Node!");
-        Number num = (Number) this.visit(node.node, context).value;
+    public RTResult visitUnaryOpNode(UnaryOpNode node, Context context){
+        RTResult res = new RTResult();
+
+        Number num = ((Number) res.register(this.visit(node.node, context)));
+        if(res.shouldReturn()) return res;
         
 
         if(node.opToken.type.equals(Token.TT_MINUS)){
@@ -179,77 +186,86 @@ public class Interpreter {
             num = num.notted();
         }
         num.setPosition(node.positionStart, node.positionEnd);
-        return new valueContext(num, context);
+        return res.success(num);
     }
 
-    public valueContext visitVarAccessNode(VarAccessNode node, Context context){
-        //ParseResult res = new ParseResult();
-        //System.out.println("Visit var access!");
+    public RTResult visitVarAccessNode(VarAccessNode node, Context context){
+        RTResult res = new RTResult();
         Object varName = node.varNameToken.value;
         Value value = context.symbolTableObject.symbols.get(varName);
 
-        //if(value == null) System.out.println(HappyMain.globalSymbolTable.symbols.get();
         if(value == null) throw new IllegalArgumentException("Variable " + varName + " is not defined");
-        //System.out.println(value);
-        return new valueContext(value, context);
+        
+        value.setPosition(node.positionStart, node.positionEnd);
+        value.setContext(context);
+
+        return res.success(value);
     }
 
-    public valueContext visitVarAssignedNode(VarAssignNode node, Context context){
-        //ParseResult res = new ParseResult();
+    public RTResult visitVarAssignedNode(VarAssignNode node, Context context){
+        RTResult res = new RTResult();
         Object varName = node.varNameToken.value;
         Value value = this.visit(node.valueNode, context).value;
+        if(res.shouldReturn()) return res;
         if(value == null) throw new IllegalArgumentException("Variable " + varName + " is not defined");
-    
+        
+
         context.symbolTableObject.set(varName.toString(), value);
         
-        return new valueContext(value, context);
+        return res.success(value);
     }
 
-    public valueContext visitIfNode(IfNode node, Context context){
-        //ParseResult res = new ParseResult();
-        //for(List<ASTNode> list : node.cases){
+    public RTResult visitIfNode(IfNode node, Context context){
+        RTResult res = new RTResult();
+
         boolean shouldReturnNull = node.elseCase.shouldReturnNull;
         for(int i = 0; i < node.cases.size(); i++){
         
             ASTNode condition = node.cases.get(i).condition;
             ASTNode expr = node.cases.get(i).expression;
+            Number conditionValue = (Number) res.register(this.visit(condition,context));
+            if(res.shouldReturn()) return res;
+
 
             
-            Number conditionValue = (Number) this.visit(condition,context).value;
             if(Number.toInt(conditionValue.value) != 0){
-                Value exprValue = this.visit(expr,context).value;
+                Value exprValue = res.register(this.visit(expr,context));
+                if(res.shouldReturn()) return res;
                 if(shouldReturnNull){
-                    return new valueContext(null,context);
+                    return res.success(null);
                 } else {
-                return new valueContext(exprValue, context);
+                return res.success(exprValue);
                 }
             } 
         }
         if(node.elseCase != null){
             ASTNode expr = node.elseCase.elseCase;
-            Value elseValue = this.visit(expr,context).value;
+            Value elseValue = res.register(this.visit(expr,context));
+            if(res.shouldReturn()) return res;
             if(shouldReturnNull){
-                return new valueContext(null, context);
+                return res.success(null);
             } else {
-                return new valueContext(elseValue, context);
+                return res.success(elseValue);
             }
         }
-        return new valueContext(null,context);
+        return res.success(null);
     }
 
-    public valueContext visitForNode(ForNode node, Context context){
-        //ParseResult res = new ParseResult();
+    public RTResult visitForNode(ForNode node, Context context){
+        RTResult res = new RTResult();
         ArrayList<Value> elements = new ArrayList<>();
         
         
-        Number startValue = (Number) this.visit(node.startValueNode, context).value;
-        Number endValue = (Number) this.visit(node.endValueNode, context).value;
+        Number startValue = (Number) res.register(this.visit(node.startValueNode, context));
+        if(res.shouldReturn()) return res;
+        Number endValue = (Number) res.register(this.visit(node.endValueNode, context));
+        if(res.shouldReturn()) return res;
         Number stepValue = null;
         
         
 
         if(node.stepValueNode != null){
-            stepValue = (Number) this.visit(node.stepValueNode,context).value;
+            stepValue = (Number) res.register(this.visit(node.stepValueNode,context));
         } else {
             stepValue = new Number(1);
         }
@@ -261,50 +277,67 @@ public class Interpreter {
         if(step >= 0){
             while(i < Number.toInt(endValue.value)){
                 context.symbolTableObject.set(node.varNameToken.value.toString(), new Number(i));
-                //System.out.println(context.symbolTableObject.toString());
+                
                 i += step;
-                //System.out.println(i);
-                elements.add(this.visit(node.bodyNode, context).value);
+                Value value = res.register(this.visit(node.bodyNode, context));
+                if(res.shouldReturn() && !res.loopShouldContinue && !res.loopShouldBreak) return res;
+
+                if(res.loopShouldContinue) continue;
+                if(res.loopShouldBreak) break;
+                elements.add(value);
             }
         } else {
             while(i > Number.toInt(endValue.value)){
-                
-                //System.out.println(context.symbolTableObject.toString());
                 context.symbolTableObject.set(node.varNameToken.value.toString(), new Number(i));
                 i += step;
-                //System.out.println(i);
-                elements.add(this.visit(node.bodyNode, context).value);
+                
+                Value value = res.register(this.visit(node.bodyNode, context));
+                if(res.shouldReturn() && !res.loopShouldContinue && !res.loopShouldBreak) return res;
+
+                if(res.loopShouldContinue) continue;
+                if(res.loopShouldBreak) break;
+                elements.add(value);
             }
         }
         
-        MyList res = new MyList(elements);
-        res.setContext(context);
-        res.setPosition(node.posStart,node.posEnd);
+        if(node.shouldReturnNull) return res.success(null);
+        MyList list = new MyList(elements);
+        list.setContext(context);
+        list.setPosition(node.posStart,node.posEnd);
         
-        return new valueContext(res,context);
+        return res.success(list);
     }
 
-    public valueContext visitWhileNode(WhileNode node, Context context){
+    public RTResult visitWhileNode(WhileNode node, Context context){
+        RTResult res = new RTResult();
         ArrayList<Value> elements = new ArrayList<>();
 
         while(true){
-            Number condition = (Number) this.visit(node.conditionNode, context).value;
+            Number condition = (Number) res.register(this.visit(node.conditionNode, context));
+            if(res.shouldReturn()) return res;
+
             if(Number.toInt(condition.value) == 0){
-                
                 break;
             }
+
+            Value value = res.register(this.visit(node.bodyNode, context));
+            if(res.shouldReturn()) return res;
             
-            elements.add(this.visit(node.bodyNode, context).value);
+            if(res.loopShouldContinue) continue;
+            if(res.loopShouldBreak) break;
+
+            elements.add(value);
         }
         
-        MyList res = new MyList(elements);
-        res.setContext(context);
-        res.setPosition(node.posStart, node.posEnd);
-        return new valueContext(res,context);
+        if(node.shouldReturnNull) return res.success(null);
+        MyList list = new MyList(elements);
+        list.setContext(context);
+        list.setPosition(node.posStart, node.posEnd);
+        return res.success(list);
     }
 
-    public valueContext visitFuncDefNode(FuncDefNode node, Context context){
-        //System.out.println("Func def Node");
+    public RTResult visitFuncDefNode(FuncDefNode node, Context context){
+        RTResult res = new RTResult();
         String funcName = node.varNameTok.value.toString();
         ASTNode bodyNode = node.bodyNode;
         ArrayList<String> argNames = new ArrayList<>();
@@ -312,61 +345,85 @@ public class Interpreter {
         for(Token<?> argName : node.argNameTokens){
             argNames.add(argName.value.toString());
         }
-        Function funcValue = new Function(funcName, bodyNode, argNames);
-    
-        //System.out.println(argNames.toString());
+
+        Function funcValue = new Function(funcName, bodyNode, argNames, node.shouldAutoReturn);
+
         context.symbolTableObject.set(funcName,funcValue);
-        System.out.println(context.symbolTableObject.symbols.toString());
         
-        return new valueContext(funcValue, context);
+        return res.success(funcValue);
     }
 
-    public valueContext visitCallNode(CallNode node, Context context){
-        //System.out.println("Call Node");
+    public RTResult visitCallNode(CallNode node, Context context){
+        RTResult res = new RTResult();
+
         ArrayList<Value> args = new ArrayList<>();
-        if (this.visit(node.nodeToCall,context).value instanceof BuiltInFunction){
-            BuiltInFunction valueToCall = (BuiltInFunction) this.visit(node.nodeToCall,context).value;
-            //System.out.println(valueToCall.name);
+        Value valueToCall = res.register(this.visit(node.nodeToCall, context));
+        if(res.shouldReturn()) return res;
+
+        if (valueToCall instanceof BuiltInFunction){
+            BuiltInFunction valueToCallB = (BuiltInFunction) valueToCall;
             
             for(ASTNode argNode : node.argNodes){
-                args.add(this.visit(argNode,context).value);
+                args.add(res.register(this.visit(argNode,context)));
+                if(res.shouldReturn()) return res;
             }
         
-            Value returnValue = valueToCall.execute(args,context);
+            Value returnValue = res.register(valueToCallB.execute(args,context));
             
-            return new valueContext(returnValue,context);
+            return res.success(returnValue);
         } else {
-            Function valueToCall = (Function) this.visit(node.nodeToCall,context).value;
+            Function valueToCallB = (Function) valueToCall;
             
             for(ASTNode argNode : node.argNodes){
-                args.add(this.visit(argNode,context).value);
+                args.add(res.register(this.visit(argNode,context)));
             }
         
-            Value returnValue = valueToCall.execute(args,context).value;
-            return new valueContext(returnValue,context);
+            Value returnValue = res.register(valueToCallB.execute(args,context));
+            return res.success(returnValue);
         }
     }
 
-    public valueContext visitStringNode(StringNode node, Context context){
+    public ValueContext visitStringNode(StringNode node, Context context){
         
         MyString str = new MyString(node.token.value.toString());
         str.setContext(context);
         str.setPosition(node.positionStart,node.positionEnd);
-        return new valueContext(str,context);
+        return new ValueContext(str,context);
     }
 
-    public valueContext visitListNode(ListNode node, Context context){
+    public RTResult visitListNode(ListNode node, Context context){
+        RTResult res = new RTResult();
         ArrayList<Value> elements = new ArrayList<>();
 
         for(ASTNode n : node.elementNodes){
             elements.add(this.visit(n, context).value);
+            if(res.shouldReturn()) return res;
         }
 
-        MyList res = new MyList(elements);
+        MyList list = new MyList(elements);
         res.setContext(context);
         res.setPosition(node.posStart,node.posEnd);
 
-        return new valueContext(res, context);
+        return res.success(new ValueContext(list, context).value);
     }
 
+    public RTResult visitReturnNode(ReturnNode node, Context context){
+        RTResult res = new RTResult();
+        Value value = null;
+
+        if(node.nodeToReturn != null){
+            value = res.register(this.visit(node.nodeToReturn,context));
+            if(res.shouldReturn()) return res;
+        }
+        return res.successReturn(value);
+    }
+
+    public RTResult visitContinueNode(ContinueNode node, Context context){
+        RTResult res = new RTResult();
+        return res.successContinue();
+    }
+    public RTResult visitBreakNode(BreakNode node, Context context){
+        RTResult res = new RTResult();
+        return res.successBreak();
+    }
 }
