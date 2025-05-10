@@ -27,5 +27,52 @@ public class Context {
         this.parent = parent;
         
     }
-    
+
+    public Context getParent() {
+        return parent;
+    }
+
+    public void setParent(Context parent) {
+        this.parent = parent;
+    }
+
+    public SymbolTable getSymbolTableObject() {
+        return symbolTableObject;
+    }
+
+    public void setSymbolTableObject(SymbolTable symbolTableObject) {
+        this.symbolTableObject = symbolTableObject;
+    }
+
+    public int getParentEntryPos() {
+        return parentEntryPos;
+    }
+
+    public void setParentEntryPos(int parentEntryPos) {
+        this.parentEntryPos = parentEntryPos;
+    }
+
+    public HashMap<String, Number> getSymbolTable() {
+        return symbolTable;
+    }
+
+    public void setSymbolTable(HashMap<String, Number> symbolTable) {
+        this.symbolTable = symbolTable;
+    }
+
+    public HashMap<String, Number> getParentSymbols() {
+        return parentSymbols;
+    }
+
+    public void setParentSymbols(HashMap<String, Number> parentSymbols) {
+        this.parentSymbols = parentSymbols;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 }

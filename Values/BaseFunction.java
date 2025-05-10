@@ -15,7 +15,7 @@ public class BaseFunction extends Value {
 
     public Context generateNewContext(){
         Context newContext = new Context(this.name, this.context);
-        newContext.symbolTableObject = new SymbolTable(newContext.parent.symbolTableObject);
+        newContext.setSymbolTableObject(new SymbolTable(newContext.getParent().getSymbolTableObject()));
         return newContext;
     }
 
