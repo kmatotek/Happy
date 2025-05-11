@@ -32,7 +32,7 @@ public class BaseFunction extends Value {
         for(int i = 0; i < args.size(); i++){
             String argName = argNames.get(i);
             Value argValue = args.get(i);
-            context.symbolTableObject.set(argName,argValue);
+            context.getSymbolTableObject().set(argName,argValue);
         }
     }
 

@@ -24,15 +24,15 @@ public class HappyMain {
             // Infinite loop to read code from terminal1
             Context context = new Context("Program");
             //SymbolTable globalSymbolTable = new SymbolTable();
-            context.symbolTableObject.set("null",new Number(0));
-            context.symbolTableObject.set("true",new Number(1));
-            context.symbolTableObject.set("false",new Number(0));
-            context.symbolTableObject.set("pi",new Number(Math.PI));
-            context.symbolTableObject.set("hapy",new MyString(":)"));
+            context.getSymbolTableObject().set("null",new Number(0));
+            context.getSymbolTableObject().set("true",new Number(1));
+            context.getSymbolTableObject().set("false",new Number(0));
+            context.getSymbolTableObject().set("pi",new Number(Math.PI));
+            context.getSymbolTableObject().set("hapy",new MyString(":)"));
 
-            context.symbolTableObject.set("print",new BuiltInFunction("print"));
-            context.symbolTableObject.set("fac", new BuiltInFunction("factorial"));
-            context.symbolTableObject.set("length", new BuiltInFunction("length"));
+            context.getSymbolTableObject().set("print",new BuiltInFunction("print"));
+            context.getSymbolTableObject().set("fac", new BuiltInFunction("factorial"));
+            context.getSymbolTableObject().set("length", new BuiltInFunction("length"));
             
             
             while(true){
@@ -53,8 +53,6 @@ public class HappyMain {
                 }else {
                     System.out.println(result);
                 }
-                   
-
             }    
     }
 

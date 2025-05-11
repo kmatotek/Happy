@@ -192,7 +192,7 @@ public class Interpreter {
     public RTResult visitVarAccessNode(VarAccessNode node, Context context){
         RTResult res = new RTResult();
         Object varName = node.varNameToken.value;
-        Value value = context.symbolTableObject.symbols.get(varName);
+        Value value = context.getSymbolTableObject().symbols.get(varName);
 
         if(value == null) throw new IllegalArgumentException("Variable " + varName + " is not defined");
         
@@ -210,7 +210,7 @@ public class Interpreter {
         if(value == null) throw new IllegalArgumentException("Variable " + varName + " is not defined");
         
 
-        context.symbolTableObject.set(varName.toString(), value);
+        context.getSymbolTableObject().set(varName.toString(), value);
         
         return res.success(value);
     }
@@ -276,7 +276,7 @@ public class Interpreter {
         
         if(step >= 0){
             while(i < Number.toInt(endValue.value)){
-                context.symbolTableObject.set(node.varNameToken.value.toString(), new Number(i));
+                context.getSymbolTableObject().set(node.varNameToken.value.toString(), new Number(i));
                 
                 i += step;
                 Value value = res.register(this.visit(node.bodyNode, context));
@@ -288,7 +288,7 @@ public class Interpreter {
             }
         } else {
             while(i > Number.toInt(endValue.value)){
-                context.symbolTableObject.set(node.varNameToken.value.toString(), new Number(i));
+                context.getSymbolTableObject().set(node.varNameToken.value.toString(), new Number(i));
                 i += step;
                 
                 Value value = res.register(this.visit(node.bodyNode, context));
@@ -348,7 +348,7 @@ public class Interpreter {
 
         Function funcValue = new Function(funcName, bodyNode, argNames, node.shouldAutoReturn);
 
-        context.symbolTableObject.set(funcName,funcValue);
+        context.getSymbolTableObject().set(funcName,funcValue);
         
         return res.success(funcValue);
     }

@@ -60,12 +60,12 @@ public class BuiltInFunction extends BaseFunction {
     }
 
     public Value print(Context context) {
-        Value v = context.symbolTableObject.get("value");
+        Value v = context.getSymbolTableObject().get("value");
         return v;
     }
 
     public Value factorial(Context context) {
-        Number num = (Number) context.symbolTableObject.get("value");
+        Number num = (Number) context.getSymbolTableObject().get("value");
         int res = 1;
         for(int i = 1; i <= Number.toInt(num.value); i++){
             res = res * i;
@@ -74,7 +74,7 @@ public class BuiltInFunction extends BaseFunction {
     }
 
     public Value length(Context context){
-        Value v = context.symbolTableObject.get("value");
+        Value v = context.getSymbolTableObject().get("value");
         if (v instanceof MyString){
             MyString s = (MyString) v;
             return new Number(s.s.length());
