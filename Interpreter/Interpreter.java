@@ -218,11 +218,11 @@ public class Interpreter {
     public RTResult visitIfNode(IfNode node, Context context){
         RTResult res = new RTResult();
 
-        boolean shouldReturnNull = node.elseCase.shouldReturnNull;
+        boolean shouldReturnNull = node.elseCase.isShouldReturnNull();
         for(int i = 0; i < node.cases.size(); i++){
         
-            ASTNode condition = node.cases.get(i).condition;
-            ASTNode expr = node.cases.get(i).expression;
+            ASTNode condition = node.cases.get(i).getCondition();
+            ASTNode expr = node.cases.get(i).getExpression();
             Number conditionValue = (Number) res.register(this.visit(condition,context));
             if(res.shouldReturn()) return res;
 
@@ -239,7 +239,7 @@ public class Interpreter {
             } 
         }
         if(node.elseCase != null){
-            ASTNode expr = node.elseCase.elseCase;
+            ASTNode expr = node.elseCase.getElseCase();
             Value elseValue = res.register(this.visit(expr,context));
             if(res.shouldReturn()) return res;
             if(shouldReturnNull){

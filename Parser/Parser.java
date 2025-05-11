@@ -316,7 +316,7 @@ public class Parser {
         IfCases allCases = (IfCases) res.register(this.ifExpressionCases("if"));
         if(res.error != null) return res;
 
-        return res.success(new IfNode(allCases.cases,allCases.elseCase));
+        return res.success(new IfNode(allCases.getCases(),allCases.getElseCase()));
     }
 
     public ParseResult ifExpressionCases(String keyword){    
@@ -357,8 +357,8 @@ public class Parser {
                 
                 IfCases allCases = (IfCases) res.register(this.ifExprBorC());
                 if(res.error != null) return res;
-                List<Case> newCases = allCases.cases;
-                elseCase = allCases.elseCase;
+                List<Case> newCases = allCases.getCases();
+                elseCase = allCases.getElseCase();
                 cases.addAll(newCases);
                 
             }
@@ -369,8 +369,8 @@ public class Parser {
 
             IfCases allCases = (IfCases) res.register(this.ifExprBorC());
             if(res.error != null) return res;
-            List<Case> newCases = allCases.cases;
-            elseCase = allCases.elseCase;
+            List<Case> newCases = allCases.getCases();
+            elseCase = allCases.getElseCase();
            // Printing null System.out.println(elseCase);
             cases.addAll(newCases);
         }     
@@ -419,8 +419,8 @@ public class Parser {
 
         if(this.currToken.matches(Token.TT_KEYWORD, "elif")){
             IfCases allCases = (IfCases) res.register(this.ifExprB());
-            cases = allCases.cases;
-            elseCase = allCases.elseCase;
+            cases = allCases.getCases();
+            elseCase = allCases.getElseCase();
         } else {
             elseCase = (ElseCase) res.register(this.ifExprC());
         }

@@ -16,7 +16,7 @@ public class IfNode extends ASTNode {
         this.elseCase = elseCase;
         posStart = cases.get(0).positionStart;
         if(elseCase != null){
-            this.posEnd = elseCase.elseCase.positionEnd;
+            this.posEnd = elseCase.getElseCase().positionEnd;
         } else {
             this.posEnd = this.cases.get(cases.size()-1).positionEnd;
         }

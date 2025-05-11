@@ -39,7 +39,7 @@ public class HappyMain {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 System.out.print("Happy > ");
                 String input = reader.readLine();
-                if(input.replaceAll(" ","").equals("")) continue;
+                if(input.replaceAll(" ", "").isEmpty()) continue;
                 
                 //System.out.println(context.symbolTableObject);
                 Value result = run(input, globalSymbolTable, context);
