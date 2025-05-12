@@ -1,10 +1,13 @@
 package DataStructures;
 import Operators.*;
+import Position.Position;
 
 public class Case extends ASTNode {
     private ASTNode condition;
     private ASTNode expression;
     private boolean shouldReturnNull;
+    private Position positionStart;
+    private Position positionEnd;
 
     public Case(ASTNode condition, ASTNode expression, boolean shouldReturnNull){
         this.condition = condition;
@@ -34,5 +37,23 @@ public class Case extends ASTNode {
 
     public void setShouldReturnNull(boolean shouldReturnNull) {
         this.shouldReturnNull = shouldReturnNull;
+    }
+
+    @Override
+    public Position getPositionStart() {
+        return positionStart;
+    }
+
+    public void setPositionStart(Position positionStart) {
+        this.positionStart = positionStart;
+    }
+
+    @Override
+    public Position getPositionEnd() {
+        return positionEnd;
+    }
+
+    public void setPositionEnd(Position positionEnd) {
+        this.positionEnd = positionEnd;
     }
 }

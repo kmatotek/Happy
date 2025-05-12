@@ -11,6 +11,7 @@ public class Lexer{
     private String text;
     private Position currPosition;
     private char currChar;
+
     public Lexer(String text){
         this.text = text;
         this.currPosition = new Position(-1, 0, -1, text);

@@ -4,8 +4,11 @@ import Position.*;
 import Token.*;
 
 public abstract class ASTNode {
-    public Position positionStart;
-    public Position positionEnd; 
-    public Token<?> token; 
+    private Position positionStart;
+    private Position positionEnd;
+    private Token<?> token;
+
+    public abstract Position getPositionStart();
+    public abstract Position getPositionEnd();
     
 }

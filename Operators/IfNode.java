@@ -4,21 +4,20 @@ import java.util.List;
 import Position.*;
 import DataStructures.*;
 
-
 public class IfNode extends ASTNode {
-    public List<Case> cases;
-    public ElseCase elseCase;
-    public Position posStart;
-    public Position posEnd;
+    private List<Case> cases;
+    private ElseCase elseCase;
+    private Position positionStart;
+    private Position positionEnd;
 
     public IfNode(List<Case> cases, ElseCase elseCase){
         this.cases = cases;
         this.elseCase = elseCase;
-        posStart = cases.get(0).positionStart;
+        positionStart = cases.get(0).getPositionStart();
         if(elseCase != null){
-            this.posEnd = elseCase.getElseCase().positionEnd;
+            this.positionEnd = elseCase.getElseCase().getPositionEnd();
         } else {
-            this.posEnd = this.cases.get(cases.size()-1).positionEnd;
+            this.positionEnd = this.cases.get(cases.size()-1).getPositionEnd();
         }
     }
 
@@ -29,5 +28,39 @@ public class IfNode extends ASTNode {
             ans += " ";
         }
         return ans;
+    }
+
+    public List<Case> getCases() {
+        return cases;
+    }
+
+    public void setCases(List<Case> cases) {
+        this.cases = cases;
+    }
+
+    public ElseCase getElseCase() {
+        return elseCase;
+    }
+
+    public void setElseCase(ElseCase elseCase) {
+        this.elseCase = elseCase;
+    }
+
+    @Override
+    public Position getPositionStart() {
+        return positionStart;
+    }
+
+    public void setPositionStart(Position positionStart) {
+        this.positionStart = positionStart;
+    }
+
+    @Override
+    public Position getPositionEnd() {
+        return positionEnd;
+    }
+
+    public void setPositionEnd(Position positionEnd) {
+        this.positionEnd = positionEnd;
     }
 }
