@@ -28,7 +28,7 @@ public class HappyMain {
             context.getSymbolTableObject().set("true",new Number(1));
             context.getSymbolTableObject().set("false",new Number(0));
             context.getSymbolTableObject().set("pi",new Number(Math.PI));
-            context.getSymbolTableObject().set("hapy",new MyString(":)"));
+            context.getSymbolTableObject().set("happy",new MyString(":)"));
 
             context.getSymbolTableObject().set("print",new BuiltInFunction("print"));
             context.getSymbolTableObject().set("fac", new BuiltInFunction("factorial"));

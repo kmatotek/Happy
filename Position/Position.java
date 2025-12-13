@@ -1,10 +1,10 @@
 package Position;
 
 public class Position {
-    public int index;
-    public int line;
-    public int col;
-    public String fileName;
+    private int index;
+    private int line;
+    private int col;
+    private String fileName;
     private String fileText;
 
     public Position(int index, int line, int col, String fileName, String fileText){
@@ -20,6 +20,23 @@ public class Position {
         this.line = line;
         this.col = col;
         this.fileText = fileText;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+
+    public int getCol() {
+        return col;
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 
     public void advance(char currChar){

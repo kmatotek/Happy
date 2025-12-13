@@ -21,8 +21,8 @@ public class Lexer{
     // Advance to next character in text
     public void advance(){
         this.currPosition.advance(currChar);
-        if(this.currPosition.index < this.text.length()){
-            this.currChar = this.text.charAt(currPosition.index); 
+        if(this.currPosition.getIndex() < this.text.length()){
+            this.currChar = this.text.charAt(currPosition.getIndex());
         } else {
             this.currChar = '\0';
         }
@@ -94,7 +94,7 @@ public class Lexer{
                 //Position positionStart = this.currPosition.copy();
                     char invalidChar = this.currChar; // Capture the invalid character
                     this.advance(); // Move to the next character
-                    throw new IllegalCharError("Line " + this.currPosition.line + ": Unexpected character: " + invalidChar);
+                    throw new IllegalCharError("Line " + this.currPosition.getLine() + ": Unexpected character: " + invalidChar);
             }
         }
 

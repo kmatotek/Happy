@@ -18,8 +18,8 @@ public class Error extends RuntimeException {
   
     public String asString() {
 
-        return "File: " + this.positionStart.fileName + " Line " + 
-        this.positionStart.line + errorName + ". " + errorDetails + 
+        return "File: " + this.positionStart.getFileName() + " Line " +
+        this.positionStart.getLine() + errorName + ". " + errorDetails +
         " " + stringWithArrows(errorDetails, positionStart, positionEnd);
     }
 
@@ -28,17 +28,17 @@ public class Error extends RuntimeException {
         StringBuilder result = new StringBuilder();
 
         // Calculate indices
-        int idxStart = Math.max(text.lastIndexOf('\n', posStart.index), 0);
+        int idxStart = Math.max(text.lastIndexOf('\n', posStart.getIndex()), 0);
         int idxEnd = text.indexOf('\n', idxStart + 1);
         if (idxEnd < 0) idxEnd = text.length();
 
         // Generate each line
-        int lineCount = posEnd.line - posStart.line + 1;
+        int lineCount = posEnd.getLine() - posStart.getLine() + 1;
         for (int i = 0; i < lineCount; i++) {
             // Calculate line columns
             String line = text.substring(idxStart, idxEnd);
-            int colStart = (i == 0) ? posStart.col : 0;
-            int colEnd = (i == lineCount - 1) ? posEnd.col : line.length();
+            int colStart = (i == 0) ? posStart.getCol() : 0;
+            int colEnd = (i == lineCount - 1) ? posEnd.getCol() : line.length();
 
             // Append to result
             result.append(line).append('\n');
