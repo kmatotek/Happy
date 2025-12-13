@@ -30,25 +30,25 @@ public class Interpreter {
         } else if(node instanceof StringNode){ 
             return res.success(new ValueContext(visitStringNode((StringNode) node, context).getValue(), context).getValue());
         } else if(node instanceof BinOpNode){
-            return res.success(new ValueContext(visitBinaryOpNode((BinOpNode)node, context).value, context).getValue());
+            return res.success(new ValueContext(visitBinaryOpNode((BinOpNode)node, context).getValue(), context).getValue());
         } if(node instanceof UnaryOpNode){
-            return res.success(new ValueContext(visitUnaryOpNode((UnaryOpNode) node, context).value, context).getValue());
+            return res.success(new ValueContext(visitUnaryOpNode((UnaryOpNode) node, context).getValue(), context).getValue());
         } else if(node instanceof VarAccessNode){
-            return res.success(new ValueContext(visitVarAccessNode((VarAccessNode) node, context).value, context).getValue());
+            return res.success(new ValueContext(visitVarAccessNode((VarAccessNode) node, context).getValue(), context).getValue());
         } else if(node instanceof VarAssignNode){
-            return res.success(new ValueContext(visitVarAssignedNode((VarAssignNode) node, context).value, context).getValue());
+            return res.success(new ValueContext(visitVarAssignedNode((VarAssignNode) node, context).getValue(), context).getValue());
         } else if(node instanceof IfNode){
-            return res.success(new ValueContext(visitIfNode((IfNode) node, context).value, context).getValue());
+            return res.success(new ValueContext(visitIfNode((IfNode) node, context).getValue(), context).getValue());
         } else if(node instanceof ForNode){
-            return res.success(new ValueContext(visitForNode((ForNode) node, context).value, context).getValue());
+            return res.success(new ValueContext(visitForNode((ForNode) node, context).getValue(), context).getValue());
         } else if(node instanceof WhileNode){
-            return res.success(new ValueContext(visitWhileNode((WhileNode) node, context).value, context).getValue());
+            return res.success(new ValueContext(visitWhileNode((WhileNode) node, context).getValue(), context).getValue());
         } else if(node instanceof CallNode){
-            return res.success(new ValueContext(visitCallNode((CallNode) node, context).value, context).getValue());
+            return res.success(new ValueContext(visitCallNode((CallNode) node, context).getValue(), context).getValue());
         } else if(node instanceof FuncDefNode){
-            return res.success(new ValueContext(visitFuncDefNode((FuncDefNode) node, context).value, context).getValue());
+            return res.success(new ValueContext(visitFuncDefNode((FuncDefNode) node, context).getValue(), context).getValue());
         } else if(node instanceof ListNode){
-            return res.success(new ValueContext(visitListNode((ListNode) node, context).value, context).getValue());
+            return res.success(new ValueContext(visitListNode((ListNode) node, context).getValue(), context).getValue());
         }
         else {
             System.out.println("no instance found");
@@ -213,7 +213,7 @@ public class Interpreter {
     public RTResult visitVarAssignedNode(VarAssignNode node, Context context){
         RTResult res = new RTResult();
         Object varName = node.getVarNameToken().value;
-        Value value = this.visit(node.getValueNode(), context).value;
+        Value value = this.visit(node.getValueNode(), context).getValue();
         if(res.shouldReturn()) return res;
         if(value == null) throw new IllegalArgumentException("Variable " + varName + " is not defined");
         
@@ -286,10 +286,10 @@ public class Interpreter {
                 
                 i += step;
                 Value value = res.register(this.visit(node.getBodyNode(), context));
-                if(res.shouldReturn() && !res.loopShouldContinue && !res.loopShouldBreak) return res;
+                if(res.shouldReturn() && !res.isLoopShouldContinue() && !res.isLoopShouldBreak()) return res;
 
-                if(res.loopShouldContinue) continue;
-                if(res.loopShouldBreak) break;
+                if(res.isLoopShouldContinue()) continue;
+                if(res.isLoopShouldBreak()) break;
                 elements.add(value);
             }
         } else {
@@ -298,10 +298,10 @@ public class Interpreter {
                 i += step;
                 
                 Value value = res.register(this.visit(node.getBodyNode(), context));
-                if(res.shouldReturn() && !res.loopShouldContinue && !res.loopShouldBreak) return res;
+                if(res.shouldReturn() && !res.isLoopShouldContinue() && !res.isLoopShouldBreak()) return res;
 
-                if(res.loopShouldContinue) continue;
-                if(res.loopShouldBreak) break;
+                if(res.isLoopShouldContinue()) continue;
+                if(res.isLoopShouldBreak()) break;
                 elements.add(value);
             }
         }
@@ -329,8 +329,8 @@ public class Interpreter {
             Value value = res.register(this.visit(node.getBodyNode(), context));
             if(res.shouldReturn()) return res;
             
-            if(res.loopShouldContinue) continue;
-            if(res.loopShouldBreak) break;
+            if(res.isLoopShouldContinue()) continue;
+            if(res.isLoopShouldBreak()) break;
 
             elements.add(value);
         }
@@ -402,7 +402,7 @@ public class Interpreter {
         ArrayList<Value> elements = new ArrayList<>();
 
         for(ASTNode n : node.getElementNodes()){
-            elements.add(this.visit(n, context).value);
+            elements.add(this.visit(n, context).getValue());
             if(res.shouldReturn()) return res;
         }
 

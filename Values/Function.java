@@ -43,15 +43,15 @@ public class Function extends BaseFunction {
         
         
         Value value = res.register(interpreter.visit(this.bodyNode, context));
-        if(res.shouldReturn() && res.funcReturnValue == null) return res;
+        if(res.shouldReturn() && res.getFuncReturnValue() == null) return res;
 
 
         Value retValue = null;
 
         if(this.shouldAutoReturn){
             retValue = value;
-        } else if (res.funcReturnValue != null){
-            retValue = res.funcReturnValue;
+        } else if (res.getFuncReturnValue() != null){
+            retValue = res.getFuncReturnValue();
         }
         return res.success(retValue);
     }

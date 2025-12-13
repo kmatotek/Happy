@@ -64,12 +64,12 @@ public class HappyMain {
         // Generate AST
         Parser parser = new Parser(tokens);
         ParseResult ast = parser.parse();
-        if(ast.error != null) return null;
+        if(ast.getError() != null) return null;
 
         // Run Program
         Interpreter interpreter = new Interpreter();
 
-        Value res = interpreter.visit(ast.node, context).value;
+        Value res = interpreter.visit(ast.getNode(), context).getValue();
         //globalSymbolTable.symbols = context.symbolTableObject.symbols;
 
         return res;

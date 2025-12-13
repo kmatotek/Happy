@@ -1,22 +1,31 @@
 package Parser;
 import Operators.*;
-import DataStructures.*;
-
 
 public class ParseResult {
-    public Error error;
-    public ASTNode node;
-    public ElseCase elseCase;
-    public int lastRegisteredAdvanceCount = 0;
-    public int advanceCount = 0;
-    public int toReverseCount = 0;
+    private Error error;
+    private ASTNode node;
+    private int lastRegisteredAdvanceCount = 0;
+    private int advanceCount = 0;
+    private int toReverseCount = 0;
 
     public ParseResult(){
         this.error = null;
         this.node = null;
     }
 
-    public ASTNode register(ParseResult parseResult){ // Takes in parse result 
+    public Error getError() {
+        return error;
+    }
+
+    public int getToReverseCount() {
+        return toReverseCount;
+    }
+
+    public ASTNode getNode() {
+        return node;
+    }
+    
+    public ASTNode register(ParseResult parseResult){
         if(parseResult.error != null){  
             return parseResult.node;
         }
@@ -28,11 +37,6 @@ public class ParseResult {
     public ParseResult success(ASTNode node){
         this.node = node;
         return this;
-    }
-
-
-    public void failure(Error error){
-        this.error = error;
     }
 
     public ASTNode tryRegister(ParseResult res){

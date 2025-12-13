@@ -12,9 +12,10 @@ import DataStructures.*;
 
 public class Parser {
 
-    public ArrayList<Token<?>> tokens;
-    public int currTokenIndex;
-    public Token<?> currToken;
+    private ArrayList<Token<?>> tokens;
+    private int currTokenIndex;
+    private Token<?> currToken;
+
     public Parser(ArrayList<Token<?>> tokens){
         this.tokens = tokens;
         this.currTokenIndex = -1;
@@ -47,7 +48,7 @@ public class Parser {
 
     public ParseResult parse(){
         ParseResult res = this.statements();
-        if(this.currToken.type != Token.TT_EOF || res.error != null){
+        if(this.currToken.type != Token.TT_EOF || res.getError() != null){
             throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Extecpted '+', '-', '*', or '/'");
         }
         
@@ -66,7 +67,7 @@ public class Parser {
 
         boolean moreStatements = true;
         ASTNode statement = res.register(this.statement());
-        if(res.error != null) return res;
+        if(res.getError() != null) return res;
         statements.add(statement);
 
         while(true){
@@ -82,7 +83,7 @@ public class Parser {
             if (!moreStatements) break;
             statement = res.tryRegister(this.statement());
             if(statement == null){
-                this.reverse(res.toReverseCount);
+                this.reverse(res.getToReverseCount());
                 moreStatements = false;
                 continue;
             }
@@ -103,7 +104,7 @@ public class Parser {
 
             ASTNode expr = res.tryRegister(this.expression());
             if(expr == null){
-                this.reverse(res.toReverseCount);
+                this.reverse(res.getToReverseCount());
             }
             return res.success(new ReturnNode(expr, posStart, this.currToken.positionStart));
         }
@@ -121,7 +122,7 @@ public class Parser {
         }
 
         ASTNode expr = res.register(this.expression());
-        if(res.error != null){
+        if(res.getError() != null){
             throw new IllegalArgumentException("res.error is NOT NULL boii");
         }
         return res.success(expr);
@@ -134,7 +135,6 @@ public class Parser {
             res.registerAdvancement();
             this.advance();
             
-            
             if(!this.currToken.type.equals(Token.TT_IDENTIFIER)){
                 throw new IllegalCharError("Expected identifier");
             }
@@ -144,7 +144,7 @@ public class Parser {
             this.advance();
 
             if(!this.currToken.type.equals(Token.TT_EQ)){
-                throw new IllegalCharError("Excpected =");
+                throw new IllegalCharError("Expected =");
             }
             
             res.registerAdvancement();
@@ -155,7 +155,7 @@ public class Parser {
             return res.success(new VarAssignNode(varName, expr));
         }
         ASTNode node = res.register(this.binOp(this::compExpression, Arrays.asList("and","or")));
-        if(res.error != null) return res;
+        if(res.getError() != null) return res;
         return res.success(node);
 
     }   
@@ -170,15 +170,14 @@ public class Parser {
             this.advance();
 
             ASTNode node = res.register(this.compExpression());
-            if(res.error != null) return res;
+            if(res.getError() != null) return res;
 
             return res.success(new UnaryOpNode(opToken, node));
         }
-        
 
-        
+
         ASTNode node = res.register(this.binOp(this::artithExpression, Arrays.asList(Token.TT_EE,Token.TT_NE,Token.TT_LT,Token.TT_GT,Token.TT_LTE,Token.TT_GTE)));
-        if(res.error != null){
+        if(res.getError() != null){
             throw new IllegalCharError("res.error is not null");
         }
 
@@ -203,7 +202,7 @@ public class Parser {
             this.advance();
 
             ASTNode factor = res.register(this.factor());
-            if(res.error != null){
+            if(res.getError() != null){
                 throw new InvalidSyntaxError(token.positionStart,token.positionEnd,"You fond a hidden error!");
             }
             return res.success(new UnaryOpNode(token, factor));
@@ -220,7 +219,7 @@ public class Parser {
     public ParseResult call(){
         ParseResult res = new ParseResult();
         ASTNode atom = res.register(this.atom());
-        if(res.error != null) return res;
+        if(res.getError() != null) return res;
 
         if(this.currToken.type.equals(Token.TT_LPAREN)){
             res.registerAdvancement();
@@ -232,14 +231,14 @@ public class Parser {
                 this.advance();
             } else {
                 argNodes.add(res.register(this.expression()));
-                if(res.error != null) return res;
+                if(res.getError() != null) return res;
 
                 while(this.currToken.type.equals(Token.TT_COMMA)){
                     res.registerAdvancement();
                     this.advance();
 
                     argNodes.add(res.register(this.expression()));
-                    if(res.error != null) return res;
+                    if(res.getError() != null) return res;
 
                 }
                 
@@ -282,7 +281,7 @@ public class Parser {
 
             ASTNode expr = res.register(this.expression());
             
-            if(res.error != null) throw new InvalidSyntaxError(token.positionStart,token.positionEnd,"You fond a hidden error!");
+            if(res.getError() != null) throw new InvalidSyntaxError(token.positionStart,token.positionEnd,"You fond a hidden error!");
             
             if(this.currToken.type.equals(Token.TT_RPAREN)){
                 res.registerAdvancement();
@@ -315,7 +314,7 @@ public class Parser {
         ParseResult res = new ParseResult();
 
         IfCases allCases = (IfCases) res.register(this.ifExpressionCases("if"));
-        if(res.error != null) return res;
+        if(res.getError() != null) return res;
 
         return res.success(new IfNode(allCases.getCases(),allCases.getElseCase()));
     }
@@ -333,7 +332,7 @@ public class Parser {
         this.advance();
         
         ASTNode condition = res.register(this.expression());
-        if(res.error != null) return res;
+        if(res.getError() != null) return res;
         
         if(!this.currToken.matches(Token.TT_KEYWORD,"then")){
             throw new IllegalArgumentException("Expected 'then'");
@@ -347,7 +346,7 @@ public class Parser {
             this.advance();
             
             ASTNode statements = res.register(this.statements());
-            if(res.error != null) return res;
+            if(res.getError() != null) return res;
             cases.add(new Case(condition,statements,true));
             
 
@@ -357,7 +356,7 @@ public class Parser {
             } else {
                 
                 IfCases allCases = (IfCases) res.register(this.ifExprBorC());
-                if(res.error != null) return res;
+                if(res.getError() != null) return res;
                 List<Case> newCases = allCases.getCases();
                 elseCase = allCases.getElseCase();
                 cases.addAll(newCases);
@@ -365,11 +364,11 @@ public class Parser {
             }
         } else {
             ASTNode expr = res.register(this.statement());
-            if(res.error != null) return res;
+            if(res.getError() != null) return res;
             cases.add(new Case(condition, expr, false));
 
             IfCases allCases = (IfCases) res.register(this.ifExprBorC());
-            if(res.error != null) return res;
+            if(res.getError() != null) return res;
             List<Case> newCases = allCases.getCases();
             elseCase = allCases.getElseCase();
            // Printing null System.out.println(elseCase);
@@ -395,7 +394,7 @@ public class Parser {
                 this.advance();
 
                 ASTNode statements = res.register(this.statements());
-                if(res.error != null) return res;
+                if(res.getError() != null) return res;
                 elseCase = new ElseCase(statements, true);
 
                 if(this.currToken.matches(Token.TT_KEYWORD, "end")){
@@ -406,7 +405,7 @@ public class Parser {
                 }
             } else {
                 ASTNode expr = res.register(this.expression());
-                if(res.error != null) return res;
+                if(res.getError() != null) return res;
                 elseCase = new ElseCase(expr,false);
             }
         }
@@ -456,7 +455,7 @@ public class Parser {
         this.advance();
 
         ASTNode startValue = res.register(this.expression());
-        if(res.error != null) return res;
+        if(res.getError() != null) return res;
 
         if(!this.currToken.matches(Token.TT_KEYWORD,"to")){
             throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected TO");
@@ -466,7 +465,7 @@ public class Parser {
         this.advance();
 
         ASTNode endValue = res.register(this.expression());
-        if(res.error != null) return res;
+        if(res.getError() != null) return res;
         
         ASTNode stepValue = null;
 
@@ -475,7 +474,7 @@ public class Parser {
             this.advance();
 
             stepValue = res.register(this.expression());
-            if(res.error != null) return res;
+            if(res.getError() != null) return res;
         }
 
         if(!this.currToken.matches(Token.TT_KEYWORD, "then")){
@@ -490,7 +489,7 @@ public class Parser {
             this.advance();
 
             ASTNode body = res.register(this.statements());
-            if(res.error != null) return res;
+            if(res.getError() != null) return res;
 
             if(!this.currToken.matches(Token.TT_KEYWORD,"end")){
                 throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected 'end'");
@@ -506,7 +505,7 @@ public class Parser {
         ASTNode body = res.register(this.statement());
 
 
-        if(res.error != null) return res;
+        if(res.getError() != null) return res;
 
        if(!this.currToken.matches(Token.TT_KEYWORD,"end")){
             // Failing here
@@ -527,7 +526,7 @@ public class Parser {
         this.advance();
 
         ASTNode condition = res.register(this.expression());
-        if(res.error != null) return null;
+        if(res.getError() != null) return null;
 
         if(!this.currToken.matches(Token.TT_KEYWORD, "then")){
             throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected THEN");
@@ -541,7 +540,7 @@ public class Parser {
             this.advance();
 
             ASTNode body = res.register(this.statements());
-            if(res.error != null) return res;
+            if(res.getError() != null) return res;
 
             if(!this.currToken.matches(Token.TT_KEYWORD,"end")){
                 throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd,"Expected end");
@@ -554,7 +553,7 @@ public class Parser {
         }
            
         ASTNode body = res.register(this.statements());
-        if(res.error != null) return res;
+        if(res.getError() != null) return res;
 
         return res.success(new WhileNode(condition, body, false));
     }
@@ -582,7 +581,7 @@ public class Parser {
                 this.advance();
 
                 elementNodes.add(res.register(this.expression()));
-                if(res.error != null) return res;
+                if(res.getError() != null) return res;
             }
 
             if(!this.currToken.type.equals(Token.TT_RSQUAREB)){
@@ -602,7 +601,7 @@ public class Parser {
         ASTNode left = res.register(parseFuncA.get());
 
         // Call the provided parse function (e.g., factor or term)
-        if(res.error != null) throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"You fond a hidden error!");
+        if(res.getError() != null) throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"You fond a hidden error!");
         
         while(ops.contains(this.currToken.type)){
             Token<?> opToken = this.currToken;
@@ -611,7 +610,7 @@ public class Parser {
 
             ASTNode right = res.register(parseFuncB.get());
             // Use the same parse function for the right side
-            if(res.error != null) throw new InvalidSyntaxError(opToken.positionStart,opToken.positionEnd,"You fond a hidden error!");
+            if(res.getError() != null) throw new InvalidSyntaxError(opToken.positionStart,opToken.positionEnd,"You fond a hidden error!");
 
             left = new BinOpNode(left, opToken, right); 
         }
@@ -623,14 +622,14 @@ public class Parser {
         ASTNode left = res.register(parseFuncA.get());
         
           // Call the provided parse function (e.g., factor or term)
-        if(res.error != null) throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"You fond a hidden error!");
+        if(res.getError() != null) throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"You fond a hidden error!");
         
         while(ops.contains(this.currToken.value)){
             Token<?> opToken = this.currToken;
             res.registerAdvancement();
             this.advance();
             ASTNode right = res.register(parseFuncB.get());  // Use the same parse function for the right side
-            if(res.error != null) throw new InvalidSyntaxError(opToken.positionStart,opToken.positionEnd,"You fond a hidden error!");
+            if(res.getError() != null) throw new InvalidSyntaxError(opToken.positionStart,opToken.positionEnd,"You fond a hidden error!");
 
             left = new BinOpNode(left, opToken, right);
         }
@@ -701,7 +700,7 @@ public class Parser {
             this.advance();
 
             ASTNode body = res.register(this.expression());
-            if(res.error != null) return res;
+            if(res.getError() != null) return res;
 
             return res.success(new FuncDefNode(varNameTok, argNameTokens, body, true));
         }
@@ -714,7 +713,7 @@ public class Parser {
         this.advance();
 
         ASTNode body = res.register(this.statements());
-        if(res.error != null) return res;
+        if(res.getError() != null) return res;
 
         if(!this.currToken.matches(Token.TT_KEYWORD, "end")){
             throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected end");

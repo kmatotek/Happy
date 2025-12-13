@@ -3,12 +3,11 @@ import Values.*;
 //import DataStructures.*;
 
 public class RTResult extends Value{
-    public Value value;
-    public Error error;
-    public Value funcReturnValue;
-    public boolean loopShouldContinue;
-    public boolean loopShouldBreak;
-
+    private Value value;
+    private Error error;
+    private Value funcReturnValue;
+    private boolean loopShouldContinue;
+    private boolean loopShouldBreak;
     
     public RTResult(){
         this.reset();
@@ -20,6 +19,26 @@ public class RTResult extends Value{
         this.funcReturnValue = null;
         this.loopShouldContinue = false;
         this.loopShouldBreak = false;
+    }
+
+    public Value getValue() {
+        return value;
+    }
+
+    public void setValue(Value value) {
+        this.value = value;
+    }
+
+    public Value getFuncReturnValue() {
+        return funcReturnValue;
+    }
+
+    public boolean isLoopShouldContinue() {
+        return loopShouldContinue;
+    }
+
+    public boolean isLoopShouldBreak() {
+        return loopShouldBreak;
     }
 
     public Value register(RTResult res){
