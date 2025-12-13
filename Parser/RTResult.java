@@ -25,10 +25,6 @@ public class RTResult extends Value{
         return value;
     }
 
-    public void setValue(Value value) {
-        this.value = value;
-    }
-
     public Value getFuncReturnValue() {
         return funcReturnValue;
     }
