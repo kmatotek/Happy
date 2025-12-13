@@ -43,8 +43,7 @@ public class HappyMain {
                 
                 //System.out.println(context.symbolTableObject);
                 Value result = run(input, globalSymbolTable, context);
-                if(result instanceof MyList){
-                    MyList listRes = (MyList) result;
+                if(result instanceof MyList listRes){
                     if(listRes.elements.size() == 1){
                         System.out.println(listRes.elements.get(0));
                     } else {
@@ -72,7 +71,6 @@ public class HappyMain {
 
         Value res = interpreter.visit(ast.node, context).value;
         //globalSymbolTable.symbols = context.symbolTableObject.symbols;
-
 
         return res;
     }

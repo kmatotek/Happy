@@ -204,7 +204,6 @@ public class Lexer{
 
     public Token<?> makeLessThan(Position position){
         Position  currPosition = position.copy();
-        this.advance();
 
         if(this.currChar == '='){
             this.advance();
@@ -215,7 +214,6 @@ public class Lexer{
 
     public Token<?> makeGreaterThan(Position position){
         Position  currPosition = position.copy();
-        this.advance();
 
         if(this.currChar == '='){
             this.advance();

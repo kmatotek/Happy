@@ -258,6 +258,8 @@ public class Parser {
     public ParseResult atom(){
         ParseResult res = new ParseResult();
         Token<?> token = currToken;
+        System.out.println(token.type);
+        // System.out.println(token)
 
         if(token.type.equals(Token.TT_INT) || token.type.equals(Token.TT_FLOAT)){
             res.registerAdvancement();
