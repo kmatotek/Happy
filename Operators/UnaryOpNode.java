@@ -17,7 +17,7 @@ public class UnaryOpNode extends ASTNode {
     }
 
     public String toString(){
-        return "Type: "+ this.opToken.type +" Value: " + this.node;
+        return "Type: "+ this.opToken.getType() +" Value: " + this.node;
     }
 
     public Token<?> getOpToken() {

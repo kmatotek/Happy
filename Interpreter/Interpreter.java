@@ -78,7 +78,7 @@ public class Interpreter {
             MyString left = (MyString) value1;
             MyString right = (MyString) value2;
             MyString ans = null;
-            if(node.getToken().type.equals(Token.TT_PLUS)){
+            if(node.getToken().getType().equals(Token.TT_PLUS)){
                 ans = left.addedTo(right);
             } else {
                 throw new InvalidSyntaxError(node.getPositionStart(), node.getPositionEnd(), "Invalid operator on Strings");
@@ -89,14 +89,14 @@ public class Interpreter {
             MyString left = (MyString) value1;
             Number right = (Number) value2;
             MyString ans = null;
-            if(node.getToken().type.equals(Token.TT_MUL)){
+            if(node.getToken().getType().equals(Token.TT_MUL)){
                 int goTo = Number.toInt(right.value);
                 StringBuilder sb = new StringBuilder();
                 for(int i = 0; i < goTo; i++){
                     sb.append(left);
                 }
                 ans = new MyString(sb.toString());
-            } else if (node.getToken().type.equals(Token.TT_EXCLM)){
+            } else if (node.getToken().getType().equals(Token.TT_EXCLM)){
                 int index = Number.toInt(right.value);
                 ans = new MyString(String.valueOf(left.s.charAt(index)));
             } else {
@@ -106,12 +106,12 @@ public class Interpreter {
         } else if (value1 instanceof MyList && value2 instanceof Number){
             MyList left = (MyList) value1;
             Number right = (Number) value2;
-            if(node.getToken().type.equals(Token.TT_PLUS)){
+            if(node.getToken().getType().equals(Token.TT_PLUS)){
                 MyList ans = left.copy();
                 ans.elements.add(right);
                 return res.success(ans);
 
-            } else if(node.getToken().type.equals(Token.TT_EXCLM)){
+            } else if(node.getToken().getType().equals(Token.TT_EXCLM)){
                 
                 int get = Number.toInt(right.value);
                 if(get < 0 || get > left.elements.size()){
@@ -124,7 +124,7 @@ public class Interpreter {
 
         } else if (value1 instanceof MyList && value2 instanceof MyList){
             
-            if(node.getToken().type.equals(Token.TT_PLUS)){
+            if(node.getToken().getType().equals(Token.TT_PLUS)){
                 MyList left = (MyList) value1;
                 MyList right = (MyList) value2;
                 MyList ans = left.copy();
@@ -145,27 +145,27 @@ public class Interpreter {
         Number result;
 
         
-        if(node.getToken().type.equals(Token.TT_PLUS)){
+        if(node.getToken().getType().equals(Token.TT_PLUS)){
             result = left.addBy(right);
-        } else if(node.getToken().type.equals(Token.TT_MINUS)){
+        } else if(node.getToken().getType().equals(Token.TT_MINUS)){
             result = left.subtractBy(right);
-        } else if(node.getToken().type.equals(Token.TT_MUL)){
+        } else if(node.getToken().getType().equals(Token.TT_MUL)){
             result = left.multiplyBy(right);
-        } else if(node.getToken().type.equals(Token.TT_DIV)){
+        } else if(node.getToken().getType().equals(Token.TT_DIV)){
             result = left.divideBy(right);
-        } else if(node.getToken().type.equals(Token.TT_POW)){
+        } else if(node.getToken().getType().equals(Token.TT_POW)){
             result = left.powerBy(right);
-        } else if(node.getToken().type.equals(Token.TT_EE)){
+        } else if(node.getToken().getType().equals(Token.TT_EE)){
             result = left.getComparisonEe(right);
-        } else if(node.getToken().type.equals(Token.TT_NE)){
+        } else if(node.getToken().getType().equals(Token.TT_NE)){
            result = left.getComparisonNe(right);
-        } else if(node.getToken().type.equals(Token.TT_LT)){
+        } else if(node.getToken().getType().equals(Token.TT_LT)){
            result = left.getComparisonLt(right);
-        } else if(node.getToken().type.equals(Token.TT_GT)){
+        } else if(node.getToken().getType().equals(Token.TT_GT)){
             result = left.getComparisonGt(right);
-        } else if(node.getToken().type.equals(Token.TT_LTE)){
+        } else if(node.getToken().getType().equals(Token.TT_LTE)){
            result = left.getComparisonLte(right);
-        } else if(node.getToken().type.equals(Token.TT_GTE)){
+        } else if(node.getToken().getType().equals(Token.TT_GTE)){
             result = left.getComparisonGte(right);
         } else if(node.getToken().matches(Token.TT_KEYWORD, "and")){
             result = left.andBy(right);
@@ -188,7 +188,7 @@ public class Interpreter {
         if(res.shouldReturn()) return res;
         
 
-        if(node.getOpToken().type.equals(Token.TT_MINUS)){
+        if(node.getOpToken().getType().equals(Token.TT_MINUS)){
             num = num.multiplyBy(new Number(-1));
         } else if (node.getOpToken().matches(Token.TT_KEYWORD,"not")){
             num = num.notted();

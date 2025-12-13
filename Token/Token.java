@@ -40,7 +40,7 @@ public class Token<T>{
     
 
 
-    public String type;
+    private String type;
     public T value;
     public Position positionStart;
     public Position positionEnd;
@@ -65,6 +65,38 @@ public class Token<T>{
 
     public Token(String type){
         this.type = type;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public T getValue() {
+        return value;
+    }
+
+    public void setValue(T value) {
+        this.value = value;
+    }
+
+    public Position getPositionStart() {
+        return positionStart;
+    }
+
+    public void setPositionStart(Position positionStart) {
+        this.positionStart = positionStart;
+    }
+
+    public Position getPositionEnd() {
+        return positionEnd;
+    }
+
+    public void setPositionEnd(Position positionEnd) {
+        this.positionEnd = positionEnd;
     }
 
     public boolean matches(String type, T value){
