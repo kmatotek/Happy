@@ -15,7 +15,7 @@ public class StringNode extends ASTNode{
     }
 
     public String toString(){
-        return token.value.toString();
+        return token.getValue().toString();
     }
 
     public Token<?> getToken() {

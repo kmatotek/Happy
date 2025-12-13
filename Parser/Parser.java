@@ -164,7 +164,7 @@ public class Parser {
         ParseResult res = new ParseResult();
         Token<?> opToken = null;
 
-        if(this.currToken.value.equals("not")){
+        if(this.currToken.getValue().equals("not")){
             opToken = this.currToken;
             res.registerAdvancement();
             this.advance();
@@ -624,7 +624,7 @@ public class Parser {
           // Call the provided parse function (e.g., factor or term)
         if(res.getError() != null) throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"You fond a hidden error!");
         
-        while(ops.contains(this.currToken.value)){
+        while(ops.contains(this.currToken.getValue())){
             Token<?> opToken = this.currToken;
             res.registerAdvancement();
             this.advance();

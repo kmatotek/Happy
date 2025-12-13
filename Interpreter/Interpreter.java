@@ -61,7 +61,7 @@ public class Interpreter {
     }
 
     public ValueContext visitNumberNode(NumberNode node, Context context){
-        Number num = new Number(node.getToken().value);
+        Number num = new Number(node.getToken().getValue());
         num.setPosition(node.getPositionStart(),node.getPositionEnd());
         return new ValueContext(num,context);
     }
@@ -199,7 +199,7 @@ public class Interpreter {
 
     public RTResult visitVarAccessNode(VarAccessNode node, Context context){
         RTResult res = new RTResult();
-        Object varName = node.getVarNameToken().value;
+        Object varName = node.getVarNameToken().getValue();
         Value value = context.getSymbolTableObject().symbols.get(varName);
 
         if(value == null) throw new IllegalArgumentException("Variable " + varName + " is not defined");
@@ -212,7 +212,7 @@ public class Interpreter {
 
     public RTResult visitVarAssignedNode(VarAssignNode node, Context context){
         RTResult res = new RTResult();
-        Object varName = node.getVarNameToken().value;
+        Object varName = node.getVarNameToken().getValue();
         Value value = this.visit(node.getValueNode(), context).getValue();
         if(res.shouldReturn()) return res;
         if(value == null) throw new IllegalArgumentException("Variable " + varName + " is not defined");
@@ -282,7 +282,7 @@ public class Interpreter {
         
         if(step >= 0){
             while(i < Number.toInt(endValue.value)){
-                context.getSymbolTableObject().set(node.getVarNameToken().value.toString(), new Number(i));
+                context.getSymbolTableObject().set(node.getVarNameToken().getValue().toString(), new Number(i));
                 
                 i += step;
                 Value value = res.register(this.visit(node.getBodyNode(), context));
@@ -294,7 +294,7 @@ public class Interpreter {
             }
         } else {
             while(i > Number.toInt(endValue.value)){
-                context.getSymbolTableObject().set(node.getVarNameToken().value.toString(), new Number(i));
+                context.getSymbolTableObject().set(node.getVarNameToken().getValue().toString(), new Number(i));
                 i += step;
                 
                 Value value = res.register(this.visit(node.getBodyNode(), context));
@@ -344,12 +344,12 @@ public class Interpreter {
 
     public RTResult visitFuncDefNode(FuncDefNode node, Context context){
         RTResult res = new RTResult();
-        String funcName = node.getVarNameTok().value.toString();
+        String funcName = node.getVarNameTok().getValue().toString();
         ASTNode bodyNode = node.getBodyNode();
         ArrayList<String> argNames = new ArrayList<>();
 
         for(Token<?> argName : node.getArgNameTokens()){
-            argNames.add(argName.value.toString());
+            argNames.add(argName.getValue().toString());
         }
 
         Function funcValue = new Function(funcName, bodyNode, argNames, node.isShouldAutoReturn());
@@ -391,7 +391,7 @@ public class Interpreter {
 
     public ValueContext visitStringNode(StringNode node, Context context){
         
-        MyString str = new MyString(node.getToken().value.toString());
+        MyString str = new MyString(node.getToken().getValue().toString());
         str.setContext(context);
         str.setPosition(node.getPositionStart(),node.getPositionEnd());
         return new ValueContext(str,context);

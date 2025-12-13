@@ -41,7 +41,7 @@ public class Token<T>{
 
 
     private String type;
-    public T value;
+    private T value;
     public Position positionStart;
     public Position positionEnd;
 
