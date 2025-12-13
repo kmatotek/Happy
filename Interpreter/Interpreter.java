@@ -263,13 +263,11 @@ public class Interpreter {
         RTResult res = new RTResult();
         ArrayList<Value> elements = new ArrayList<>();
         
-        
         Number startValue = (Number) res.register(this.visit(node.getStartValueNode(), context));
         if(res.shouldReturn()) return res;
         Number endValue = (Number) res.register(this.visit(node.getEndValueNode(), context));
         if(res.shouldReturn()) return res;
         Number stepValue = null;
-        
         
 
         if(node.getStepValueNode() != null){
@@ -409,6 +407,7 @@ public class Interpreter {
         }
 
         MyList list = new MyList(elements);
+
         res.setContext(context);
         res.setPosition(node.getPositionStart(), node.getPositionEnd());
 

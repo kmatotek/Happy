@@ -2,8 +2,6 @@
 
 Current bugs
 - For loops
-- Functions
-- cant do 3>=5 getting EOF
 
 TODO:
 Make an automated ci pipeline (maybe just a github actions script that runs a file simply testing all basic syntaxes of the language to make sure everything still works)

@@ -258,8 +258,7 @@ public class Parser {
     public ParseResult atom(){
         ParseResult res = new ParseResult();
         Token<?> token = currToken;
-        System.out.println(token.type);
-        // System.out.println(token)
+        // System.out.println(token.type);
 
         if(token.type.equals(Token.TT_INT) || token.type.equals(Token.TT_FLOAT)){
             res.registerAdvancement();
@@ -502,11 +501,15 @@ public class Parser {
 
             return res.success(new ForNode(varName, body, startValue, endValue, stepValue, true));
         }
-        
+
 
         ASTNode body = res.register(this.statement());
+
+
         if(res.error != null) return res;
-        if(!this.currToken.matches(Token.TT_KEYWORD,"end")){
+
+       if(!this.currToken.matches(Token.TT_KEYWORD,"end")){
+            // Failing here
             throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected 'end'");
         }
 
@@ -601,7 +604,7 @@ public class Parser {
         // Call the provided parse function (e.g., factor or term)
         if(res.error != null) throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"You fond a hidden error!");
         
-        while(ops.contains(this.currToken.type) || ops.contains(this.currToken.value)){
+        while(ops.contains(this.currToken.type)){
             Token<?> opToken = this.currToken;
             res.registerAdvancement();
             this.advance();
@@ -622,7 +625,7 @@ public class Parser {
           // Call the provided parse function (e.g., factor or term)
         if(res.error != null) throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"You fond a hidden error!");
         
-        while(ops.contains(this.currToken.value) || ops.contains(this.currToken.value)){
+        while(ops.contains(this.currToken.value)){
             Token<?> opToken = this.currToken;
             res.registerAdvancement();
             this.advance();

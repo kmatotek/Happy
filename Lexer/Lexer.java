@@ -45,7 +45,7 @@ public class Lexer{
                 this.advance();
             } else if(this.currChar == '-'){
                 tokens.add(this.makeMinusOrArrow());
-                this.advance();
+                //this.advance();
             } else if(this.currChar == '*'){
                 tokens.add(new Token<>(Token.TT_MUL, this.currPosition));
                 this.advance();
@@ -70,16 +70,13 @@ public class Lexer{
             } else if(this.currChar == '!'){
                 Token<?> token = this.makeNotEquals(this.currPosition);
                 tokens.add(token);
-                this.advance();
             } else if(this.currChar == '='){
                 tokens.add(this.makeEquals(this.currPosition));
-                this.advance();
             } else if(this.currChar == '<'){
                 tokens.add(this.makeLessThan(this.currPosition));
-                this.advance();
+                // Advancing here will result in more strict format checking, same goes for !, =, <, >
             } else if(this.currChar == '>'){
                 tokens.add(this.makeGreaterThan(this.currPosition));
-                this.advance();
             } else if(this.currChar == ','){
                 tokens.add(new Token<>(Token.TT_COMMA, this.currPosition));
                 this.advance();
@@ -204,6 +201,7 @@ public class Lexer{
 
     public Token<?> makeLessThan(Position position){
         Position  currPosition = position.copy();
+        this.advance();
 
         if(this.currChar == '='){
             this.advance();
@@ -214,6 +212,7 @@ public class Lexer{
 
     public Token<?> makeGreaterThan(Position position){
         Position  currPosition = position.copy();
+        this.advance();
 
         if(this.currChar == '='){
             this.advance();
@@ -225,6 +224,7 @@ public class Lexer{
     public Token<?> makeMinusOrArrow(){
         String tokType = Token.TT_MINUS;
         Position posStart = this.currPosition.copy();
+        this.advance();
 
         if(this.currChar == '>'){
             this.advance();
