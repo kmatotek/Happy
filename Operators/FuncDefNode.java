@@ -18,7 +18,7 @@ public class FuncDefNode extends ASTNode {
         this.bodyNode = bodyNode;
         this.shouldAutoReturn = autoRet;
 
-        if(!argNameTokens.isEmpty()) this.positionStart = argNameTokens.get(0).positionStart;
+        if(!argNameTokens.isEmpty()) this.positionStart = argNameTokens.get(0).getPositionStart();
         else this.positionStart = bodyNode.getPositionStart();
         this.positionEnd = bodyNode.getPositionEnd();
 

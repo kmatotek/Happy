@@ -12,8 +12,8 @@ public class VarAssignNode extends ASTNode{
     public VarAssignNode(Token<?> varNameToken, ASTNode valueNode){
         this.varNameToken = varNameToken;
         this.valueNode = valueNode;
-        this.positionStart = varNameToken.positionStart;
-        this.positionEnd = varNameToken.positionEnd;
+        this.positionStart = varNameToken.getPositionStart();
+        this.positionEnd = varNameToken.getPositionEnd();
     }
 
     public Token<?> getVarNameToken() {

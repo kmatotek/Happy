@@ -10,8 +10,8 @@ public class StringNode extends ASTNode{
     
     public StringNode(Token<?> token){
         this.token = token;
-        this.positionStart = this.token.positionStart;
-        this.positionEnd = this.token.positionEnd;
+        this.positionStart = this.token.getPositionStart();
+        this.positionEnd = this.token.getPositionEnd();
     }
 
     public String toString(){

@@ -10,8 +10,8 @@ public class VarAccessNode extends ASTNode {
 
     public VarAccessNode(Token<?> varNameToken){
         this.varNameToken = varNameToken;
-        this.positionStart = varNameToken.positionStart;
-        this.positionEnd = varNameToken.positionEnd;
+        this.positionStart = varNameToken.getPositionStart();
+        this.positionEnd = varNameToken.getPositionEnd();
     }
 
     public Token<?> getVarNameToken() {

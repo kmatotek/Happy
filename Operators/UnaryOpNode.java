@@ -11,7 +11,7 @@ public class UnaryOpNode extends ASTNode {
     public UnaryOpNode(Token<?> opToken, ASTNode node){
         this.opToken = opToken;
         this.node = node;
-        this.positionStart = opToken.positionStart;
+        this.positionStart = opToken.getPositionStart();
         this.positionEnd = node.getPositionEnd();
 
     }

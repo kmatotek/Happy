@@ -14,7 +14,7 @@ public class ForNode extends ASTNode {
     
 
     public ForNode(Token <?> varNameToken, ASTNode bodyNode, ASTNode startValueNode, ASTNode endValueNode, ASTNode stepValuNode, boolean shouldReturnNull){
-        this.positionStart = varNameToken.positionStart;
+        this.positionStart = varNameToken.getPositionStart();
         this.positionEnd = bodyNode.getPositionEnd();
         this.startValueNode = startValueNode;
         this.endValueNode = endValueNode;
@@ -26,7 +26,7 @@ public class ForNode extends ASTNode {
     }
 
     public ForNode(Token<?> varNameToken, ASTNode bodyNode, ASTNode startValueNode, ASTNode endValueNode){
-        this.positionStart = varNameToken.positionStart;
+        this.positionStart = varNameToken.getPositionStart();
         this.positionEnd = bodyNode.getPositionEnd();
         this.startValueNode = startValueNode;
         this.endValueNode = endValueNode;

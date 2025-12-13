@@ -10,8 +10,8 @@ public class NumberNode extends ASTNode{
     
     public NumberNode(Token<?> token){
         this.token = token;
-        this.positionStart = this.token.positionStart;
-        this.positionEnd = this.token.positionEnd;
+        this.positionStart = this.token.getPositionStart();
+        this.positionEnd = this.token.getPositionEnd();
     }
 
     public String toString(){

@@ -42,8 +42,8 @@ public class Token<T>{
 
     private String type;
     private T value;
-    public Position positionStart;
-    public Position positionEnd;
+    private Position positionStart;
+    private Position positionEnd;
 
     public Token(String type, T value, Position positionStart, Position positionEnd){
         this.type = type;

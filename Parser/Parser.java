@@ -49,7 +49,7 @@ public class Parser {
     public ParseResult parse(){
         ParseResult res = this.statements();
         if(this.currToken.getType() != Token.TT_EOF || res.getError() != null){
-            throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected '+', '-', '*', or '/'");
+            throw new InvalidSyntaxError(this.currToken.getPositionStart(), this.currToken.getPositionEnd(), "Expected '+', '-', '*', or '/'");
         }
         
         return res;
@@ -96,7 +96,7 @@ public class Parser {
     public ParseResult statement(){
         ParseResult res = new ParseResult();
         //Position posStart = this.currToken.positionStart.copy();
-        Position posStart = this.currToken.positionStart;
+        Position posStart = this.currToken.getPositionStart();
 
         if(this.currToken.matches(Token.TT_KEYWORD, "return")){
             res.registerAdvancement();
@@ -106,19 +106,19 @@ public class Parser {
             if(expr == null){
                 this.reverse(res.getToReverseCount());
             }
-            return res.success(new ReturnNode(expr, posStart, this.currToken.positionStart));
+            return res.success(new ReturnNode(expr, posStart, this.currToken.getPositionStart()));
         }
 
         if(this.currToken.matches(Token.TT_KEYWORD,"continue")){
             res.registerAdvancement();
             this.advance();
-            return res.success(new ContinueNode(posStart,this.currToken.positionStart));
+            return res.success(new ContinueNode(posStart,this.currToken.getPositionStart()));
         }
 
         if(this.currToken.matches(Token.TT_KEYWORD, "break")){
             res.registerAdvancement();
             this.advance();
-            return res.success(new BreakNode(posStart, this.currToken.positionStart));
+            return res.success(new BreakNode(posStart, this.currToken.getPositionStart()));
         }
 
         ASTNode expr = res.register(this.expression());
@@ -203,7 +203,7 @@ public class Parser {
 
             ASTNode factor = res.register(this.factor());
             if(res.getError() != null){
-                throw new InvalidSyntaxError(token.positionStart,token.positionEnd,"You fond a hidden error!");
+                throw new InvalidSyntaxError(token.getPositionStart(),token.getPositionEnd(),"You fond a hidden error!");
             }
             return res.success(new UnaryOpNode(token, factor));
         } 
@@ -243,7 +243,7 @@ public class Parser {
                 }
                 
                 if(!this.currToken.getType().equals(Token.TT_RPAREN)){
-                    throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd, "Expected ',' or ')'");
+                    throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(), "Expected ',' or ')'");
                 }
 
                 res.registerAdvancement();
@@ -281,14 +281,14 @@ public class Parser {
 
             ASTNode expr = res.register(this.expression());
             
-            if(res.getError() != null) throw new InvalidSyntaxError(token.positionStart,token.positionEnd,"You fond a hidden error!");
+            if(res.getError() != null) throw new InvalidSyntaxError(token.getPositionStart(),token.getPositionEnd(),"You fond a hidden error!");
             
             if(this.currToken.getType().equals(Token.TT_RPAREN)){
                 res.registerAdvancement();
                 this.advance();
                 return res.success(expr);
             } else {
-                throw new InvalidSyntaxError(token.positionStart, token.positionEnd,"Expected ')'");
+                throw new InvalidSyntaxError(token.getPositionStart(), token.getPositionEnd(),"Expected ')'");
             }
         } else if (token.getType().equals(Token.TT_LSQUAREB)){
             ASTNode listExpr = res.register(this.listExpression());
@@ -401,7 +401,7 @@ public class Parser {
                     res.registerAdvancement();
                     this.advance();
                 } else {
-                    throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"expected 'end'");
+                    throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(),"expected 'end'");
                 }
             } else {
                 ASTNode expr = res.register(this.expression());
@@ -448,7 +448,7 @@ public class Parser {
         this.advance();
 
         if(this.currToken.getType() != Token.TT_EQ){
-            throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected identifier");
+            throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(),"Expected identifier");
         }
 
         res.registerAdvancement();
@@ -458,7 +458,7 @@ public class Parser {
         if(res.getError() != null) return res;
 
         if(!this.currToken.matches(Token.TT_KEYWORD,"to")){
-            throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected TO");
+            throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(),"Expected TO");
         }
 
         res.registerAdvancement();
@@ -478,7 +478,7 @@ public class Parser {
         }
 
         if(!this.currToken.matches(Token.TT_KEYWORD, "then")){
-            throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected THEN");
+            throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(),"Expected THEN");
         }
 
         res.registerAdvancement();
@@ -492,7 +492,7 @@ public class Parser {
             if(res.getError() != null) return res;
 
             if(!this.currToken.matches(Token.TT_KEYWORD,"end")){
-                throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected 'end'");
+                throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(),"Expected 'end'");
             }
             
             res.registerAdvancement();
@@ -509,7 +509,7 @@ public class Parser {
 
        if(!this.currToken.matches(Token.TT_KEYWORD,"end")){
             // Failing here
-            throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected 'end'");
+            throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(),"Expected 'end'");
         }
 
         return res.success(new ForNode(varName, startValue, endValue, stepValue, body, false));
@@ -519,7 +519,7 @@ public class Parser {
         ParseResult res = new ParseResult();
 
         if(!this.currToken.matches(Token.TT_KEYWORD, "while")){
-            throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected WHILE");
+            throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(),"Expected WHILE");
         }
 
         res.registerAdvancement();
@@ -529,7 +529,7 @@ public class Parser {
         if(res.getError() != null) return null;
 
         if(!this.currToken.matches(Token.TT_KEYWORD, "then")){
-            throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected THEN");
+            throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(),"Expected THEN");
         }
 
         res.registerAdvancement();
@@ -543,7 +543,7 @@ public class Parser {
             if(res.getError() != null) return res;
 
             if(!this.currToken.matches(Token.TT_KEYWORD,"end")){
-                throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd,"Expected end");
+                throw new InvalidSyntaxError(this.currToken.getPositionStart(), this.currToken.getPositionEnd(),"Expected end");
             }
 
             res.registerAdvancement();
@@ -565,7 +565,7 @@ public class Parser {
         //Position posStart = this.currToken.positionStart.copy();
 
         if(!this.currToken.getType().equals(Token.TT_LSQUAREB)){
-            throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"Expected '[");
+            throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(),"Expected '[");
         }
         res.registerAdvancement();
         this.advance();
@@ -585,7 +585,7 @@ public class Parser {
             }
 
             if(!this.currToken.getType().equals(Token.TT_RSQUAREB)){
-                throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd, "Expected ',' or ']'");
+                throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(), "Expected ',' or ']'");
             }
             res.registerAdvancement();
             this.advance();
@@ -601,7 +601,7 @@ public class Parser {
         ASTNode left = res.register(parseFuncA.get());
 
         // Call the provided parse function (e.g., factor or term)
-        if(res.getError() != null) throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"You fond a hidden error!");
+        if(res.getError() != null) throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(),"You fond a hidden error!");
         
         while(ops.contains(this.currToken.getType())){
             Token<?> opToken = this.currToken;
@@ -610,7 +610,7 @@ public class Parser {
 
             ASTNode right = res.register(parseFuncB.get());
             // Use the same parse function for the right side
-            if(res.getError() != null) throw new InvalidSyntaxError(opToken.positionStart,opToken.positionEnd,"You fond a hidden error!");
+            if(res.getError() != null) throw new InvalidSyntaxError(opToken.getPositionStart(),opToken.getPositionEnd(),"You fond a hidden error!");
 
             left = new BinOpNode(left, opToken, right); 
         }
@@ -622,14 +622,14 @@ public class Parser {
         ASTNode left = res.register(parseFuncA.get());
         
           // Call the provided parse function (e.g., factor or term)
-        if(res.getError() != null) throw new InvalidSyntaxError(this.currToken.positionStart,this.currToken.positionEnd,"You fond a hidden error!");
+        if(res.getError() != null) throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(),"You fond a hidden error!");
         
         while(ops.contains(this.currToken.getValue())){
             Token<?> opToken = this.currToken;
             res.registerAdvancement();
             this.advance();
             ASTNode right = res.register(parseFuncB.get());  // Use the same parse function for the right side
-            if(res.getError() != null) throw new InvalidSyntaxError(opToken.positionStart,opToken.positionEnd,"You fond a hidden error!");
+            if(res.getError() != null) throw new InvalidSyntaxError(opToken.getPositionStart(),opToken.getPositionEnd(),"You fond a hidden error!");
 
             left = new BinOpNode(left, opToken, right);
         }
@@ -641,7 +641,7 @@ public class Parser {
         ParseResult res = new ParseResult();
 
         if(!this.currToken.matches(Token.TT_KEYWORD,"func")){
-            throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected 'FUNC'");
+            throw new InvalidSyntaxError(this.currToken.getPositionStart(), this.currToken.getPositionEnd(), "Expected 'FUNC'");
         }
         
         res.registerAdvancement();
@@ -653,11 +653,11 @@ public class Parser {
             res.registerAdvancement();
             this.advance();
             if(!this.currToken.getType().equals(Token.TT_LPAREN)){
-                throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected '('");
+                throw new InvalidSyntaxError(this.currToken.getPositionStart(), this.currToken.getPositionEnd(), "Expected '('");
             }
         } else {
             if(!this.currToken.getType().equals(Token.TT_LPAREN)){
-                throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected identifier or '('");
+                throw new InvalidSyntaxError(this.currToken.getPositionStart(), this.currToken.getPositionEnd(), "Expected identifier or '('");
             }
         }
         
@@ -675,7 +675,7 @@ public class Parser {
                 this.advance();
 
                 if(!this.currToken.getType().equals(Token.TT_IDENTIFIER)){
-                    throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected identifier");
+                    throw new InvalidSyntaxError(this.currToken.getPositionStart(), this.currToken.getPositionEnd(), "Expected identifier");
                 } else {
                     argNameTokens.add(this.currToken);
                     res.registerAdvancement();
@@ -683,12 +683,12 @@ public class Parser {
                 }
             }
             if(!this.currToken.getType().equals(Token.TT_RPAREN)){
-                throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected ',' or ')'");
+                throw new InvalidSyntaxError(this.currToken.getPositionStart(), this.currToken.getPositionEnd(), "Expected ',' or ')'");
             }
 
         } else {
             if(!this.currToken.getType().equals(Token.TT_RPAREN)){
-                throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected identifier or ')'");
+                throw new InvalidSyntaxError(this.currToken.getPositionStart(), this.currToken.getPositionEnd(), "Expected identifier or ')'");
             }
         }
 
@@ -706,7 +706,7 @@ public class Parser {
         }
 
         if(!this.currToken.getType().equals(Token.TT_NEWLINE)){
-            throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected identifier or '->' or newline");
+            throw new InvalidSyntaxError(this.currToken.getPositionStart(), this.currToken.getPositionEnd(), "Expected identifier or '->' or newline");
         }
 
         res.registerAdvancement();
@@ -716,7 +716,7 @@ public class Parser {
         if(res.getError() != null) return res;
 
         if(!this.currToken.matches(Token.TT_KEYWORD, "end")){
-            throw new InvalidSyntaxError(this.currToken.positionStart, this.currToken.positionEnd, "Expected end");
+            throw new InvalidSyntaxError(this.currToken.getPositionStart(), this.currToken.getPositionEnd(), "Expected end");
         }
 
         res.registerAdvancement();
