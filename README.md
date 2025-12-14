@@ -1,7 +1,7 @@
 # Happy
 
-Current bugs
-- For loops
+Current bugs:
+None known
 
 TODO:
 Make an automated ci pipeline (maybe just a github actions script that runs a file simply testing all basic syntaxes of the language to make sure everything still works)
