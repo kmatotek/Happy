@@ -503,16 +503,10 @@ public class Parser {
 
 
         ASTNode body = res.register(this.statement());
+        if (res.getError() != null) return res;
 
+        return res.success(new ForNode(varName, body, startValue, endValue, stepValue, false));
 
-        if(res.getError() != null) return res;
-
-       if(!this.currToken.matches(Token.TT_KEYWORD,"end")){
-            // Failing here
-            throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(),"Expected 'end'");
-        }
-
-        return res.success(new ForNode(varName, startValue, endValue, stepValue, body, false));
     }
 
     public ParseResult whileExpression(){
