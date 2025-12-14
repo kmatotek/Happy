@@ -1,0 +1,4 @@
+func: add. args: [x, y]
+7
+func: addThree. args: [x, y, z]
+6

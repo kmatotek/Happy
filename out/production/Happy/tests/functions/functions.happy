@@ -1,0 +1,4 @@
+func add(x, y) -> x + y
+var addTest = add(3,4)
+func addThree(x, y, z) -> x + y + z
+var addThree = addThree(1,2,3)
