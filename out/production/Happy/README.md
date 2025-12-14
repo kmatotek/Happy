@@ -1,7 +1,7 @@
 # Happy
 
-Current bugs
-- For loops
+Current bugs:
+`while a < 10 then ; var a = a + 1 ; print(a) end` prints null but still executes and works
 
 TODO:
 Make an automated ci pipeline (maybe just a github actions script that runs a file simply testing all basic syntaxes of the language to make sure everything still works)
@@ -65,7 +65,6 @@ while <condition> then <expression>
 
 ~~~
 while x < 5 then var x = x + 1
-while a < 10 then ; var a = a + 1 ; print(a) end
 ~~~
 
 ### Functions

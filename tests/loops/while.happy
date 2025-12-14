@@ -1,0 +1,2 @@
+var x = 0
+while x < 5 then var x = x + 1
