@@ -7,7 +7,7 @@ import SymbolTable.SymbolTable;
 import java.util.ArrayList;
 
 public class BaseFunction extends Value {
-    public String name;
+    private String name;
 
     public BaseFunction(String name){
         this.name = name;

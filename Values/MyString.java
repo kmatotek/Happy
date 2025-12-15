@@ -1,9 +1,18 @@
 package Values;
 
 public class MyString extends Value {
-    public String s;
 
-   public  MyString(String s){
+    private String s;
+
+    public  MyString(String s){
+        this.s = s;
+    }
+
+    public String getS() {
+        return s;
+    }
+
+    public void setS(String s) {
         this.s = s;
     }
 

@@ -4,9 +4,9 @@ import java.util.HashMap;
 import Values.*;
 
 public class SymbolTable {
-    public HashMap<String,Value> symbols = new HashMap<>();
-    public HashMap<String,Value> parentSymbols = new HashMap<>();
-    public SymbolTable parent;
+    private HashMap<String,Value> symbols = new HashMap<>();
+    private HashMap<String,Value> parentSymbols = new HashMap<>();
+    private SymbolTable parent;
 
     public SymbolTable(SymbolTable parent){
         this.parent = parent;
@@ -14,7 +14,11 @@ public class SymbolTable {
 
     public SymbolTable(){
     }
-    
+
+    public HashMap<String, Value> getSymbols() {
+        return symbols;
+    }
+
     public Value get(String name){
         Value value = symbols.getOrDefault(name,null);
         if(value == null && !parentSymbols.isEmpty()){

@@ -49,8 +49,8 @@ public class HappyMain {
             Value result = run(input, globalSymbolTable, context);
 
             if (result instanceof MyList listRes) {
-                if (listRes.elements.size() == 1) {
-                    System.out.println(listRes.elements.get(0));
+                if (listRes.getElements().size() == 1) {
+                    System.out.println(listRes.getElements().get(0));
                 } else {
                     System.out.println(result);
                 }

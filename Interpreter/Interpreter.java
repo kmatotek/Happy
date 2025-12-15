@@ -90,15 +90,15 @@ public class Interpreter {
             Number right = (Number) value2;
             MyString ans = null;
             if(node.getToken().getType().equals(Token.TT_MUL)){
-                int goTo = Number.toInt(right.value);
+                int goTo = Number.toInt(right.getValue());
                 StringBuilder sb = new StringBuilder();
                 for(int i = 0; i < goTo; i++){
                     sb.append(left);
                 }
                 ans = new MyString(sb.toString());
             } else if (node.getToken().getType().equals(Token.TT_EXCLM)){
-                int index = Number.toInt(right.value);
-                ans = new MyString(String.valueOf(left.s.charAt(index)));
+                int index = Number.toInt(right.getValue());
+                ans = new MyString(String.valueOf(left.getS().charAt(index)));
             } else {
                 throw new InvalidSyntaxError(node.getPositionStart(), node.getPositionEnd(), "Invalid operator on Strings");
             }
@@ -108,16 +108,16 @@ public class Interpreter {
             Number right = (Number) value2;
             if(node.getToken().getType().equals(Token.TT_PLUS)){
                 MyList ans = left.copy();
-                ans.elements.add(right);
+                ans.getElements().add(right);
                 return res.success(ans);
 
             } else if(node.getToken().getType().equals(Token.TT_EXCLM)){
                 
-                int get = Number.toInt(right.value);
-                if(get < 0 || get > left.elements.size()){
+                int get = Number.toInt(right.getValue());
+                if(get < 0 || get > left.getElements().size()){
                     throw new InvalidSyntaxError(node.getPositionStart(), node.getPositionEnd(), "Index " + get + " out of bounds");
                 }
-                Number ans = new Number(left.elements.get(get));
+                Number ans = new Number(left.getElements().get(get));
                 return res.success(ans);
             }
 
@@ -129,8 +129,8 @@ public class Interpreter {
                 MyList right = (MyList) value2;
                 MyList ans = left.copy();
 
-                for(Value v : right.elements){
-                    ans.elements.add(v);
+                for(Value v : right.getElements()){
+                    ans.getElements().add(v);
                 }
             
                 return res.success(ans);
@@ -200,7 +200,7 @@ public class Interpreter {
     public RTResult visitVarAccessNode(VarAccessNode node, Context context){
         RTResult res = new RTResult();
         Object varName = node.getVarNameToken().getValue();
-        Value value = context.getSymbolTableObject().symbols.get(varName);
+        Value value = context.getSymbolTableObject().getSymbols().get(varName);
 
         if(value == null) throw new IllegalArgumentException("Variable " + varName + " is not defined");
         
@@ -236,7 +236,7 @@ public class Interpreter {
 
 
             
-            if(Number.toInt(conditionValue.value) != 0){
+            if(Number.toInt(conditionValue.getValue()) != 0){
                 Value exprValue = res.register(this.visit(expr,context));
                 if(res.shouldReturn()) return res;
                 if(shouldReturnNull){
@@ -276,12 +276,12 @@ public class Interpreter {
             stepValue = new Number(1);
         }
         
-        int i = Number.toInt(startValue.value);
-        int step = Number.toInt(stepValue.value);
+        int i = Number.toInt(startValue.getValue());
+        int step = Number.toInt(stepValue.getValue());
       
         
         if(step >= 0){
-            while(i < Number.toInt(endValue.value)){
+            while(i < Number.toInt(endValue.getValue())){
                 context.getSymbolTableObject().set(node.getVarNameToken().getValue().toString(), new Number(i));
                 
                 i += step;
@@ -293,7 +293,7 @@ public class Interpreter {
                 elements.add(value);
             }
         } else {
-            while(i > Number.toInt(endValue.value)){
+            while(i > Number.toInt(endValue.getValue())){
                 context.getSymbolTableObject().set(node.getVarNameToken().getValue().toString(), new Number(i));
                 i += step;
                 
@@ -322,7 +322,7 @@ public class Interpreter {
             Number condition = (Number) res.register(this.visit(node.getConditionNode(), context));
             if(res.shouldReturn()) return res;
 
-            if(Number.toInt(condition.value) == 0){
+            if(Number.toInt(condition.getValue()) == 0){
                 break;
             }
 

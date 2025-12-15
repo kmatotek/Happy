@@ -4,9 +4,9 @@ import Errors.DivideByZero;
 import Position.*;
 
 public class Number extends Value {
-    public Object value;
-    public Position positionStart;
-    public Position positionEnd;
+    private Object value;
+    private Position positionStart;
+    private Position positionEnd;
 
     public Number(Object obj) {
         this.value = obj;
@@ -15,6 +15,14 @@ public class Number extends Value {
     public void setPosition(Position posStart, Position posEnd){
         this.positionStart = posStart;
         this.positionEnd = posEnd;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
     }
 
     public Number addBy(Number other) {

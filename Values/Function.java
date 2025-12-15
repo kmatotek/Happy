@@ -9,13 +9,13 @@ import Context.*;
 //import DataStructures.*;
 
 public class Function extends BaseFunction {
-    public Context context;
-    public String name;
-    public ASTNode bodyNode;
-    public SymbolTable symbolTable;
-    public boolean shouldAutoReturn;
-    public ArrayList<Number> argNodes = new ArrayList<>();
-    public ArrayList<String> argNames = new ArrayList<>();
+    private Context context;
+    private String name;
+    private ASTNode bodyNode;
+    private SymbolTable symbolTable;
+    private boolean shouldAutoReturn;
+    private ArrayList<Number> argNodes = new ArrayList<>();
+    private ArrayList<String> argNames = new ArrayList<>();
 
     public Function(String name, ASTNode bodyNode, ArrayList<Number> argNodes, ArrayList<String> argNames){
         super(name);

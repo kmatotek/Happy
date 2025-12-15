@@ -8,7 +8,7 @@ import java.util.Arrays;
 import Parser.*;
 
 public class BuiltInFunction extends BaseFunction {
-    public String name;
+    private String name;
 
     public BuiltInFunction(String name) {
         super(name);  // Call the superclass constructor
@@ -67,7 +67,7 @@ public class BuiltInFunction extends BaseFunction {
     public Value factorial(Context context) {
         Number num = (Number) context.getSymbolTableObject().get("value");
         int res = 1;
-        for(int i = 1; i <= Number.toInt(num.value); i++){
+        for(int i = 1; i <= Number.toInt(num.getValue()); i++){
             res = res * i;
         }
         return new Number(res);
@@ -77,10 +77,10 @@ public class BuiltInFunction extends BaseFunction {
         Value v = context.getSymbolTableObject().get("value");
         if (v instanceof MyString){
             MyString s = (MyString) v;
-            return new Number(s.s.length());
+            return new Number(s.getS().length());
         } else if (v instanceof MyList){
             MyList lis = (MyList) v;
-            return new Number(lis.elements.size());
+            return new Number(lis.getElements().size());
         } else {
             throw new IllegalArgumentException("Invalid use of 'LENGTH' method");
         }

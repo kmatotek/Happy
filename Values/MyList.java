@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 
 public class MyList extends Value {
-    public ArrayList<Value> elements;
+    private ArrayList<Value> elements;
 
     public MyList(ArrayList<Value> elements){
         this.elements = elements;
@@ -14,6 +14,10 @@ public class MyList extends Value {
         MyList newList = this.copy();
         newList.elements.add(other);
         return newList;
+    }
+
+    public ArrayList<Value> getElements() {
+        return elements;
     }
 
     public MyList copy(){
