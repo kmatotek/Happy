@@ -14,7 +14,7 @@ public class BaseFunction extends Value {
     }
 
     public Context generateNewContext(){
-        Context newContext = new Context(this.name, this.context);
+        Context newContext = new Context(this.name, this.getContext());
         newContext.setSymbolTableObject(new SymbolTable(newContext.getParent().getSymbolTableObject()));
         return newContext;
     }
@@ -23,7 +23,7 @@ public class BaseFunction extends Value {
         RTResult res = new RTResult();
 
         if(argNames.size() != args.size()){
-            throw new InvalidSyntaxError(positionStart, positionEnd, "Illegal amount of arguments");
+            throw new InvalidSyntaxError(this.getPositionStart(), this.getPositionEnd(), "Illegal amount of arguments");
         }
         return res.success(null);
     }

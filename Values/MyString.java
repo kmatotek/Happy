@@ -27,7 +27,7 @@ public class MyString extends Value {
 
     public MyString copy(){
         MyString copy = new MyString(this.s);
-        copy.setContext(this.context);
+        copy.setContext(this.getContext());
         return copy;
     }
 

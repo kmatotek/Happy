@@ -22,7 +22,7 @@ public class MyList extends Value {
 
     public MyList copy(){
         MyList copy = new MyList(this.elements);
-        copy.setContext(this.context);
+        copy.setContext(this.getContext());
         return copy;
     }
 

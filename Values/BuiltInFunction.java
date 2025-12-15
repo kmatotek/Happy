@@ -56,7 +56,7 @@ public class BuiltInFunction extends BaseFunction {
     }
 
     public void noVisitMethod() {
-        throw new InvalidSyntaxError(this.positionStart, this.positionEnd, "Method not defined"); // Handle method not found
+        throw new InvalidSyntaxError(this.getPositionStart(), this.getPositionEnd(), "Method not defined"); // Handle method not found
     }
 
     public Value print(Context context) {
