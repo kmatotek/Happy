@@ -40,7 +40,7 @@ public class ReplTestRunner {
                             .redirectErrorStream(true)
                             .start();
 
-                    // Write REPL input line-by-line
+                    // Get input line-by-line
                     try (BufferedWriter writer = new BufferedWriter(
                             new OutputStreamWriter(process.getOutputStream()))) {
 
@@ -51,7 +51,7 @@ public class ReplTestRunner {
                         }
                     }
 
-                    // Wait for REPL to exit
+                    // Wait to exit
                     if (!process.waitFor(3, TimeUnit.SECONDS)) {
                         process.destroyForcibly();
                         throw new RuntimeException("Test timed out");
@@ -70,13 +70,13 @@ public class ReplTestRunner {
 
                     if (!output.equals(expected)) {
                         allPassed = false;
-                        System.err.println("\n❌ FAILED: " + testFile);
+                        System.err.println("\n✗ failed :( " + testFile);
                         System.err.println("Expected:");
                         System.err.println(expected);
                         System.err.println("Got:");
                         System.err.println(output);
                     } else {
-                        System.out.println("✅ PASSED: " + testFile);
+                        System.out.println("✔ passed! " + testFile);
                     }
 
                 } catch (Exception e) {
@@ -88,10 +88,10 @@ public class ReplTestRunner {
         }
 
         if (!allPassed) {
-            System.err.println("\n❌ Some Happy REPL tests failed.");
+            System.err.println("\n Some tests failed.");
             System.exit(1);
         }
 
-        System.out.println("\n🎉 All Happy REPL tests passed!");
+        System.out.println("\n🎉 All tests passed!");
     }
 }
