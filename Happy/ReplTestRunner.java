@@ -81,14 +81,14 @@ public class ReplTestRunner {
 
                 } catch (Exception e) {
                     allPassed = false;
-                    System.err.println("\n💥 ERROR: " + testFile);
+                    System.err.println("\n error: " + testFile);
                     e.printStackTrace();
                 }
             }
         }
 
         if (!allPassed) {
-            System.err.println("\n Some tests failed.");
+            System.err.println("\n Some tests failed");
             System.exit(1);
         }
 
