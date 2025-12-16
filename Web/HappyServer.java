@@ -17,7 +17,9 @@ import java.nio.file.Paths;
 public class HappyServer {
 
     public static void main(String[] args) throws IOException {
-        int port = 8080;
+        int port = Integer.parseInt(
+                System.getenv().getOrDefault("PORT", "8080")
+        );
 
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 
