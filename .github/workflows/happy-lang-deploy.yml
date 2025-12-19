@@ -3,14 +3,17 @@ name: Happy Language CD
 on:
   push:
     branches: [ main ]
+    paths:
+      - '**'
+      - '.github/workflows/happy-deploy.yaml'
+  workflow_dispatch:
 
 jobs:
   build-test-and-deploy:
     runs-on: ubuntu-latest
-
     permissions:
-      contents: read   # required for actions/checkout
       id-token: write
+      contents: read
 
     steps:
       # Checkout repository
@@ -32,40 +35,31 @@ jobs:
           javac -d build $(find . -name "*.java")
           jar cfe happy.jar Happy.HappyMain -C build .
 
-      # Run tests
-      - name: Run Happy REPL tests
+      # Run Happy REPL tests
+      - name: Run REPL tests
         run: |
           java -cp build Happy.ReplTestRunner
 
-      # Docker Hub login
-      - name: Docker Hub login
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      # Build and push Docker image
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: parispig/happy-language:${{ github.sha }}
-
-      # Azure login using Service Principal
+      # Azure Login (using azure's OIDC setup)
       - name: Azure Login
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          client-id: ${{ secrets.HAPPYLANGUAGE_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.HAPPYLANGUAGE_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.HAPPYLANGUAGE_AZURE_SUBSCRIPTION_ID }}
 
-      # Deploy Docker image to Azure Container App
-      - name: Deploy to Azure Container App
+      # Build and push Docker image to Docker Hub
+      - name: Build and push Docker image
         uses: azure/container-apps-deploy-action@v2
         with:
-          imageToDeploy: parispig/happy-language:${{ github.sha }}
+          appSourcePath: ${{ github.workspace }}
+          _dockerfilePathKey_: _dockerfilePath_
+          _targetLabelKey_: _targetLabel_
+          registryUrl: docker.io
+          registryUsername: ${{ secrets.HAPPYLANGUAGE_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.HAPPYLANGUAGE_REGISTRY_PASSWORD }}
           containerAppName: happy-language
           resourceGroup: DefaultResourceGroup-EUS
+          imageToBuild: parispig/happy-language:${{ github.sha }}
+          _buildArgumentsKey_: |
+            _buildArgumentsValues_
