@@ -4,10 +4,10 @@ WORKDIR /app
 # Copy all source code
 COPY . .
 
-# Build jar inside the container
+# Build jar inside the container with HappyServer as entry point
 RUN mkdir build \
     && javac -d build $(find . -name "*.java") \
-    && jar cfe app.jar Happy.HappyMain -C build .
+    && jar cfe app.jar Web.HappyServer -C build .
 
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
