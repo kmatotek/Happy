@@ -5,8 +5,12 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  build-test-and-deploy:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read   # required for actions/checkout
+      id-token: write
 
     steps:
       # Checkout repository
@@ -28,7 +32,12 @@ jobs:
           javac -d build $(find . -name "*.java")
           jar cfe happy.jar Happy.HappyMain -C build .
 
-      # Log in to Docker Hub
+      # Run tests
+      - name: Run Happy REPL tests
+        run: |
+          java -cp build Happy.ReplTestRunner
+
+      # Docker Hub login
       - name: Docker Hub login
         uses: docker/login-action@v3
         with:
@@ -44,13 +53,14 @@ jobs:
           push: true
           tags: parispig/happy-language:${{ github.sha }}
 
-      # Azure login via Service Principal
+      # Azure login using Service Principal
       - name: Azure Login
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
 
       # Deploy Docker image to Azure Container App
       - name: Deploy to Azure Container App
