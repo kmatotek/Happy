@@ -27,14 +27,6 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      # Build happy.jar automatically
-      - name: Build happy.jar
-        run: |
-          rm -rf build
-          mkdir build
-          javac -d build $(find . -name "*.java")
-          jar cfe happy.jar Happy.HappyMain -C build .
-
       # Run Happy REPL tests
       - name: Run REPL tests
         run: |
