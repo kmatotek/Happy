@@ -71,6 +71,7 @@ while x < 5 then var x = x + 1
 Built in Functions
 The `print` function takes in any Type in prints that Type as a String.
 The `length` function returns the length of a List or a String.
+the `fac` function returns the factorial of a number (floored if non-int)
 
 ~~~
 print("Be happy") -> "Be happy"
