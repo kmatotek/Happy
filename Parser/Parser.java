@@ -533,7 +533,7 @@ public class Parser {
             res.registerAdvancement();
             this.advance();
 
-            ASTNode body = res.register(this.statements());
+            ASTNode body = res.register(this.statement());
             if(res.getError() != null) return res;
 
             if(!this.currToken.matches(Token.TT_KEYWORD,"end")){
@@ -546,7 +546,7 @@ public class Parser {
             return res.success(new WhileNode(condition, body, true)); 
         }
            
-        ASTNode body = res.register(this.statements());
+        ASTNode body = res.register(this.statement());
         if(res.getError() != null) return res;
 
         return res.success(new WhileNode(condition, body, false));
