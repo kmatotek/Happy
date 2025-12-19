@@ -1,0 +1,55 @@
+name: Deploy Happy to Azure
+
+on:
+  push:
+    branches: [ main ]  # Only deploy from main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Java 21
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # Step 3: Build happy.jar
+      - name: Build happy.jar
+        run: |
+          rm -rf build
+          mkdir build
+          javac -d build $(find . -name "*.java")
+          jar cfe happy.jar Happy.HappyMain -C build .
+
+      # Step 4: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Step 5: Build and push Docker image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            parispig/happy-language:${{ github.sha }}
+
+      # Step 6: Deploy to Azure Container Apps using User-assigned Identity
+      - name: Deploy to Azure Container App
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          imageToDeploy: parispig/happy-language:${{ github.sha }}
+          containerAppName: happy-language
+          resourceGroup: DefaultResourceGroup-EUS
+          environmentVariables: ""  # Optional
