@@ -1,38 +1,29 @@
-name: Happy Language CD
+name: Trigger auto deployment for happy-language
 
+# When this action will be executed
 on:
+  # Automatically trigger it when detected changes in repo
   push:
-    branches: [ main ]
+    branches:
+      [ main ]
     paths:
       - '**'
-      - '.github/workflows/happy-deploy.yaml'
+      - '.github/workflows/happy-lang-deploy.yaml'
+
+  # Allow manual trigger
   workflow_dispatch:
 
 jobs:
-  build-test-and-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
-      contents: read
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
 
     steps:
-      # Checkout repository
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
 
-      # Set up Java 21
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-
-      # Run Happy REPL tests
-      - name: Run REPL tests
-        run: |
-          java -cp build Happy.ReplTestRunner
-
-      # Azure Login (using azure's OIDC setup)
       - name: Azure Login
         uses: azure/login@v2
         with:
@@ -40,8 +31,7 @@ jobs:
           tenant-id: ${{ secrets.HAPPYLANGUAGE_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.HAPPYLANGUAGE_AZURE_SUBSCRIPTION_ID }}
 
-      # Build and push Docker image to Docker Hub
-      - name: Build and push Docker image
+      - name: Build and push container image to registry
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}
@@ -55,3 +45,4 @@ jobs:
           imageToBuild: parispig/happy-language:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
+
