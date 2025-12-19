@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk
+FROM eclipse-temurin:21-jdk AS builder
 WORKDIR /app
 
 # Copy all source code
@@ -7,8 +7,16 @@ COPY . .
 # Build jar inside the container
 RUN mkdir build \
     && javac -d build $(find . -name "*.java") \
-    && jar cfe app.jar Happy.HappyMain -C build . \
-    && rm -rf build
+    && jar cfe app.jar Happy.HappyMain -C build .
+
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+
+# Copy the built jar from builder stage
+COPY --from=builder /app/app.jar app.jar
+
+# Copy the Web directory
+COPY Web ./Web
 
 EXPOSE 8080
 CMD ["java", "-jar", "app.jar"]
