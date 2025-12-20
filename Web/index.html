@@ -44,22 +44,24 @@ var test = if 3 >= 1 then "math works" else "math broken"</pre>
             <h3>Conditionals</h3>
             <div class="code-block">
                 <button class="copy-btn">Copy</button>
-                <pre>if x == 10 then print("x is 10") elif x > 10 then print("x is greater") else print("x is less")</pre>
+                <pre>var x = 1
+if x == 10 then print("x is 10") elif x > 10 then print("x is greater") else print("x is less")</pre>
             </div>
 
             <h3>Loops</h3>
             <p><strong>For Loop</strong></p>
             <div class="code-block">
                 <button class="copy-btn">Copy</button>
-                <pre>for i = 0 to 5 then print(i)
+                <pre>for i = 0 to 6 then print(i)
 
-for i = 0 to 10 step 2 then print(i)</pre>
+for i = 0 to 11 step 2 then print(i)</pre>
             </div>
 
             <p><strong>While Loop</strong></p>
             <div class="code-block">
                 <button class="copy-btn">Copy</button>
-                <pre>while x < 5 then var x = x + 1</pre>
+                <pre>var x = 0
+while x < 5 then var x = x + 1</pre>
             </div>
 
             <h3>Functions</h3>
@@ -76,14 +78,11 @@ var result = add(3, 4)</pre>
             <h3>Lists</h3>
             <div class="code-block">
                 <button class="copy-btn">Copy</button>
-                <pre>[1, 2, 3] + 4
-=> [1, 2, 3, 4]
+                <pre>[1, 2, 3] + 4 => [1, 2, 3, 4]
 
-[1, 2] + [3, 4, 5]
-=> [1, 2, 3, 4, 5]
+[1, 2] + [3, 4, 5] => [1, 2, 3, 4, 5]
 
-[1, 2, 3] ! 0
-=> 1</pre>
+[1, 2, 3] ! 0 => 1</pre>
             </div>
 
             <h3>Strings</h3>
@@ -93,14 +92,105 @@ var result = add(3, 4)</pre>
 "Text with \"quotes\""
 "Text \n with newlines"
 
-"Happy" * 3
-=> "HappyHappyHappy"</pre>
+"Happy" * 3 => "HappyHappyHappy"</pre>
             </div>
 
             <h3>Operators</h3>
             <p>Arithmetic: <code>+ - * /</code></p>
             <p>Comparison: <code>== != &lt; &gt; &lt;= &gt;=</code></p>
             <p>Logical: <code>not</code></p>
+
+            <h3>Examples</h3>
+
+            <div class="example">
+                <button class="example-header">Simple Geometry Functions</button>
+                <div class="example-content">
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre>func area_circle(r) -> pi*r*r
+func circumference_circle(r) -> 2*pi*r
+
+func area_triangle(b, h) -> (b*h)/2
+
+area_circle(1)
+circumference_circle(1)
+
+area_triangle(2,2)</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="example">
+                <button class="example-header">Counting Loop</button>
+                <div class="example-content">
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre>print("Counting from 1 to 10:")
+for i = 1 to 11 then print(i)
+
+print("Counting to 20 by twos:")
+for i = 0 to 21 step 2 then print(i)</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="example">
+                <button class="example-header">Temperature Converter</button>
+                <div class="example-content">
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre>func celsiusToFahrenheit(c) -> (c * 9 / 5) + 32
+
+var temp_c = 0
+var temp_f = celsiusToFahrenheit(temp_c)</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="example">
+                <button class="example-header">Building Lists</button>
+                <div class="example-content">
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre>var a = [1,2,3]
+var b = [1,2] + 3
+var c = [1] + [2,3]
+var d = [1,2] + [3]</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="example">
+                <button class="example-header">String Fun</button>
+                <div class="example-content">
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre>print("Happy" * 3)
+
+var greeting = "Hello " + "World!"
+
+print(happy + "\n")
+
+for i = 1 to 100 then print(("*" * i) + "\n")</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="example">
+                <button class="example-header">Grade Evaluator</button>
+                <div class="example-content">
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre>func letter_grade(percent) -> if percent >= 90 then "A" elif percent >= 80 then "B" elif percent >= 70 then "C" else "Try harder!"
+
+letter_grade(97)
+letter_grade(83)
+letter_grade(79)
+letter_grade(53)</pre>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -113,12 +203,14 @@ var result = add(3, 4)</pre>
         </div>
 
         <div class="editor-container">
-        <textarea id="code">func greet(name) -> "Hello, " + name + "!"
+        <textarea id="code">func greet(name) -> "Hello " + name + "!"
 
-var message = greet("World")
-print(message)</textarea>
+print(greet("World"))</textarea>
 
-            <button class="run" id="run-btn">Run</button>
+            <div class="button-group">
+                <button class="run" id="run-btn">Run</button>
+                <button class="clear" id="clear-btn">Clear</button>
+            </div>
 
             <pre class="output" id="output"></pre>
         </div>

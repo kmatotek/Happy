@@ -107,9 +107,3 @@ func hi() ->
         .
         .
 end
-
-Things I want to implement:
-
-a readme!!
-:) at the end of lines (possibly a :( as well)
-for i = 0 to 10 then ; print(i) ; print(i+2) end

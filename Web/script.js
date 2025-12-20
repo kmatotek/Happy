@@ -21,9 +21,16 @@ async function run() {
   document.getElementById("output").textContent = await res.text();
 }
 
+// Clear code and output
+function clear() {
+  document.getElementById("code").value = "";
+  document.getElementById("output").textContent = "";
+}
+
 // Wire up buttons
 document.getElementById("toggle-docs").addEventListener("click", toggleDocs);
 document.getElementById("run-btn").addEventListener("click", run);
+document.getElementById("clear-btn").addEventListener("click", clear);
 
 // Copy buttons
 document.querySelectorAll(".copy-btn").forEach(button => {
@@ -33,5 +40,12 @@ document.querySelectorAll(".copy-btn").forEach(button => {
 
     button.textContent = "Copied!";
     setTimeout(() => (button.textContent = "Copy"), 1000);
+  });
+});
+
+// Example toggles
+document.querySelectorAll(".example-header").forEach(header => {
+  header.addEventListener("click", () => {
+    header.parentElement.classList.toggle("open");
   });
 });
