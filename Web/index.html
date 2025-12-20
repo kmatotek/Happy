@@ -1,255 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Happy Language</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.5;
-      color: #1a1a1a;
-    }
+    <meta charset="UTF-8" />
+    <title>Happy Language</title>
 
-    .container {
-      display: flex;
-      height: 100vh;
-    }
-
-    .sidebar {
-      width: 280px;
-      background: #f9f9f9;
-      border-right: 1px solid #e0e0e0;
-      overflow-y: auto;
-      transform: translateX(-280px);
-      transition: transform 0.3s ease;
-    }
-
-    .sidebar.open {
-      transform: translateX(0);
-    }
-
-    .sidebar-content {
-      padding: 20px;
-    }
-
-    .sidebar h2 {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 16px;
-    }
-
-    .sidebar h3 {
-      font-size: 14px;
-      font-weight: 600;
-      margin-top: 20px;
-      margin-bottom: 8px;
-      color: #555;
-    }
-
-    .sidebar p {
-      font-size: 13px;
-      color: #666;
-      margin-bottom: 8px;
-    }
-
-    .sidebar code {
-      background: #fff;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-family: 'SF Mono', Monaco, monospace;
-      font-size: 12px;
-      border: 1px solid #e0e0e0;
-    }
-
-    /* Code block wrapper */
-    .code-block {
-      position: relative;
-      margin: 8px 0;
-    }
-
-    .sidebar pre {
-      background: #fff;
-      padding: 10px;
-      border-radius: 4px;
-      font-size: 12px;
-      overflow-x: auto;
-      border: 1px solid #e0e0e0;
-      font-family: 'SF Mono', Monaco, monospace;
-    }
-
-    /* Copy button */
-    .copy-btn {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 4px;
-      border: 1px solid #d0d0d0;
-      background: #f0f0f0;
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.15s ease;
-    }
-
-    .code-block:hover .copy-btn {
-      opacity: 1;
-    }
-
-    .copy-btn:active {
-      background: #e0e0e0;
-    }
-
-    .main {
-      flex: 1;
-      padding: 40px;
-      overflow-y: auto;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 30px;
-    }
-
-    h1 {
-      font-size: 24px;
-      font-weight: 600;
-    }
-
-    .toggle-docs {
-      padding: 6px 14px;
-      font-size: 13px;
-      background: #f0f0f0;
-      color: #1a1a1a;
-      border: 1px solid #d0d0d0;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-
-    .toggle-docs:hover {
-      background: #e5e5e5;
-    }
-
-    .editor-container {
-      max-width: 700px;
-    }
-
-    textarea {
-      width: 100%;
-      height: 180px;
-      font-family: 'SF Mono', Monaco, 'Courier New', monospace;
-      font-size: 14px;
-      padding: 12px;
-      border: 1px solid #d0d0d0;
-      border-radius: 6px;
-      resize: vertical;
-      outline: none;
-    }
-
-    textarea:focus {
-      border-color: #888;
-    }
-
-    button.run {
-      margin-top: 16px;
-      padding: 8px 20px;
-      font-size: 14px;
-      background: #1a1a1a;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-
-    button.run:hover {
-      background: #333;
-    }
-
-    pre.output {
-      background: #f5f5f5;
-      color: #1a1a1a;
-      padding: 16px;
-      margin-top: 20px;
-      border-radius: 6px;
-      font-family: 'SF Mono', Monaco, 'Courier New', monospace;
-      font-size: 13px;
-      overflow-x: auto;
-      border: 1px solid #e0e0e0;
-    }
-
-    pre.output:empty {
-      display: none;
-    }
-  </style>
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 <div class="container">
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-content">
-      <h2>Documentation</h2>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-content">
+            <h2>Documentation</h2>
 
-      <h3>Types</h3>
-      <p>Happy supports Number, String, and List types. Booleans are represented as <code>1</code> (true) or <code>0</code> (false). '=>' in these docs represent the output. They are NOT apart of the code</p>
+            <h3>Types</h3>
+            <p>
+                Happy supports Number, String, and List types.
+                Booleans are represented as <code>1</code> (true) or
+                <code>0</code> (false). '=&gt;' in these docs represent the output.
+                They are NOT apart of the code
+            </p>
 
-      <h3>Built-in Constants</h3>
-      <div class="code-block">
-        <button class="copy-btn">Copy</button>
-        <pre>null  => 0
+            <h3>Built-in Constants</h3>
+            <div class="code-block">
+                <button class="copy-btn">Copy</button>
+                <pre>null  => 0
 true  => 1
 false => 0
 pi    => 3.14159...
 happy => ":)"</pre>
-      </div>
+            </div>
 
-      <h3>Variables</h3>
-      <div class="code-block">
-        <button class="copy-btn">Copy</button>
-        <pre>var x = 10
+            <h3>Variables</h3>
+            <div class="code-block">
+                <button class="copy-btn">Copy</button>
+                <pre>var x = 10
 var name = "Happy"
 var list = [1, 2, 3]</pre>
-      </div>
+            </div>
 
-      <h3>Conditionals</h3>
-      <div class="code-block">
-        <button class="copy-btn">Copy</button>
-        <pre>if x == 10 then print("x is 10") elif x > 10 then print("x is greater") else print("x is less")</pre>
-      </div>
+            <h3>Conditionals</h3>
+            <div class="code-block">
+                <button class="copy-btn">Copy</button>
+                <pre>if x == 10 then print("x is 10")
+elif x > 10 then print("x is greater")
+else print("x is less")</pre>
+            </div>
 
-      <h3>Loops</h3>
-      <p><strong>For Loop</strong></p>
-      <div class="code-block">
-        <button class="copy-btn">Copy</button>
-        <pre>for i = 0 to 5 then print(i)
+            <h3>Loops</h3>
+            <p><strong>For Loop</strong></p>
+            <div class="code-block">
+                <button class="copy-btn">Copy</button>
+                <pre>for i = 0 to 5 then print(i)
 
 for i = 0 to 10 step 2 then print(i)</pre>
-      </div>
+            </div>
 
-      <p><strong>While Loop</strong></p>
-      <div class="code-block">
-        <button class="copy-btn">Copy</button>
-        <pre>while x < 5 then var x = x + 1</pre>
-      </div>
+            <p><strong>While Loop</strong></p>
+            <div class="code-block">
+                <button class="copy-btn">Copy</button>
+                <pre>while x < 5 then var x = x + 1</pre>
+            </div>
 
-      <h3>Functions</h3>
-      <p><strong>Built-in:</strong> <code>print()</code>, <code>length()</code>, <code>fac()</code></p>
+            <h3>Functions</h3>
+            <p><strong>Built-in:</strong> <code>print()</code>, <code>length()</code>, <code>fac()</code></p>
 
-      <p><strong>Custom Functions</strong></p>
-      <div class="code-block">
-        <button class="copy-btn">Copy</button>
-        <pre>func add(x, y) -> x + y
+            <p><strong>Custom Functions</strong></p>
+            <div class="code-block">
+                <button class="copy-btn">Copy</button>
+                <pre>func add(x, y) -> x + y
 
 var result = add(3, 4)
 print(result)</pre>
-      </div>
+            </div>
 
-      <h3>Lists</h3>
-      <div class="code-block">
-        <button class="copy-btn">Copy</button>
-        <pre>[1, 2, 3] + 4
+            <h3>Lists</h3>
+            <div class="code-block">
+                <button class="copy-btn">Copy</button>
+                <pre>[1, 2, 3] + 4
 => [1, 2, 3, 4]
 
 [1, 2] + [3, 4]
@@ -257,76 +85,48 @@ print(result)</pre>
 
 [1, 2, 3] ! 0
 => 1</pre>
-      </div>
+            </div>
 
-      <h3>Strings</h3>
-      <div class="code-block">
-        <button class="copy-btn">Copy</button>
-        <pre>"Hello World"
+            <h3>Strings</h3>
+            <div class="code-block">
+                <button class="copy-btn">Copy</button>
+                <pre>"Hello World"
 "Text with \"quotes\""
 "Text \n with newlines"
 
 "Happy" * 3
 => "HappyHappyHappy"</pre>
-      </div>
+            </div>
 
-      <h3>Operators</h3>
-      <p>Arithmetic: <code>+ - * /</code></p>
-      <p>Comparison: <code>== != < > <= >=</code></p>
-      <p>Logical: <code>not</code></p>
-    </div>
-  </div>
-
-  <div class="main">
-    <div class="header">
-      <h1>Happy Language</h1>
-      <button class="toggle-docs" onclick="toggleDocs()">
-        <span id="docs-toggle-text">Show Docs</span>
-      </button>
+            <h3>Operators</h3>
+            <p>Arithmetic: <code>+ - * /</code></p>
+            <p>Comparison: <code>== != &lt; &gt; &lt;= &gt;=</code></p>
+            <p>Logical: <code>not</code></p>
+        </div>
     </div>
 
-    <div class="editor-container">
-      <textarea id="code">func greet(name) -> "Hello, " + name + "!"
+    <div class="main">
+        <div class="header">
+            <h1>Happy Language</h1>
+            <button class="toggle-docs" id="toggle-docs">
+                <span id="docs-toggle-text">Show Docs</span>
+            </button>
+        </div>
+
+        <div class="editor-container">
+        <textarea id="code">func greet(name) -> "Hello, " + name + "!"
 
 var message = greet("World")
 print(message)</textarea>
-      <br>
-      <button class="run" onclick="run()">Run</button>
 
-      <pre class="output" id="output"></pre>
+            <button class="run" id="run-btn">Run</button>
+
+            <pre class="output" id="output"></pre>
+        </div>
     </div>
-  </div>
 </div>
 
-<script>
-  function toggleDocs() {
-    const sidebar = document.getElementById('sidebar');
-    const toggleText = document.getElementById('docs-toggle-text');
-
-    sidebar.classList.toggle('open');
-    toggleText.textContent = sidebar.classList.contains('open')
-      ? 'Hide Docs'
-      : 'Show Docs';
-  }
-
-  async function run() {
-    const res = await fetch("/run", {
-      method: "POST",
-      body: document.getElementById("code").value
-    });
-    document.getElementById("output").textContent = await res.text();
-  }
-
-  // Copy button logic
-  document.querySelectorAll(".copy-btn").forEach(button => {
-    button.addEventListener("click", () => {
-      const pre = button.nextElementSibling;
-      navigator.clipboard.writeText(pre.textContent);
-
-      button.textContent = "Copied!";
-      setTimeout(() => button.textContent = "Copy", 1000);
-    });
-  });
-</script>
+<!-- JS -->
+<script src="script.js"></script>
 </body>
 </html>

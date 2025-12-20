@@ -1,7 +1,6 @@
 package Web;
 
 import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.HttpExchange;
 
 import Happy.HappyMain;
 import Context.Context;
@@ -12,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class HappyServer {
@@ -23,24 +23,38 @@ public class HappyServer {
 
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 
-
-        // HTML frontend
+        // Serve static files (HTML, CSS, JS)
         server.createContext("/", exchange -> {
             if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
                 exchange.sendResponseHeaders(405, -1);
                 return;
             }
 
-            byte[] html = Files.readAllBytes(Paths.get("Web/index.html"));
-            exchange.sendResponseHeaders(200, html.length);
+            String requestPath = exchange.getRequestURI().getPath();
+            if (requestPath.equals("/")) {
+                requestPath = "/index.html";
+            }
 
-            OutputStream os = exchange.getResponseBody();
-            os.write(html);
-            os.close();
+            Path filePath = Paths.get("Web", requestPath);
+
+            if (!Files.exists(filePath) || Files.isDirectory(filePath)) {
+                exchange.sendResponseHeaders(404, -1);
+                return;
+            }
+
+            String contentType = getContentType(filePath.toString());
+            exchange.getResponseHeaders().add("Content-Type", contentType);
+
+            byte[] fileBytes = Files.readAllBytes(filePath);
+            exchange.sendResponseHeaders(200, fileBytes.length);
+
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(fileBytes);
+            }
         });
 
-            // Run Happy code
-            server.createContext("/run", exchange -> {
+        // Run Happy code
+        server.createContext("/run", exchange -> {
             if (!exchange.getRequestMethod().equalsIgnoreCase("POST")) {
                 exchange.sendResponseHeaders(405, -1);
                 return;
@@ -52,14 +66,14 @@ public class HappyServer {
             SymbolTable symbolTable = new SymbolTable();
             Context context = new Context("Program");
 
-            // Happy's values
+            // Built-in values
             context.getSymbolTableObject().set("null", new Values.Number(0));
             context.getSymbolTableObject().set("true", new Values.Number(1));
             context.getSymbolTableObject().set("false", new Values.Number(0));
             context.getSymbolTableObject().set("pi", new Values.Number(Math.PI));
             context.getSymbolTableObject().set("happy", new MyString(":)"));
 
-            // Happy's functions
+            // Built-in functions
             context.getSymbolTableObject().set("print", new BuiltInFunction("print"));
             context.getSymbolTableObject().set("fac", new BuiltInFunction("factorial"));
             context.getSymbolTableObject().set("length", new BuiltInFunction("length"));
@@ -70,12 +84,19 @@ public class HappyServer {
             byte[] responseBytes = response.getBytes();
 
             exchange.sendResponseHeaders(200, responseBytes.length);
-            OutputStream os = exchange.getResponseBody();
-            os.write(responseBytes);
-            os.close();
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(responseBytes);
+            }
         });
 
         server.start();
         System.out.println("Happy server running at http://localhost:" + port);
+    }
+
+    private static String getContentType(String path) {
+        if (path.endsWith(".html")) return "text/html";
+        if (path.endsWith(".css")) return "text/css";
+        if (path.endsWith(".js")) return "application/javascript";
+        return "application/octet-stream";
     }
 }
