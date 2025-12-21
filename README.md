@@ -1,7 +1,18 @@
 # Happy
 
+Program in Happy: https://happy-lang.live
+
 ## Introduction
 This programming language supports variable assignments, conditional expressions, loops, function definitions, list operations, and string formatting. It aims to provide a clean and concise syntax for common programming constructs while supporting features such as function calls, list manipulation, and control flow.
+
+## CI/CD Pipeline
+
+The Happy language uses a fully automated CI/CD pipeline to ensure language correctness and continuous deployment.  
+All code changes are validated through syntax and REPL tests before being containerized and deployed to production.
+
+<p align="center">
+  <img src="diagrams/ci-cd-pipeline.svg" alt="Happy CI/CD Pipeline Diagram">
+</p>
 
 ## Syntax Overview
 
