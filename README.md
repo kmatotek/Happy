@@ -11,7 +11,7 @@ The Happy language uses a fully automated CI/CD pipeline to ensure language corr
 All code changes are validated through syntax and REPL tests before being containerized and deployed to production.
 
 <p align="center">
-  <img src="diagrams/ci-cd-pipeline.svg" alt="Happy CI/CD Pipeline Diagram">
+  <img src="diagrams/ci-cd-pipeline.png" alt="Happy CI/CD Pipeline Diagram">
 </p>
 
 ## Syntax Overview
