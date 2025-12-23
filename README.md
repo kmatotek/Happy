@@ -7,8 +7,8 @@ This programming language supports variable assignments, conditional expressions
 
 ## CI/CD Pipeline
 
-The Happy language uses a fully automated CI/CD pipeline to ensure language correctness and continuous deployment.  
-All code changes are validated through syntax and REPL tests before being containerized and deployed to production.
+The Happy language uses a fully automated CI/CD pipeline to ensure continuous development and deployment.  
+All code changes are validated through syntax/REPL tests before being containerized and deployed to production.
 
 <p align="center">
   <img src="diagrams/ci-cd-pipeline.png" alt="Happy CI/CD Pipeline Diagram">
