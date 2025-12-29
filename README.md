@@ -5,6 +5,15 @@ Program in Happy: https://happy-lang.live
 ## Introduction
 This programming language supports variable assignments, conditional expressions, loops, function definitions, list operations, and string formatting. It aims to provide a clean and concise syntax for common programming constructs while supporting features such as function calls, list manipulation, and control flow.
 
+## Language Execution Pipeline
+
+Happy follows a traditional interpreted-language architecture. Source code is first tokenized by the Lexer, then parsed into an Abstract Syntax Tree (AST) by the Parser, which is evaluated by the interpreter to produce runtime values and update program state.
+
+<p align="center">
+  <img src="diagrams/HappyFullDiagram.svg" alt="Happy Language Execution Pipeline">
+</p>
+
+
 ## CI/CD Pipeline
 
 The Happy language uses a fully automated CI/CD pipeline to ensure continuous development and deployment.  
