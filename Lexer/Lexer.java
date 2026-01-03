@@ -88,7 +88,6 @@ public class Lexer{
                 this.advance();
             }
             
-            
             else {
                 // return some error
                 //Position positionStart = this.currPosition.copy();
@@ -97,7 +96,6 @@ public class Lexer{
                     throw new IllegalCharError("Line " + this.currPosition.getLine() + ": Unexpected character: " + invalidChar);
             }
         }
-
         tokens.add(new Token<>(Token.TT_EOF));
         return tokens;
     }
@@ -105,7 +103,6 @@ public class Lexer{
     public Token<?> makeIdentifier(){
         String idString = "";
         Position posStart = this.currPosition.copy();
-       
 
         while(this.currChar != '\0' && (Character.isLetter(this.currChar) || Token.DIGITS.indexOf(this.currChar) != -1) || this.currChar == '_'){
             idString += this.currChar;
@@ -113,7 +110,6 @@ public class Lexer{
         }
         
         String tokenType = Token.KEYWORDS.contains(idString) ? Token.TT_KEYWORD : Token.TT_IDENTIFIER;
-       //System.out.println(idString);
         return new Token<>(tokenType, idString, posStart, this.currPosition);
     }
 
@@ -171,7 +167,6 @@ public class Lexer{
        // this.advance();
         return new Token<>(Token.TT_STRING, sb.toString(), posStart, this.currPosition);
     }
-    
 
     public Token<?> makeNotEquals(Position position){
         Position  currPosition = position.copy();
@@ -182,9 +177,6 @@ public class Lexer{
             return new Token<>(Token.TT_NE, currPosition);
         }
         else return new Token<>(Token.TT_EXCLM, currPosition);
-        
-        // throw new IllegalCharError("Extected '=' after '!'");
-
     }
 
     public Token<?> makeEquals(Position position){
@@ -195,8 +187,7 @@ public class Lexer{
             this.advance();
             return new Token<>(Token.TT_EE, currPosition);
         }
-        return new Token<>(Token.TT_EQ, currPosition);   
-
+        return new Token<>(Token.TT_EQ, currPosition);
     }
 
     public Token<?> makeLessThan(Position position){
@@ -230,8 +221,6 @@ public class Lexer{
             this.advance();
             tokType = Token.TT_ARROW;
         }
-        
         return new Token<> (tokType, posStart);
     }
-
 }
