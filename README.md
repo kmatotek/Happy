@@ -3,7 +3,7 @@
 Program in Happy: https://happy-lang.live
 
 ## Introduction
-This programming language supports variable assignments, conditional expressions, loops, function definitions, list operations, and string formatting. It aims to provide a clean and concise syntax for common programming constructs while supporting features such as function calls, list manipulation, and control flow.
+Happy is a small interpreted programming language built to explore how modern languages work under the hood. It supports variables, conditionals, loops, functions, lists, and strings, with a syntax designed to be simple and engaging.
 
 ## Language Execution Pipeline
 
@@ -16,8 +16,7 @@ Happy follows a traditional interpreted-language architecture. Source code is fi
 
 ## CI/CD Pipeline
 
-The Happy language uses a fully automated CI/CD pipeline to ensure continuous development and deployment.  
-All code changes are validated through syntax/REPL tests before being containerized and deployed to production.
+The Happy language uses a fully automated CI/CD pipeline to ensure continuous integration and deployment. All code changes are validated through syntax/REPL tests before being containerized and deployed to production.
 
 <p align="center">
   <img src="diagrams/ci-cd-pipeline.png" alt="Happy CI/CD Pipeline Diagram">
@@ -82,9 +81,10 @@ while x < 5 then var x = x + 1
 
 ### Functions
 Built in Functions
-The `print` function takes in any Type in prints that Type as a String.
-The `length` function returns the length of a List or a String.
-the `fac` function returns the factorial of a number (floored if non-int)
+
+- The `print` function takes in any Type and prints that Type as a String.
+- The `length` function returns the length of a List or a String.
+- The `fac` function returns the factorial of a number (floored if non-int)
 
 ~~~
 print("Be happy") -> "Be happy"
