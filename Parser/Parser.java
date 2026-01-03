@@ -22,12 +22,14 @@ public class Parser {
         this.advance();
     }
 
+    // Moves forward one token
     public Token<?> advance(){
         this.currTokenIndex += 1;
         this.updateCurrToken();
         return this.currToken;
     }
 
+    // Backtrack when parsing fails on ambiguous grammar
     public Token<?> reverse(int amount){
         this.currTokenIndex -= amount;
         this.updateCurrToken();
@@ -46,6 +48,7 @@ public class Parser {
         }
     }
 
+    // Ensures the program ends with EOF
     public ParseResult parse(){
         ParseResult res = this.statements();
         if(this.currToken.getType() != Token.TT_EOF || res.getError() != null){
@@ -55,10 +58,10 @@ public class Parser {
         return res;
     }
 
+    // Returns a ParseResult with the root of the AST (parses multiple statements when using ';' (newline token))
     public ParseResult statements(){
         ParseResult res = new ParseResult();
         ArrayList<ASTNode> statements = new ArrayList<>();
-        //Position posStart = this.currToken.positionStart.copy();
 
         while(this.currToken.getType().equals(Token.TT_NEWLINE)){
             res.registerAdvancement();
@@ -93,6 +96,7 @@ public class Parser {
         return res.success(new ListNode(statements));
     }
 
+    // Parses a single statement
     public ParseResult statement(){
         ParseResult res = new ParseResult();
         //Position posStart = this.currToken.positionStart.copy();
@@ -128,6 +132,7 @@ public class Parser {
         return res.success(expr);
     }
 
+    // Parses expressions, ex 2 * 3. Just like they are defined in Java docs
     public ParseResult expression(){
         // Handle addition and subtraction (lower precedence)
         ParseResult res = new ParseResult();
@@ -160,6 +165,7 @@ public class Parser {
 
     }   
 
+    // Compares expressions ex `not 0`, `3+1 > 4`, etc.
     public ParseResult compExpression(){
         ParseResult res = new ParseResult();
         Token<?> opToken = null;
@@ -175,8 +181,7 @@ public class Parser {
             return res.success(new UnaryOpNode(opToken, node));
         }
 
-
-        ASTNode node = res.register(this.binOp(this::artithExpression, Arrays.asList(Token.TT_EE,Token.TT_NE,Token.TT_LT,Token.TT_GT,Token.TT_LTE,Token.TT_GTE)));
+        ASTNode node = res.register(this.binOp(this::arithExpression, Arrays.asList(Token.TT_EE,Token.TT_NE,Token.TT_LT,Token.TT_GT,Token.TT_LTE,Token.TT_GTE)));
         if(res.getError() != null){
             throw new IllegalCharError("res.error is not null");
         }
@@ -184,15 +189,18 @@ public class Parser {
         return res.success(node);
     }
 
+    // *, /
     public ParseResult term(){
         // Handle multiplication and division first (higher precedence)
         return this.binOp(this::factor, Arrays.asList(Token.TT_MUL, Token.TT_DIV));           
     }
 
-    public ParseResult artithExpression(){
+    // +, -, !
+    public ParseResult arithExpression(){
         return this.binOp(this::term, Arrays.asList(Token.TT_PLUS,Token.TT_MINUS, Token.TT_EXCLM));
     }
 
+    // Parses Unary operators
     public ParseResult factor(){
         ParseResult res = new ParseResult();
         Token<?> token = currToken;
@@ -212,6 +220,7 @@ public class Parser {
         //throw new InvalidSyntaxError(Token.positionStart,Token.positionEnd,"Expected int or float");
     }
 
+    // Currently under construction (not in use)
     public ParseResult power(){
         return  this.binOp(this::call, this::factor, Arrays.asList("POW")); 
     }
@@ -254,10 +263,11 @@ public class Parser {
         return res.success(atom);
     }
 
+    // Parses the smallest syntactic units in an expression
+    // ex 42, "hello", x, (x+4), [1,2,3], etc
     public ParseResult atom(){
         ParseResult res = new ParseResult();
         Token<?> token = currToken;
-        // System.out.println(token.type);
 
         if(token.getType().equals(Token.TT_INT) || token.getType().equals(Token.TT_FLOAT)){
             res.registerAdvancement();
@@ -309,7 +319,7 @@ public class Parser {
         else throw new IllegalCharError("Expected int or float but got " + this.currToken.getType());
     }
 
-
+    // Delegates the actual work to ifExpressionCases
     public ParseResult ifExpression(){
         ParseResult res = new ParseResult();
 
@@ -319,12 +329,12 @@ public class Parser {
         return res.success(new IfNode(allCases.getCases(),allCases.getElseCase()));
     }
 
+    // Parses one if or elif case
     public ParseResult ifExpressionCases(String keyword){    
         ParseResult res = new ParseResult();
         List<Case> cases = new ArrayList<>();
         ElseCase elseCase = null;
 
-        //System.out.println(this.currToken.value);
         if(!this.currToken.matches(Token.TT_KEYWORD,keyword)){
             throw new IllegalArgumentException("Expected 'if'");
         }
@@ -371,16 +381,17 @@ public class Parser {
             if(res.getError() != null) return res;
             List<Case> newCases = allCases.getCases();
             elseCase = allCases.getElseCase();
-           // Printing null System.out.println(elseCase);
             cases.addAll(newCases);
         }     
         return res.success(new IfCases(cases,elseCase));
     }
 
+    // Wrapper
     public ParseResult ifExprB(){
         return this.ifExpressionCases("elif");
     }
 
+    // Parses the `else` block
     public ParseResult ifExprC(){
         ParseResult res = new ParseResult();
         ElseCase elseCase = null;
@@ -412,6 +423,8 @@ public class Parser {
         return res.success(elseCase);
     }
 
+    // If next token is `elif` -> parse more cases
+    // Else -> try parsing `else`
     public ParseResult ifExprBorC(){
         ParseResult res = new ParseResult();
         List<Case> cases = new ArrayList<>();
@@ -429,6 +442,7 @@ public class Parser {
 
     }
 
+    // Parses for loops
     public ParseResult forExpression(){
         ParseResult res = new ParseResult();
 
@@ -509,6 +523,7 @@ public class Parser {
 
     }
 
+    // Parses While loops
     public ParseResult whileExpression(){
         ParseResult res = new ParseResult();
 
@@ -552,7 +567,7 @@ public class Parser {
         return res.success(new WhileNode(condition, body, false));
     }
 
-    
+    // Parses Lists
     public ParseResult listExpression(){
         ParseResult res = new ParseResult();
         ArrayList<ASTNode> elementNodes = new ArrayList<>();
@@ -587,7 +602,7 @@ public class Parser {
         return res.success(new ListNode(elementNodes));
     }
 
-    // binOp accepts a parsing function to handle the correct precedence levels
+    // Accepts a single parsing function to handle the correct precedence levels
     public ParseResult binOp(Supplier<ParseResult> parseFuncA, List<String> ops){
         ParseResult res = new ParseResult();
         Supplier<ParseResult> parseFuncB = parseFuncA;
@@ -611,11 +626,12 @@ public class Parser {
         return res.success(left);
     }
 
+    // Accepts two parsing function to handle the correct precedence levels
     public ParseResult binOp(Supplier<ParseResult> parseFuncA, Supplier<ParseResult> parseFuncB, List<String> ops){
         ParseResult res = new ParseResult();
         ASTNode left = res.register(parseFuncA.get());
         
-          // Call the provided parse function (e.g., factor or term)
+        // Call the provided parse function (e.g., factor or term)
         if(res.getError() != null) throw new InvalidSyntaxError(this.currToken.getPositionStart(),this.currToken.getPositionEnd(),"You fond a hidden error!");
         
         while(ops.contains(this.currToken.getValue())){
@@ -631,6 +647,7 @@ public class Parser {
         return res.success(left);
     }
 
+    // Parses functions
     public ParseResult funcDef(){
         ParseResult res = new ParseResult();
 
