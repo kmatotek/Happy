@@ -23,26 +23,26 @@ public class Parser {
     }
 
     // Moves forward one token
-    public Token<?> advance(){
+    private Token<?> advance(){
         this.currTokenIndex += 1;
         this.updateCurrToken();
         return this.currToken;
     }
 
     // Backtrack when parsing fails on ambiguous grammar
-    public Token<?> reverse(int amount){
+    private Token<?> reverse(int amount){
         this.currTokenIndex -= amount;
         this.updateCurrToken();
         return this.currToken;
     }
 
-    public Token<?> reverse(){
+    private Token<?> reverse(){
         this.currTokenIndex -= 1;
         this.updateCurrToken();
         return this.currToken;
     }
 
-    public void updateCurrToken(){
+    private void updateCurrToken(){
         if(this.currTokenIndex >= 0 && this.currTokenIndex < this.tokens.size()){
             this.currToken = this.tokens.get(this.currTokenIndex);
         }
@@ -59,7 +59,7 @@ public class Parser {
     }
 
     // Returns a ParseResult with the root of the AST (parses multiple statements when using ';' (newline token))
-    public ParseResult statements(){
+    private ParseResult statements(){
         ParseResult res = new ParseResult();
         ArrayList<ASTNode> statements = new ArrayList<>();
 
@@ -97,7 +97,7 @@ public class Parser {
     }
 
     // Parses a single statement
-    public ParseResult statement(){
+    private ParseResult statement(){
         ParseResult res = new ParseResult();
         //Position posStart = this.currToken.positionStart.copy();
         Position posStart = this.currToken.getPositionStart();
@@ -133,7 +133,7 @@ public class Parser {
     }
 
     // Parses expressions, ex 2 * 3. Just like they are defined in Java docs
-    public ParseResult expression(){
+    private ParseResult expression(){
         // Handle addition and subtraction (lower precedence)
         ParseResult res = new ParseResult();
         if(this.currToken.matches(Token.TT_KEYWORD, "var")){
@@ -166,7 +166,7 @@ public class Parser {
     }   
 
     // Compares expressions ex `not 0`, `3+1 > 4`, etc.
-    public ParseResult compExpression(){
+    private ParseResult compExpression(){
         ParseResult res = new ParseResult();
         Token<?> opToken = null;
 
@@ -190,18 +190,18 @@ public class Parser {
     }
 
     // *, /
-    public ParseResult term(){
+    private ParseResult term(){
         // Handle multiplication and division first (higher precedence)
         return this.binOp(this::factor, Arrays.asList(Token.TT_MUL, Token.TT_DIV));           
     }
 
     // +, -, !
-    public ParseResult arithExpression(){
+    private ParseResult arithExpression(){
         return this.binOp(this::term, Arrays.asList(Token.TT_PLUS,Token.TT_MINUS, Token.TT_EXCLM));
     }
 
     // Parses Unary operators
-    public ParseResult factor(){
+    private ParseResult factor(){
         ParseResult res = new ParseResult();
         Token<?> token = currToken;
             
@@ -221,11 +221,11 @@ public class Parser {
     }
 
     // Currently under construction (not in use)
-    public ParseResult power(){
+    private ParseResult power(){
         return  this.binOp(this::call, this::factor, Arrays.asList("POW")); 
     }
 
-    public ParseResult call(){
+    private ParseResult call(){
         ParseResult res = new ParseResult();
         ASTNode atom = res.register(this.atom());
         if(res.getError() != null) return res;
@@ -265,7 +265,7 @@ public class Parser {
 
     // Parses the smallest syntactic units in an expression
     // ex 42, "hello", x, (x+4), [1,2,3], etc
-    public ParseResult atom(){
+    private ParseResult atom(){
         ParseResult res = new ParseResult();
         Token<?> token = currToken;
 
@@ -320,7 +320,7 @@ public class Parser {
     }
 
     // Delegates the actual work to ifExpressionCases
-    public ParseResult ifExpression(){
+    private ParseResult ifExpression(){
         ParseResult res = new ParseResult();
 
         IfCases allCases = (IfCases) res.register(this.ifExpressionCases("if"));
@@ -330,7 +330,7 @@ public class Parser {
     }
 
     // Parses one if or elif case
-    public ParseResult ifExpressionCases(String keyword){    
+    private ParseResult ifExpressionCases(String keyword){
         ParseResult res = new ParseResult();
         List<Case> cases = new ArrayList<>();
         ElseCase elseCase = null;
@@ -387,12 +387,12 @@ public class Parser {
     }
 
     // Wrapper
-    public ParseResult ifExprB(){
+    private ParseResult ifExprB(){
         return this.ifExpressionCases("elif");
     }
 
     // Parses the `else` block
-    public ParseResult ifExprC(){
+    private ParseResult ifExprC(){
         ParseResult res = new ParseResult();
         ElseCase elseCase = null;
         
@@ -425,7 +425,7 @@ public class Parser {
 
     // If next token is `elif` -> parse more cases
     // Else -> try parsing `else`
-    public ParseResult ifExprBorC(){
+    private ParseResult ifExprBorC(){
         ParseResult res = new ParseResult();
         List<Case> cases = new ArrayList<>();
         ElseCase elseCase = null;
@@ -443,7 +443,7 @@ public class Parser {
     }
 
     // Parses for loops
-    public ParseResult forExpression(){
+    private ParseResult forExpression(){
         ParseResult res = new ParseResult();
 
         if(!this.currToken.matches(Token.TT_KEYWORD,"for")){
@@ -524,7 +524,7 @@ public class Parser {
     }
 
     // Parses While loops
-    public ParseResult whileExpression(){
+    private ParseResult whileExpression(){
         ParseResult res = new ParseResult();
 
         if(!this.currToken.matches(Token.TT_KEYWORD, "while")){
@@ -568,7 +568,7 @@ public class Parser {
     }
 
     // Parses Lists
-    public ParseResult listExpression(){
+    private ParseResult listExpression(){
         ParseResult res = new ParseResult();
         ArrayList<ASTNode> elementNodes = new ArrayList<>();
         //Position posStart = this.currToken.positionStart.copy();
@@ -603,7 +603,7 @@ public class Parser {
     }
 
     // Accepts a single parsing function to handle the correct precedence levels
-    public ParseResult binOp(Supplier<ParseResult> parseFuncA, List<String> ops){
+    private ParseResult binOp(Supplier<ParseResult> parseFuncA, List<String> ops){
         ParseResult res = new ParseResult();
         Supplier<ParseResult> parseFuncB = parseFuncA;
 
@@ -627,7 +627,7 @@ public class Parser {
     }
 
     // Accepts two parsing function to handle the correct precedence levels
-    public ParseResult binOp(Supplier<ParseResult> parseFuncA, Supplier<ParseResult> parseFuncB, List<String> ops){
+    private ParseResult binOp(Supplier<ParseResult> parseFuncA, Supplier<ParseResult> parseFuncB, List<String> ops){
         ParseResult res = new ParseResult();
         ASTNode left = res.register(parseFuncA.get());
         
@@ -648,7 +648,7 @@ public class Parser {
     }
 
     // Parses functions
-    public ParseResult funcDef(){
+    private ParseResult funcDef(){
         ParseResult res = new ParseResult();
 
         if(!this.currToken.matches(Token.TT_KEYWORD,"func")){

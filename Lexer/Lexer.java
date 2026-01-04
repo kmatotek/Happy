@@ -19,7 +19,7 @@ public class Lexer{
         this.advance();
     }
     // Advance to next character in text
-    public void advance(){
+    private void advance(){
         this.currPosition.advance(currChar);
         if(this.currPosition.getIndex() < this.text.length()){
             this.currChar = this.text.charAt(currPosition.getIndex());
@@ -100,7 +100,7 @@ public class Lexer{
         return tokens;
     }
 
-    public Token<?> makeIdentifier(){
+    private Token<?> makeIdentifier(){
         String idString = "";
         Position posStart = this.currPosition.copy();
 
@@ -113,7 +113,7 @@ public class Lexer{
         return new Token<>(tokenType, idString, posStart, this.currPosition);
     }
 
-    public Token<?> makeNumber() {
+    private Token<?> makeNumber() {
         StringBuilder numStr = new StringBuilder();
         int dotCount = 0;
         Position positionStart = this.currPosition.copy();
@@ -138,7 +138,7 @@ public class Lexer{
         }
     }
 
-    public Token<?> makeString(Position position) {
+    private Token<?> makeString(Position position) {
         StringBuilder sb = new StringBuilder();
         Position posStart = this.currPosition.copy();
         boolean escapeChar = false;
@@ -168,7 +168,7 @@ public class Lexer{
         return new Token<>(Token.TT_STRING, sb.toString(), posStart, this.currPosition);
     }
 
-    public Token<?> makeNotEquals(Position position){
+    private Token<?> makeNotEquals(Position position){
         Position  currPosition = position.copy();
         this.advance();
 
@@ -179,7 +179,7 @@ public class Lexer{
         else return new Token<>(Token.TT_EXCLM, currPosition);
     }
 
-    public Token<?> makeEquals(Position position){
+    private Token<?> makeEquals(Position position){
         Position  currPosition = position.copy();
         this.advance();
 
@@ -190,7 +190,7 @@ public class Lexer{
         return new Token<>(Token.TT_EQ, currPosition);
     }
 
-    public Token<?> makeLessThan(Position position){
+    private Token<?> makeLessThan(Position position){
         Position  currPosition = position.copy();
         this.advance();
 
@@ -201,7 +201,7 @@ public class Lexer{
         return new Token<>(Token.TT_LT, currPosition);   
     }
 
-    public Token<?> makeGreaterThan(Position position){
+    private Token<?> makeGreaterThan(Position position){
         Position  currPosition = position.copy();
         this.advance();
 
@@ -212,7 +212,7 @@ public class Lexer{
         return new Token<>(Token.TT_GT, currPosition);   
     }
 
-    public Token<?> makeMinusOrArrow(){
+    private Token<?> makeMinusOrArrow(){
         String tokType = Token.TT_MINUS;
         Position posStart = this.currPosition.copy();
         this.advance();

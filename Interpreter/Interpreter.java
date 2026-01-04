@@ -21,6 +21,7 @@ public class Interpreter {
     public void setContext(Context context) {
         Context = context;
     }
+
     // This is the dispatcher, calls the appropriate methods depending on the type of `ASTNode`
     // Each visit returns a `Value` wrapped in `RTResult`
     public RTResult visit(ASTNode node, Context context){
@@ -56,17 +57,17 @@ public class Interpreter {
         }
     }
 
-    public void noVisitMethod(ASTNode node, Context context){
+    private void noVisitMethod(ASTNode node, Context context){
         throw new IllegalArgumentException("no visit method");
     }
 
-    public ValueContext visitNumberNode(NumberNode node, Context context){
+    private ValueContext visitNumberNode(NumberNode node, Context context){
         Number num = new Number(node.getToken().getValue());
         num.setPosition(node.getPositionStart(),node.getPositionEnd());
         return new ValueContext(num,context);
     }
 
-    public RTResult visitBinaryOpNode(BinOpNode node, Context context){
+    private RTResult visitBinaryOpNode(BinOpNode node, Context context){
         RTResult res = new RTResult();
 
         // Evaluate left node
@@ -184,7 +185,7 @@ public class Interpreter {
         return res.success(result);
     }
 
-    public RTResult visitUnaryOpNode(UnaryOpNode node, Context context){
+    private RTResult visitUnaryOpNode(UnaryOpNode node, Context context){
         RTResult res = new RTResult();
 
         Number num = ((Number) res.register(this.visit(node.getNode(), context)));
@@ -201,7 +202,7 @@ public class Interpreter {
         return res.success(num);
     }
 
-    public RTResult visitVarAccessNode(VarAccessNode node, Context context){
+    private RTResult visitVarAccessNode(VarAccessNode node, Context context){
         RTResult res = new RTResult();
         Object varName = node.getVarNameToken().getValue();
 
@@ -217,7 +218,7 @@ public class Interpreter {
         return res.success(value);
     }
 
-    public RTResult visitVarAssignedNode(VarAssignNode node, Context context){
+    private RTResult visitVarAssignedNode(VarAssignNode node, Context context){
         RTResult res = new RTResult();
         Object varName = node.getVarNameToken().getValue();
 
@@ -235,7 +236,7 @@ public class Interpreter {
 
     // Conditionals are expressions, not statements (by design choice)
     // ex. var isTrue = if 1 then 1 else 0
-    public RTResult visitIfNode(IfNode node, Context context){
+    private RTResult visitIfNode(IfNode node, Context context){
         RTResult res = new RTResult();
 
         boolean shouldReturnNull = node.getElseCase().isShouldReturnNull();
@@ -270,7 +271,7 @@ public class Interpreter {
         return res.success(null);
     }
 
-    public RTResult visitForNode(ForNode node, Context context){
+    private RTResult visitForNode(ForNode node, Context context){
         RTResult res = new RTResult();
         ArrayList<Value> elements = new ArrayList<>();
         
@@ -325,7 +326,7 @@ public class Interpreter {
         return res.success(list);
     }
 
-    public RTResult visitWhileNode(WhileNode node, Context context){
+    private RTResult visitWhileNode(WhileNode node, Context context){
         RTResult res = new RTResult();
         ArrayList<Value> elements = new ArrayList<>();
 
@@ -354,7 +355,7 @@ public class Interpreter {
         return res.success(list);
     }
 
-    public RTResult visitFuncDefNode(FuncDefNode node, Context context){
+    private RTResult visitFuncDefNode(FuncDefNode node, Context context){
         RTResult res = new RTResult();
         String funcName = node.getVarNameTok().getValue().toString();
         ASTNode bodyNode = node.getBodyNode();
@@ -372,7 +373,7 @@ public class Interpreter {
         return res.success(funcValue);
     }
 
-    public RTResult visitCallNode(CallNode node, Context context){
+    private RTResult visitCallNode(CallNode node, Context context){
         RTResult res = new RTResult();
 
         ArrayList<Value> args = new ArrayList<>();
@@ -406,14 +407,14 @@ public class Interpreter {
         }
     }
 
-    public ValueContext visitStringNode(StringNode node, Context context){
+    private ValueContext visitStringNode(StringNode node, Context context){
         MyString str = new MyString(node.getToken().getValue().toString());
         str.setContext(context);
         str.setPosition(node.getPositionStart(),node.getPositionEnd());
         return new ValueContext(str,context);
     }
 
-    public RTResult visitListNode(ListNode node, Context context){
+    private RTResult visitListNode(ListNode node, Context context){
         RTResult res = new RTResult();
         ArrayList<Value> elements = new ArrayList<>();
 
@@ -431,7 +432,7 @@ public class Interpreter {
     }
 
     // Remaining methods are all under construction!
-    public RTResult visitReturnNode(ReturnNode node, Context context){
+    private RTResult visitReturnNode(ReturnNode node, Context context){
         RTResult res = new RTResult();
         Value value = null;
 
@@ -442,11 +443,11 @@ public class Interpreter {
         return res.successReturn(value);
     }
 
-    public RTResult visitContinueNode(ContinueNode node, Context context){
+    private RTResult visitContinueNode(ContinueNode node, Context context){
         RTResult res = new RTResult();
         return res.successContinue();
     }
-    public RTResult visitBreakNode(BreakNode node, Context context){
+    private RTResult visitBreakNode(BreakNode node, Context context){
         RTResult res = new RTResult();
         return res.successBreak();
     }
