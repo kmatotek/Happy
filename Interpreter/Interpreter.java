@@ -11,7 +11,6 @@ import Parser.*;
 import java.util.ArrayList;
 import Values.*;
 
-
 public class Interpreter {
     private Context Context = new Context("Program");
 
@@ -22,7 +21,8 @@ public class Interpreter {
     public void setContext(Context context) {
         Context = context;
     }
-
+    // This is the dispatcher, calls the appropriate methods depending on the type of `ASTNode`
+    // Each visit returns a `Value` wrapped in `RTResult`
     public RTResult visit(ASTNode node, Context context){
         RTResult res = new RTResult();
         if(node instanceof NumberNode){
@@ -68,23 +68,30 @@ public class Interpreter {
 
     public RTResult visitBinaryOpNode(BinOpNode node, Context context){
         RTResult res = new RTResult();
+
+        // Evaluate left node
         Value value1 = res.register(this.visit(node.getLeftNode(), context));
         if(res.shouldReturn()) return res;
+
+        // Evaluate right node
         Value value2 = res.register(this.visit(node.getRightNode(), context));
         if(res.shouldReturn()) return res;
-        
+
+        // Dispatch based on types
         if(value1 instanceof MyString && value2 instanceof MyString){
             
             MyString left = (MyString) value1;
             MyString right = (MyString) value2;
             MyString ans = null;
             if(node.getToken().getType().equals(Token.TT_PLUS)){
+                // "hi" + "bye"
                 ans = left.addedTo(right);
             } else {
                 throw new InvalidSyntaxError(node.getPositionStart(), node.getPositionEnd(), "Invalid operator on Strings");
             }
             return res.success(ans);
         } else if (value1 instanceof MyString && value2 instanceof Number){
+            // "hello" * 3
             
             MyString left = (MyString) value1;
             Number right = (Number) value2;
@@ -107,11 +114,13 @@ public class Interpreter {
             MyList left = (MyList) value1;
             Number right = (Number) value2;
             if(node.getToken().getType().equals(Token.TT_PLUS)){
+                // [1,2] + 3
                 MyList ans = left.copy();
                 ans.getElements().add(right);
                 return res.success(ans);
 
             } else if(node.getToken().getType().equals(Token.TT_EXCLM)){
+                // [1,2] ! 0
                 
                 int get = Number.toInt(right.getValue());
                 if(get < 0 || get > left.getElements().size()){
@@ -121,10 +130,10 @@ public class Interpreter {
                 return res.success(ans);
             }
 
-
         } else if (value1 instanceof MyList && value2 instanceof MyList){
             
             if(node.getToken().getType().equals(Token.TT_PLUS)){
+                // [1,2,3] + [4,5]
                 MyList left = (MyList) value1;
                 MyList right = (MyList) value2;
                 MyList ans = left.copy();
@@ -137,14 +146,11 @@ public class Interpreter {
             } 
         }
 
-
-    
+        // Lastly, if we've got here, both values are of type `Number`
         Number left = (Number) value1;
-        //System.out.println(this.visit(node.leftNode, context).value);
         Number right = (Number) value2;
         Number result;
 
-        
         if(node.getToken().getType().equals(Token.TT_PLUS)){
             result = left.addBy(right);
         } else if(node.getToken().getType().equals(Token.TT_MINUS)){
@@ -171,10 +177,7 @@ public class Interpreter {
             result = left.andBy(right);
         } else if(node.getToken().matches(Token.TT_KEYWORD,"or")){
             result = left.orBy(right);
-        } 
-
-        
-        else {     
+        } else {
             throw new IllegalArgumentException("not good bro");
         }
         result.setPosition(node.getPositionStart(), node.getPositionEnd());
@@ -186,11 +189,12 @@ public class Interpreter {
 
         Number num = ((Number) res.register(this.visit(node.getNode(), context)));
         if(res.shouldReturn()) return res;
-        
 
         if(node.getOpToken().getType().equals(Token.TT_MINUS)){
+            // -4
             num = num.multiplyBy(new Number(-1));
         } else if (node.getOpToken().matches(Token.TT_KEYWORD,"not")){
+            // not 1
             num = num.notted();
         }
         num.setPosition(node.getPositionStart(), node.getPositionEnd());
@@ -200,10 +204,13 @@ public class Interpreter {
     public RTResult visitVarAccessNode(VarAccessNode node, Context context){
         RTResult res = new RTResult();
         Object varName = node.getVarNameToken().getValue();
+
+        // Lookup variable name in symbol table
         Value value = context.getSymbolTableObject().getSymbols().get(varName);
 
         if(value == null) throw new IllegalArgumentException("Variable " + varName + " is not defined");
-        
+
+        // Attach context and position
         value.setPosition(node.getPositionStart(), node.getPositionEnd());
         value.setContext(context);
 
@@ -213,29 +220,33 @@ public class Interpreter {
     public RTResult visitVarAssignedNode(VarAssignNode node, Context context){
         RTResult res = new RTResult();
         Object varName = node.getVarNameToken().getValue();
+
+        // Evaluate right-hand side
         Value value = this.visit(node.getValueNode(), context).getValue();
+
         if(res.shouldReturn()) return res;
         if(value == null) throw new IllegalArgumentException("Variable " + varName + " is not defined");
-        
 
+        // Store result in symbol table
         context.getSymbolTableObject().set(varName.toString(), value);
         
         return res.success(value);
     }
 
+    // Conditionals are expressions, not statements (by design choice)
+    // ex. var isTrue = if 1 then 1 else 0
     public RTResult visitIfNode(IfNode node, Context context){
         RTResult res = new RTResult();
 
         boolean shouldReturnNull = node.getElseCase().isShouldReturnNull();
+
+        // Evaluate conditions in order
         for(int i = 0; i < node.getCases().size(); i++){
-        
             ASTNode condition = node.getCases().get(i).getCondition();
             ASTNode expr = node.getCases().get(i).getExpression();
             Number conditionValue = (Number) res.register(this.visit(condition,context));
             if(res.shouldReturn()) return res;
 
-
-            
             if(Number.toInt(conditionValue.getValue()) != 0){
                 Value exprValue = res.register(this.visit(expr,context));
                 if(res.shouldReturn()) return res;
@@ -268,7 +279,6 @@ public class Interpreter {
         Number endValue = (Number) res.register(this.visit(node.getEndValueNode(), context));
         if(res.shouldReturn()) return res;
         Number stepValue = null;
-        
 
         if(node.getStepValueNode() != null){
             stepValue = (Number) res.register(this.visit(node.getStepValueNode(), context));
@@ -278,9 +288,9 @@ public class Interpreter {
         
         int i = Number.toInt(startValue.getValue());
         int step = Number.toInt(stepValue.getValue());
-      
-        
+
         if(step >= 0){
+            // Positive step
             while(i < Number.toInt(endValue.getValue())){
                 context.getSymbolTableObject().set(node.getVarNameToken().getValue().toString(), new Number(i));
                 
@@ -293,6 +303,7 @@ public class Interpreter {
                 elements.add(value);
             }
         } else {
+            // Negative step value
             while(i > Number.toInt(endValue.getValue())){
                 context.getSymbolTableObject().set(node.getVarNameToken().getValue().toString(), new Number(i));
                 i += step;
@@ -322,6 +333,7 @@ public class Interpreter {
             Number condition = (Number) res.register(this.visit(node.getConditionNode(), context));
             if(res.shouldReturn()) return res;
 
+            // Evaluate condition each iteration
             if(Number.toInt(condition.getValue()) == 0){
                 break;
             }
@@ -354,6 +366,7 @@ public class Interpreter {
 
         Function funcValue = new Function(funcName, bodyNode, argNames, node.isShouldAutoReturn());
 
+        // Store function in current context
         context.getSymbolTableObject().set(funcName,funcValue);
         
         return res.success(funcValue);
@@ -367,8 +380,10 @@ public class Interpreter {
         if(res.shouldReturn()) return res;
 
         if (valueToCall instanceof BuiltInFunction){
+            // Built-in function
             BuiltInFunction valueToCallB = (BuiltInFunction) valueToCall;
-            
+
+            // Populate args
             for(ASTNode argNode : node.getArgNodes()){
                 args.add(res.register(this.visit(argNode, context)));
                 if(res.shouldReturn()) return res;
@@ -378,8 +393,10 @@ public class Interpreter {
             
             return res.success(returnValue);
         } else {
+            // User-designed function
             Function valueToCallB = (Function) valueToCall;
-            
+
+            // Populate args
             for(ASTNode argNode : node.getArgNodes()){
                 args.add(res.register(this.visit(argNode,context)));
             }
@@ -390,7 +407,6 @@ public class Interpreter {
     }
 
     public ValueContext visitStringNode(StringNode node, Context context){
-        
         MyString str = new MyString(node.getToken().getValue().toString());
         str.setContext(context);
         str.setPosition(node.getPositionStart(),node.getPositionEnd());
@@ -414,6 +430,7 @@ public class Interpreter {
         return res.success(new ValueContext(list, context).getValue());
     }
 
+    // Remaining methods are all under construction!
     public RTResult visitReturnNode(ReturnNode node, Context context){
         RTResult res = new RTResult();
         Value value = null;
